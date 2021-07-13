@@ -1,0 +1,56 @@
+*,
+*::after,
+*::before {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: sans-serif;
+}
+
+.letters-row {
+  display: flex;
+  flex-wrap: none;
+}
+
+.rise-title-text {
+  display: "absolute";
+  color: "red";
+}
+
+.key-selected {
+  animation: flickerColor 2s infinite step-start;
+}
+
+.key-pressed {
+  animation: keyPressed 1s step-start;
+}
+
+@keyframes keyPressed {
+  0% {
+    background-color: #ff8a7e;
+  }
+  50% {
+    background-color: #ff8a7e;
+  }
+  51% {
+    background-color: none;
+  }
+  100% {
+    background-color: none;
+  }
+}
+
+@keyframes flickerColor {
+  0% {
+    background-color: #eb817e;
+  }
+  50% {
+    background-color: #eb817e;
+  }
+  51% {
+    background-color: none;
+  }
+  100% {
+    background-color: none;
+  }
+}
