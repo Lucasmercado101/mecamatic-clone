@@ -1,7 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useReducer } from "react";
 import "./styles.css";
 import { makeStyles } from "@material-ui/styles";
 // import {} from "ramda"
+
+// const initalModel = { areKeysColored: false };
+const initalModel = { areKeysColored: true };
+
+function modelReducer(state, action) {
+  switch (action) {
+  }
+}
 
 const useStyles = makeStyles({
   riseTitleText: {
@@ -14,7 +22,7 @@ const useStyles = makeStyles({
     transform: "translateY(-50%)",
     padding: "0 1px"
   },
-  enterBottom: {
+  enterBottom: ({ areKeysColored }) => ({
     position: "relative",
     "&::after": {
       content: "''",
@@ -23,12 +31,12 @@ const useStyles = makeStyles({
       left: -3,
       top: 0,
       bottom: 10,
-      backgroundColor: "#e0e0e0",
+      backgroundColor: areKeysColored ? KEY_FINGER_COLORS.PINKY : "#e0e0e0",
       borderLeft: "3px solid #808080",
       borderRight: "3px solid #808080",
       transform: "translateY(-65%)"
     }
-  }
+  })
 });
 
 const sentenceTest = Array.from(
@@ -36,6 +44,14 @@ const sentenceTest = Array.from(
   Lo que desde luego es imprescindible, es escribir todos los días, para adquirir cualquier habilidad se precisa tiempo y constancia.`
   // "la casa de casa la casa de casa la casa de casa la casa de casa la casa de casa la casa de casa la casa de casa"
 );
+
+const KEY_FINGER_COLORS = {
+  PINKY: "#ffffc0",
+  RING_FINGER: "#c0ffc0",
+  MIDDLE_FINGER: "#c0ffff",
+  INDEX_LEFT_HAND: "#ffc0ff",
+  INDEX_RIGHT_HAND: "#ff96ff"
+};
 
 const BACKSPACE = "Backspace";
 const WPM = (typedEntries, mins) => typedEntries / 5 / mins;
@@ -54,11 +70,13 @@ const WelcomeMessage = () => (
 );
 
 export default function App() {
-  const classes = useStyles();
+  const [state, dispatch] = useReducer(modelReducer, initalModel);
   const [currentLetter, setCurrentLetter] = useState(0);
   const [keyPressed, setKeyPressed] = useState(null);
   const [startedTyping, setStartedTyping] = useState(false);
   const [seconds, setSeconds] = useState(0);
+  const { areKeysColored } = state;
+  const classes = useStyles({ areKeysColored });
 
   useEffect(() => {
     let timer1 = setInterval(() => {
@@ -126,12 +144,12 @@ export default function App() {
             // padding: 15
           }}
         >
-          {/* <WelcomeMessage /> */}
-          {sentenceTest.map((letter, i) => (
+          <WelcomeMessage />
+          {/* {sentenceTest.map((letter, i) => (
             <span className={currentLetter === i ? "key-selected" : ""}>
               {letter}
             </span>
-          ))}
+          ))} */}
         </div>
 
         {/* Keyboard */}
@@ -145,11 +163,13 @@ export default function App() {
             flexDirection: "column",
             gap: 4,
             padding: 8,
-            fontWeight: "bold"
+            fontWeight: "bold",
+            userSelect: "none"
           }}
         >
           <div style={{ display: "flex", gap: 4 }}>
             <Key
+              color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
               letter={
                 <div
                   style={{
@@ -183,6 +203,7 @@ export default function App() {
               }
             />
             <Key
+              color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
               letter={
                 <div
                   style={{
@@ -225,6 +246,7 @@ export default function App() {
               }
             />
             <Key
+              color={areKeysColored ? KEY_FINGER_COLORS.RING_FINGER : ""}
               letter={
                 <div
                   style={{
@@ -258,6 +280,7 @@ export default function App() {
               }
             />
             <Key
+              color={areKeysColored ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
               letter={
                 <div
                   style={{
@@ -291,6 +314,7 @@ export default function App() {
               }
             />
             <Key
+              color={areKeysColored ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
               letter={
                 <div
                   style={{
@@ -323,6 +347,7 @@ export default function App() {
               }
             />
             <Key
+              color={areKeysColored ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
               letter={
                 <div
                   style={{
@@ -355,6 +380,7 @@ export default function App() {
               }
             />
             <Key
+              color={areKeysColored ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""}
               letter={
                 <div
                   style={{
@@ -387,6 +413,7 @@ export default function App() {
               }
             />
             <Key
+              color={areKeysColored ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""}
               letter={
                 <div
                   style={{
@@ -419,6 +446,7 @@ export default function App() {
               }
             />
             <Key
+              color={areKeysColored ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
               letter={
                 <div
                   style={{
@@ -451,6 +479,7 @@ export default function App() {
               }
             />
             <Key
+              color={areKeysColored ? KEY_FINGER_COLORS.RING_FINGER : ""}
               letter={
                 <div
                   style={{
@@ -483,6 +512,7 @@ export default function App() {
               }
             />
             <Key
+              color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
               letter={
                 <div
                   style={{
@@ -515,6 +545,7 @@ export default function App() {
               }
             />
             <Key
+              color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
               letter={
                 <div
                   style={{
@@ -547,6 +578,7 @@ export default function App() {
               }
             />
             <Key
+              color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
               letter={
                 <div
                   style={{
@@ -591,6 +623,7 @@ export default function App() {
 
           <div style={{ display: "flex", gap: 4 }}>
             <Key
+              color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
               style={{
                 width: 48,
                 fontSize: "1.1em",
@@ -600,17 +633,79 @@ export default function App() {
               }}
               letter="&#11134;"
             />
-            <Key letter="Q" />
-            <Key letter="W" />
-            <Key letter="E" />
-            <Key letter="R" />
-            <Key letter="T" />
-            <Key letter="Y" />
-            <Key letter="U" />
-            <Key letter="I" />
-            <Key letter="O" />
-            <Key letter="P" />
             <Key
+              letter="Q"
+              color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
+            />
+            <Key
+              letter="W"
+              color={areKeysColored ? KEY_FINGER_COLORS.RING_FINGER : ""}
+            />
+            <Key
+              letter={
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    position: "relative",
+                    width: "100%",
+                    height: "100%"
+                  }}
+                >
+                  <p
+                    style={{
+                      position: "absolute",
+                      left: 4,
+                      top: 0,
+                      fontSize: "1rem"
+                    }}
+                  >
+                    E
+                  </p>
+                  <p
+                    style={{
+                      position: "absolute",
+                      bottom: 1,
+                      right: 2,
+                      fontSize: "0.7rem"
+                    }}
+                  >
+                    &euro;
+                  </p>
+                </div>
+              }
+              color={areKeysColored ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
+            />
+            <Key
+              letter="R"
+              color={areKeysColored ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
+            />
+            <Key
+              letter="T"
+              color={areKeysColored ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
+            />
+            <Key
+              letter="Y"
+              color={areKeysColored ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""}
+            />
+            <Key
+              letter="U"
+              color={areKeysColored ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""}
+            />
+            <Key
+              letter="I"
+              color={areKeysColored ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
+            />
+            <Key
+              letter="O"
+              color={areKeysColored ? KEY_FINGER_COLORS.RING_FINGER : ""}
+            />
+            <Key
+              letter="P"
+              color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
+            />
+            <Key
+              color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
               letter={
                 <div
                   style={{
@@ -635,6 +730,7 @@ export default function App() {
               }
             />
             <Key
+              color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
               letter={
                 <div
                   style={{
@@ -659,6 +755,7 @@ export default function App() {
               }
             />
             <Key
+              color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
               style={{
                 width: 52,
                 fontSize: "0.7rem",
@@ -672,6 +769,7 @@ export default function App() {
 
           <div style={{ display: "flex", gap: 4 }}>
             <Key
+              color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
               style={{
                 width: 59,
                 fontSize: "0.9rem",
@@ -680,29 +778,56 @@ export default function App() {
               }}
               letter="Mayús"
             />
-            <Key letter="A" />
-            <Key letter="S" />
-            <Key letter="D" />
             <Key
+              letter="A"
+              color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
+            />
+            <Key
+              letter="S"
+              color={areKeysColored ? KEY_FINGER_COLORS.RING_FINGER : ""}
+            />
+            <Key
+              letter="D"
+              color={areKeysColored ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
+            />
+            <Key
+              color={areKeysColored ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
               letter={
                 <div style={{ lineHeight: 0.3, paddingTop: 5 }}>
                   F <br /> _
                 </div>
               }
             />
-            <Key letter="G" />
-            <Key letter="H" />
             <Key
+              letter="G"
+              color={areKeysColored ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
+            />
+            <Key
+              letter="H"
+              color={areKeysColored ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""}
+            />
+            <Key
+              color={areKeysColored ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""}
               letter={
                 <div style={{ lineHeight: 0.3, paddingTop: 5 }}>
                   J <br /> _
                 </div>
               }
             />
-            <Key letter="K" />
-            <Key letter="L" />
-            <Key letter="Ñ" />
             <Key
+              letter="K"
+              color={areKeysColored ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
+            />
+            <Key
+              letter="L"
+              color={areKeysColored ? KEY_FINGER_COLORS.RING_FINGER : ""}
+            />
+            <Key
+              letter="Ñ"
+              color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
+            />
+            <Key
+              color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
               letter={
                 <div
                   style={{
@@ -727,6 +852,7 @@ export default function App() {
               }
             />
             <Key
+              color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
               letter={
                 <div
                   style={{
@@ -759,6 +885,7 @@ export default function App() {
               }
             />
             <Key
+              color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
               className={classes.enterBottom}
               style={{ width: 41, paddingTop: 7 }}
               letter="&crarr;"
@@ -767,6 +894,7 @@ export default function App() {
 
           <div style={{ display: "flex", gap: 4 }}>
             <Key
+              color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
               style={{
                 width: 44,
                 fontSize: "0.9rem",
@@ -776,20 +904,43 @@ export default function App() {
               letter="&#8679;"
             />
             <Key
+              color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
               letter={
                 <div style={{ lineHeight: 0.65 }}>
                   &gt; <br /> &lt;
                 </div>
               }
             />
-            <Key letter="Z" />
-            <Key letter="X" />
-            <Key letter="C" />
-            <Key letter="V" />
-            <Key letter="B" />
-            <Key letter="N" />
-            <Key letter="M" />
             <Key
+              letter="Z"
+              color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
+            />
+            <Key
+              letter="X"
+              color={areKeysColored ? KEY_FINGER_COLORS.RING_FINGER : ""}
+            />
+            <Key
+              letter="C"
+              color={areKeysColored ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
+            />
+            <Key
+              letter="V"
+              color={areKeysColored ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
+            />
+            <Key
+              letter="B"
+              color={areKeysColored ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
+            />
+            <Key
+              letter="N"
+              color={areKeysColored ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""}
+            />
+            <Key
+              letter="M"
+              color={areKeysColored ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""}
+            />
+            <Key
+              color={areKeysColored ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
               letter={
                 <div
                   style={{
@@ -804,6 +955,7 @@ export default function App() {
               }
             />
             <Key
+              color={areKeysColored ? KEY_FINGER_COLORS.RING_FINGER : ""}
               letter={
                 <div
                   style={{
@@ -818,6 +970,7 @@ export default function App() {
               }
             />
             <Key
+              color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
               letter={
                 <div
                   style={{
@@ -833,6 +986,7 @@ export default function App() {
               }
             />
             <Key
+              color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
               style={{
                 width: 93,
                 fontSize: "0.9rem",
@@ -1201,17 +1355,16 @@ export default function App() {
 //   );
 // }
 
-function Key({ letter, style, ...otherProps }) {
+function Key({ color, letter, style, ...otherProps }) {
   return (
     <div
-      // className={isSelected ? "key-pressed" : ""}
       {...otherProps}
       style={{
+        backgroundColor: color || "#e0e0e0",
         width: 32,
         height: 32,
         border: "3px solid #808080",
         borderRadius: "4px",
-        backgroundColor: "#e0e0e0",
         textAlign: "center",
         paddingTop: 3,
         ...style
