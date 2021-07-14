@@ -13,6 +13,21 @@ const useStyles = makeStyles({
     textAlign: "center",
     transform: "translateY(-50%)",
     padding: "0 1px"
+  },
+  enterBottom: {
+    position: "relative",
+    "&::after": {
+      content: "''",
+      position: "absolute",
+      right: -3,
+      left: -3,
+      top: 0,
+      bottom: 10,
+      backgroundColor: "#e0e0e0",
+      borderLeft: "3px solid #808080",
+      borderRight: "3px solid #808080",
+      transform: "translateY(-65%)"
+    }
   }
 });
 
@@ -118,19 +133,6 @@ export default function App() {
             </span>
           ))}
         </div>
-        {/* <div
-        style={{
-          backgroundColor: "#0e7876",
-          color: "white",
-          resize: "both",
-          overflow: "auto",
-          height: 210,
-          width: 570,
-          fontSize: "1.2rem",
-          padding: 15
-        }}
-      >
-      </div> */}
 
         {/* Keyboard */}
         <div
@@ -576,6 +578,15 @@ export default function App() {
                 </div>
               }
             />
+            <Key
+              style={{
+                width: 68,
+                textAlign: "left",
+                paddingLeft: 4,
+                fontSize: "1.1rem"
+              }}
+              letter={<div style={{ marginTop: -5 }}>&larr;</div>}
+            />
           </div>
 
           <div style={{ display: "flex", gap: 4 }}>
@@ -608,13 +619,13 @@ export default function App() {
                     position: "relative"
                   }}
                 >
-                  <p style={{ position: "absolute", left: 5, top: 3 }}>^</p>
-                  <p style={{ position: "absolute", left: 6, top: 15 }}>`</p>
+                  <p style={{ position: "absolute", left: 5, top: 1 }}>^</p>
+                  <p style={{ position: "absolute", left: 6, top: 13 }}>`</p>
                   <p
                     style={{
                       position: "absolute",
                       left: 16,
-                      top: 10,
+                      top: 8,
                       fontSize: "0.7rem"
                     }}
                   >
@@ -632,13 +643,13 @@ export default function App() {
                     position: "relative"
                   }}
                 >
-                  <p style={{ position: "absolute", left: 5, top: 2 }}>*</p>
-                  <p style={{ position: "absolute", left: 4, top: 9 }}>+</p>
+                  <p style={{ position: "absolute", left: 5, top: 0 }}>*</p>
+                  <p style={{ position: "absolute", left: 4, top: 7 }}>+</p>
                   <p
                     style={{
                       position: "absolute",
                       left: 18,
-                      top: 10,
+                      top: 8,
                       fontSize: "0.7rem"
                     }}
                   >
@@ -646,6 +657,16 @@ export default function App() {
                   </p>
                 </div>
               }
+            />
+            <Key
+              style={{
+                width: 52,
+                fontSize: "0.7rem",
+                display: "grid",
+                placeItems: "center",
+                paddingBottom: 4
+              }}
+              letter="Enter"
             />
           </div>
 
@@ -732,10 +753,15 @@ export default function App() {
                       fontSize: "0.8rem"
                     }}
                   >
-                    }
+                    {"}"}
                   </p>
                 </div>
               }
+            />
+            <Key
+              className={classes.enterBottom}
+              style={{ width: 41, paddingTop: 7 }}
+              letter="&crarr;"
             />
           </div>
 
@@ -867,53 +893,6 @@ export default function App() {
               letter="Ctrl"
             />
           </div>
-          {/* <div className="letters-row">
-              <Key isSelected={keyPressed === "q"} letter="Q" color="#fefec3" />
-              <Key isSelected={keyPressed === "w"} letter="W" color="#c4fcbf" />
-              <Key isSelected={keyPressed === "e"} letter="E" color="#c8fefc" />
-              <Key isSelected={keyPressed === "r"} letter="R" color="#fac5fb" />
-              <Key isSelected={keyPressed === "t"} letter="T" color="#fac5fb" />
-              <Key isSelected={keyPressed === "y"} letter="Y" color="#f991ff" />
-              <Key isSelected={keyPressed === "u"} letter="U" color="#f991ff" />
-              <Key isSelected={keyPressed === "i"} letter="I" color="#f991ff" />
-              <Key isSelected={keyPressed === "o"} letter="O" color="#c6f9c7" />
-              <Key isSelected={keyPressed === "p"} letter="P" color="#fdfcca" />
-            </div>
-            <div className="letters-row">
-              <Key isSelected={keyPressed === "a"} letter="A" color="#fefec3" />
-              <Key isSelected={keyPressed === "s"} letter="S" color="#c4fcbf" />
-              <Key isSelected={keyPressed === "d"} letter="D" color="#c8fefc" />
-              <Key isSelected={keyPressed === "f"} letter="F" color="#fac5fb" />
-              <Key isSelected={keyPressed === "g"} letter="G" color="#fac5fb" />
-              <Key isSelected={keyPressed === "h"} letter="H" color="#f991ff" />
-              <Key isSelected={keyPressed === "j"} letter="J" color="#f991ff" />
-              <Key isSelected={keyPressed === "k"} letter="K" color="#f991ff" />
-              <Key isSelected={keyPressed === "l"} letter="L" color="#c6f9c7" />
-              <Key isSelected={keyPressed === "ñ"} letter="Ñ" color="#fdfcca" />
-            </div>
-            <div className="letters-row">
-              <Key isSelected={keyPressed === "z"} letter="Z" color="#fefec3" />
-              <Key isSelected={keyPressed === "x"} letter="X" color="#c4fcbf" />
-              <Key isSelected={keyPressed === "c"} letter="C" color="#c8fefc" />
-              <Key isSelected={keyPressed === "v"} letter="V" color="#fac5fb" />
-              <Key isSelected={keyPressed === "b"} letter="B" color="#fac5fb" />
-              <Key isSelected={keyPressed === "n"} letter="N" color="#f991ff" />
-              <Key isSelected={keyPressed === "m"} letter="M" color="#f991ff" />
-            </div>
-            <div
-              className={keyPressed === " " ? "key-pressed" : ""}
-              style={{
-                width: "12rem",
-                height: "2rem",
-                backgroundColor: "#ffccce",
-                padding: "0.2rem",
-                display: "flex",
-                justifyContent: "center",
-                border: "medium solid #8e807f",
-                borderRadius: "4px",
-                margin: "3px"
-              }}
-            /> */}
         </div>
       </div>
 
