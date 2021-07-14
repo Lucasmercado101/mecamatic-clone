@@ -1,7 +1,7 @@
 import { useState, useEffect, useReducer } from "react";
 import "./styles.css";
 import { makeStyles } from "@material-ui/styles";
-import { modelReducer, initialModel } from "./model";
+import { modelReducer, initialModel, MESSAGES } from "./model";
 // import {} from "ramda"
 
 // ------------------- ENUMS -------------------

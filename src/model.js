@@ -1,5 +1,5 @@
 export const initialModel = { areKeysColored: false };
-const MESSAGES = {};
+export const MESSAGES = {};
 
 export function modelReducer(state, action) {
   switch (action) {
