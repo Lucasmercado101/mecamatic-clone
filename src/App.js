@@ -148,6 +148,438 @@ export default function App() {
         >
           <div style={{ display: "flex", gap: 4 }}>
             <Key
+              letter={
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    position: "relative"
+                  }}
+                >
+                  <p
+                    style={{
+                      position: "absolute",
+                      fontSize: "0.8rem",
+                      left: 4,
+                      top: -4
+                    }}
+                  >
+                    a
+                  </p>
+                  <p style={{ position: "absolute", left: 4, top: 11 }}>°</p>
+                  <p
+                    style={{
+                      position: "absolute",
+                      left: 16,
+                      top: 7,
+                      fontSize: "0.9rem"
+                    }}
+                  >
+                    \
+                  </p>
+                </div>
+              }
+            />
+            <Key
+              letter={
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    position: "relative"
+                  }}
+                >
+                  <p
+                    style={{
+                      position: "absolute",
+                      left: 5,
+                      top: -3,
+                      fontSize: "0.8rem"
+                    }}
+                  >
+                    !
+                  </p>
+                  <p
+                    style={{
+                      position: "absolute",
+                      left: 4,
+                      top: 10,
+                      fontSize: "0.7rem"
+                    }}
+                  >
+                    1
+                  </p>
+                  <p
+                    style={{
+                      position: "absolute",
+                      left: 18,
+                      top: 6,
+                      fontSize: "0.8rem"
+                    }}
+                  >
+                    |
+                  </p>
+                </div>
+              }
+            />
+            <Key
+              letter={
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    position: "relative"
+                  }}
+                >
+                  <p style={{ position: "absolute", left: 5, top: -2 }}>"</p>
+                  <p
+                    style={{
+                      position: "absolute",
+                      left: 4,
+                      top: 8,
+                      fontSize: "0.8rem"
+                    }}
+                  >
+                    2
+                  </p>
+                  <p
+                    style={{
+                      position: "absolute",
+                      left: 14,
+                      top: 8,
+                      fontSize: "0.6rem"
+                    }}
+                  >
+                    @
+                  </p>
+                </div>
+              }
+            />
+            <Key
+              letter={
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    position: "relative"
+                  }}
+                >
+                  <p style={{ position: "absolute", left: 5, top: -10 }}>.</p>
+                  <p
+                    style={{
+                      position: "absolute",
+                      left: 4,
+                      top: 7,
+                      fontSize: "0.8rem"
+                    }}
+                  >
+                    3
+                  </p>
+                  <p
+                    style={{
+                      position: "absolute",
+                      left: 16,
+                      top: 8,
+                      fontSize: "0.7rem"
+                    }}
+                  >
+                    #
+                  </p>
+                </div>
+              }
+            />
+            <Key
+              letter={
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    position: "relative"
+                  }}
+                >
+                  <p
+                    style={{
+                      position: "absolute",
+                      left: 6,
+                      top: -3,
+                      fontSize: "0.8rem"
+                    }}
+                  >
+                    $
+                  </p>
+                  <p
+                    style={{
+                      position: "absolute",
+                      left: 5,
+                      top: 9,
+                      fontSize: "0.8rem"
+                    }}
+                  >
+                    4
+                  </p>
+                </div>
+              }
+            />
+            <Key
+              letter={
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    position: "relative"
+                  }}
+                >
+                  <p
+                    style={{
+                      position: "absolute",
+                      left: 5,
+                      top: -3,
+                      fontSize: "0.7rem"
+                    }}
+                  >
+                    %
+                  </p>
+                  <p
+                    style={{
+                      position: "absolute",
+                      left: 5,
+                      top: 9,
+                      fontSize: "0.8rem"
+                    }}
+                  >
+                    5
+                  </p>
+                </div>
+              }
+            />
+            <Key
+              letter={
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    position: "relative"
+                  }}
+                >
+                  <p
+                    style={{
+                      position: "absolute",
+                      left: 5,
+                      top: -3,
+                      fontSize: "1.3rem"
+                    }}
+                  >
+                    °
+                  </p>
+                  <p
+                    style={{
+                      position: "absolute",
+                      left: 6,
+                      top: 9,
+                      fontSize: "0.8rem"
+                    }}
+                  >
+                    6
+                  </p>
+                </div>
+              }
+            />
+            <Key
+              letter={
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    position: "relative"
+                  }}
+                >
+                  <p
+                    style={{
+                      position: "absolute",
+                      left: 6,
+                      top: -3,
+                      fontSize: "0.8rem"
+                    }}
+                  >
+                    /
+                  </p>
+                  <p
+                    style={{
+                      position: "absolute",
+                      left: 5,
+                      top: 9,
+                      fontSize: "0.8rem"
+                    }}
+                  >
+                    7
+                  </p>
+                </div>
+              }
+            />
+            <Key
+              letter={
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    position: "relative"
+                  }}
+                >
+                  <p
+                    style={{
+                      position: "absolute",
+                      left: 5,
+                      top: -3,
+                      fontSize: "0.7rem"
+                    }}
+                  >
+                    (
+                  </p>
+                  <p
+                    style={{
+                      position: "absolute",
+                      left: 5,
+                      top: 9,
+                      fontSize: "0.8rem"
+                    }}
+                  >
+                    8
+                  </p>
+                </div>
+              }
+            />
+            <Key
+              letter={
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    position: "relative"
+                  }}
+                >
+                  <p
+                    style={{
+                      position: "absolute",
+                      left: 5,
+                      top: -3,
+                      fontSize: "0.7rem"
+                    }}
+                  >
+                    )
+                  </p>
+                  <p
+                    style={{
+                      position: "absolute",
+                      left: 5,
+                      top: 9,
+                      fontSize: "0.8rem"
+                    }}
+                  >
+                    9
+                  </p>
+                </div>
+              }
+            />
+            <Key
+              letter={
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    position: "relative"
+                  }}
+                >
+                  <p
+                    style={{
+                      position: "absolute",
+                      left: 5,
+                      top: -3,
+                      fontSize: "0.7rem"
+                    }}
+                  >
+                    =
+                  </p>
+                  <p
+                    style={{
+                      position: "absolute",
+                      left: 5,
+                      top: 9,
+                      fontSize: "0.8rem"
+                    }}
+                  >
+                    0
+                  </p>
+                </div>
+              }
+            />
+            <Key
+              letter={
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    position: "relative"
+                  }}
+                >
+                  <p
+                    style={{
+                      position: "absolute",
+                      left: 5,
+                      top: -2,
+                      fontSize: "0.8rem"
+                    }}
+                  >
+                    ?
+                  </p>
+                  <p
+                    style={{
+                      position: "absolute",
+                      left: 5,
+                      top: 14,
+                      fontSize: "0.8rem"
+                    }}
+                  >
+                    '
+                  </p>
+                </div>
+              }
+            />
+            <Key
+              letter={
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    position: "relative"
+                  }}
+                >
+                  <p
+                    style={{
+                      position: "absolute",
+                      left: 5,
+                      top: -6,
+                      fontSize: "0.8rem"
+                    }}
+                  >
+                    ¿
+                  </p>
+                  <p
+                    style={{
+                      position: "absolute",
+                      left: 8,
+                      top: 8,
+                      fontSize: "0.7rem"
+                    }}
+                  >
+                    ¡
+                  </p>
+                </div>
+              }
+            />
+          </div>
+
+          <div style={{ display: "flex", gap: 4 }}>
+            <Key
               style={{
                 width: 48,
                 fontSize: "1.1em",
@@ -385,6 +817,56 @@ export default function App() {
             />
           </div>
 
+          <div style={{ display: "flex", gap: 4 }}>
+            <Key
+              style={{
+                width: 52,
+                fontSize: "0.8rem",
+                textAlign: "left",
+                padding: 4,
+                paddingTop: 6
+              }}
+              letter="Ctrl"
+            />
+            <Key
+              style={{
+                width: 52
+              }}
+            />
+            <Key
+              style={{
+                width: 52,
+                textAlign: "left",
+                fontSize: "0.8rem",
+                padding: 4,
+                paddingTop: 6
+              }}
+              letter="Alt"
+            />
+            <Key style={{ width: 159 }} />
+            <Key
+              style={{
+                width: 48,
+                textAlign: "left",
+                fontSize: "0.75rem",
+                padding: 4,
+                paddingTop: 6
+              }}
+              letter="AltGr"
+            />
+            <Key style={{ width: 48 }} />
+            <Key style={{ width: 48 }} />
+            <Key
+              style={{
+                width: 52,
+                fontSize: "0.8rem",
+                textAlign: "left",
+                padding: 4,
+                paddingTop: 6
+              }}
+              letter="Ctrl"
+            />
+          </div>
           {/* <div className="letters-row">
               <Key isSelected={keyPressed === "q"} letter="Q" color="#fefec3" />
               <Key isSelected={keyPressed === "w"} letter="W" color="#c4fcbf" />
