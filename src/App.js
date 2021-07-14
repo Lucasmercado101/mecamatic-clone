@@ -138,7 +138,7 @@ export default function App() {
         <div
           style={{
             width: 570,
-            height: 205,
+            height: 208,
             marginTop: 40,
             border: "9px solid #808080",
             display: "flex",
