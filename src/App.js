@@ -3,6 +3,26 @@ import "./styles.css";
 import { makeStyles } from "@material-ui/styles";
 // import {} from "ramda"
 
+// ------------------- ENUMS -------------------
+
+const SENTENCE_POSITION = {
+  NOT_STARTED: -1,
+  FIRST_LETTER: 0
+};
+
+const KEY_FINGER_COLORS = {
+  PINKY: "#ffffc0",
+  RING_FINGER: "#c0ffc0",
+  MIDDLE_FINGER: "#c0ffff",
+  INDEX_LEFT_HAND: "#ffc0ff",
+  INDEX_RIGHT_HAND: "#ff96ff"
+};
+
+const BACKSPACE = "Backspace";
+const WPM = (typedEntries, mins) => typedEntries / 5 / mins;
+
+// ----------------------------------
+
 // const initalModel = { areKeysColored: false };
 const initalModel = { areKeysColored: true };
 
@@ -44,17 +64,6 @@ const sentenceTest = Array.from(
   Lo que desde luego es imprescindible, es escribir todos los días, para adquirir cualquier habilidad se precisa tiempo y constancia.`
   // "la casa de casa la casa de casa la casa de casa la casa de casa la casa de casa la casa de casa la casa de casa"
 );
-
-const KEY_FINGER_COLORS = {
-  PINKY: "#ffffc0",
-  RING_FINGER: "#c0ffc0",
-  MIDDLE_FINGER: "#c0ffff",
-  INDEX_LEFT_HAND: "#ffc0ff",
-  INDEX_RIGHT_HAND: "#ff96ff"
-};
-
-const BACKSPACE = "Backspace";
-const WPM = (typedEntries, mins) => typedEntries / 5 / mins;
 
 const WelcomeMessage = () => (
   <div
