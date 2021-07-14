@@ -1,6 +1,7 @@
 import { useState, useEffect, useReducer } from "react";
 import "./styles.css";
 import { makeStyles } from "@material-ui/styles";
+import { modelReducer, initialModel } from "./model";
 // import {} from "ramda"
 
 // ------------------- ENUMS -------------------
@@ -20,16 +21,7 @@ const KEY_FINGER_COLORS = {
 
 const BACKSPACE = "Backspace";
 const WPM = (typedEntries, mins) => typedEntries / 5 / mins;
-
 // ----------------------------------
-
-// const initalModel = { areKeysColored: false };
-const initalModel = { areKeysColored: true };
-
-function modelReducer(state, action) {
-  switch (action) {
-  }
-}
 
 const useStyles = makeStyles({
   riseTitleText: {
@@ -79,7 +71,7 @@ const WelcomeMessage = () => (
 );
 
 export default function App() {
-  const [state, dispatch] = useReducer(modelReducer, initalModel);
+  const [state, dispatch] = useReducer(modelReducer, initialModel);
   const [currentLetter, setCurrentLetter] = useState(0);
   const [keyPressed, setKeyPressed] = useState(null);
   const [startedTyping, setStartedTyping] = useState(false);
