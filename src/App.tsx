@@ -111,19 +111,7 @@ export default function App() {
   }, [startedTyping]);
 
   useEffect(() => {
-    electron?.ipcRenderer?.on("lesson-1-exercise-1", (event, lessonText) => {
-      dispatch({
-        type: ACTION_TYPE.LESSON_SELECTED,
-        payload: { selectedLessonText: lessonText }
-      });
-    });
-    electron?.ipcRenderer?.on("lesson-1-exercise-2", (event, lessonText) => {
-      dispatch({
-        type: ACTION_TYPE.LESSON_SELECTED,
-        payload: { selectedLessonText: lessonText }
-      });
-    });
-    electron?.ipcRenderer?.on("lesson-1-exercise-3", (event, lessonText) => {
+    electron?.ipcRenderer?.on("exercise", (event, lessonText) => {
       dispatch({
         type: ACTION_TYPE.LESSON_SELECTED,
         payload: { selectedLessonText: lessonText }
@@ -173,6 +161,7 @@ export default function App() {
                 <span
                   key={i}
                   style={{
+                    color: sentenceCursorPosition > i ? "black" : "",
                     backgroundColor:
                       sentenceCursorPosition === i ? "#ff8a7e" : "transparent",
                     whiteSpace: "break-spaces"
@@ -239,6 +228,9 @@ export default function App() {
               }
             />
             <Key
+              isHighlighted={["1", "!"].some(
+                (char) => exerciseSelected?.[sentenceCursorPosition] === char
+              )}
               color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
               letter={
                 <div
@@ -282,6 +274,9 @@ export default function App() {
               }
             />
             <Key
+              isHighlighted={["2", `"`].some(
+                (char) => exerciseSelected?.[sentenceCursorPosition] === char
+              )}
               color={areKeysColored ? KEY_FINGER_COLORS.RING_FINGER : ""}
               letter={
                 <div
@@ -316,6 +311,9 @@ export default function App() {
               }
             />
             <Key
+              isHighlighted={["3", `#`].some(
+                (char) => exerciseSelected?.[sentenceCursorPosition] === char
+              )}
               color={areKeysColored ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
               letter={
                 <div
@@ -350,6 +348,9 @@ export default function App() {
               }
             />
             <Key
+              isHighlighted={["4", `$`].some(
+                (char) => exerciseSelected?.[sentenceCursorPosition] === char
+              )}
               color={areKeysColored ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
               letter={
                 <div
@@ -383,6 +384,9 @@ export default function App() {
               }
             />
             <Key
+              isHighlighted={["5", `%`].some(
+                (char) => exerciseSelected?.[sentenceCursorPosition] === char
+              )}
               color={areKeysColored ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
               letter={
                 <div
@@ -416,6 +420,9 @@ export default function App() {
               }
             />
             <Key
+              isHighlighted={["6", `&`].some(
+                (char) => exerciseSelected?.[sentenceCursorPosition] === char
+              )}
               color={areKeysColored ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""}
               letter={
                 <div
@@ -449,6 +456,9 @@ export default function App() {
               }
             />
             <Key
+              isHighlighted={["7", `/`].some(
+                (char) => exerciseSelected?.[sentenceCursorPosition] === char
+              )}
               color={areKeysColored ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""}
               letter={
                 <div
@@ -482,6 +492,9 @@ export default function App() {
               }
             />
             <Key
+              isHighlighted={["8", `(`].some(
+                (char) => exerciseSelected?.[sentenceCursorPosition] === char
+              )}
               color={areKeysColored ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
               letter={
                 <div
@@ -515,6 +528,9 @@ export default function App() {
               }
             />
             <Key
+              isHighlighted={["9", `)`].some(
+                (char) => exerciseSelected?.[sentenceCursorPosition] === char
+              )}
               color={areKeysColored ? KEY_FINGER_COLORS.RING_FINGER : ""}
               letter={
                 <div
@@ -548,6 +564,9 @@ export default function App() {
               }
             />
             <Key
+              isHighlighted={["0", `=`].some(
+                (char) => exerciseSelected?.[sentenceCursorPosition] === char
+              )}
               color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
               letter={
                 <div
@@ -581,6 +600,9 @@ export default function App() {
               }
             />
             <Key
+              isHighlighted={["?", "'", "\\"].some(
+                (char) => exerciseSelected?.[sentenceCursorPosition] === char
+              )}
               color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
               letter={
                 <div
@@ -615,6 +637,9 @@ export default function App() {
             />
             <Key
               color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
+              isHighlighted={["¿", "¡"].some(
+                (char) => exerciseSelected?.[sentenceCursorPosition] === char
+              )}
               letter={
                 <div
                   style={{
@@ -806,6 +831,9 @@ export default function App() {
               }
             />
             <Key
+              isHighlighted={["+", "*", "~"].some(
+                (char) => exerciseSelected?.[sentenceCursorPosition] === char
+              )}
               color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
               letter={
                 <div

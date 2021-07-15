@@ -22,198 +22,33 @@ function createWindow() {
   // Open the DevTools.
   win.webContents.openDevTools();
 
-  const menuTemplate = [
+  const submenus = [];
+
+  let exercises = [];
+  for (let i = 1; i <= 100; i++) {
+    exercises.push(`${i % 10 === 0 ? 10 : i % 10}.txt`);
+    if (i % 10 === 0) {
+      submenus.push({
+        label: `LECCION ${i / 10}`,
+        submenu: exercises.map((el) => ({
+          label: el,
+          click() {
+            fs.readFile(path.join(lessonsPath, el), "utf8", (err, data) => {
+              win.webContents.send("exercise", data);
+            });
+          }
+        }))
+      });
+      exercises = [];
+    }
+  }
+
+  const menu = Menu.buildFromTemplate([
     {
       label: "Aprendizaje",
-      submenu: [
-        {
-          label: "LECCION 1",
-          submenu: [
-            {
-              label: "Ejercicio 1",
-              click() {
-                fs.readFile(
-                  path.join(lessonsPath, "1.txt"),
-                  "utf8",
-                  (err, data) => {
-                    win.webContents.send("lesson-1-exercise-1", data);
-                  }
-                );
-              }
-            },
-            {
-              label: "Ejercicio 2",
-              click() {
-                fs.readFile(
-                  path.join(lessonsPath, "2.txt"),
-                  "utf8",
-                  (err, data) => {
-                    win.webContents.send("lesson-1-exercise-2", data);
-                  }
-                );
-              }
-            },
-            {
-              label: "Ejercicio 3",
-              click() {
-                fs.readFile(
-                  path.join(lessonsPath, "3.txt"),
-                  "utf8",
-                  (err, data) => {
-                    win.webContents.send("lesson-1-exercise-3", data);
-                  }
-                );
-              }
-            },
-            { label: "Ejercicio 4" },
-            { label: "Ejercicio 5" },
-            { label: "Ejercicio 6" },
-            { label: "Ejercicio 7" },
-            { label: "Ejercicio 8" },
-            { label: "Ejercicio 9" },
-            { label: "Ejercicio 10" }
-          ]
-        },
-        {
-          label: "LECCION 2",
-          submenu: [
-            { label: "Ejercicio 1" },
-            { label: "Ejercicio 2" },
-            { label: "Ejercicio 3" },
-            { label: "Ejercicio 4" },
-            { label: "Ejercicio 5" },
-            { label: "Ejercicio 6" },
-            { label: "Ejercicio 7" },
-            { label: "Ejercicio 8" },
-            { label: "Ejercicio 9" },
-            { label: "Ejercicio 10" }
-          ]
-        },
-        {
-          label: "LECCION 3",
-          submenu: [
-            { label: "Ejercicio 1" },
-            { label: "Ejercicio 2" },
-            { label: "Ejercicio 3" },
-            { label: "Ejercicio 4" },
-            { label: "Ejercicio 5" },
-            { label: "Ejercicio 6" },
-            { label: "Ejercicio 7" },
-            { label: "Ejercicio 8" },
-            { label: "Ejercicio 9" },
-            { label: "Ejercicio 10" }
-          ]
-        },
-        {
-          label: "LECCION 4",
-          submenu: [
-            { label: "Ejercicio 1" },
-            { label: "Ejercicio 2" },
-            { label: "Ejercicio 3" },
-            { label: "Ejercicio 4" },
-            { label: "Ejercicio 5" },
-            { label: "Ejercicio 6" },
-            { label: "Ejercicio 7" },
-            { label: "Ejercicio 8" },
-            { label: "Ejercicio 9" },
-            { label: "Ejercicio 10" }
-          ]
-        },
-        {
-          label: "LECCION 5",
-          submenu: [
-            { label: "Ejercicio 1" },
-            { label: "Ejercicio 2" },
-            { label: "Ejercicio 3" },
-            { label: "Ejercicio 4" },
-            { label: "Ejercicio 5" },
-            { label: "Ejercicio 6" },
-            { label: "Ejercicio 7" },
-            { label: "Ejercicio 8" },
-            { label: "Ejercicio 9" },
-            { label: "Ejercicio 10" }
-          ]
-        },
-        {
-          label: "LECCION 6",
-          submenu: [
-            { label: "Ejercicio 1" },
-            { label: "Ejercicio 2" },
-            { label: "Ejercicio 3" },
-            { label: "Ejercicio 4" },
-            { label: "Ejercicio 5" },
-            { label: "Ejercicio 6" },
-            { label: "Ejercicio 7" },
-            { label: "Ejercicio 8" },
-            { label: "Ejercicio 9" },
-            { label: "Ejercicio 10" }
-          ]
-        },
-        {
-          label: "LECCION 7",
-          submenu: [
-            { label: "Ejercicio 1" },
-            { label: "Ejercicio 2" },
-            { label: "Ejercicio 3" },
-            { label: "Ejercicio 4" },
-            { label: "Ejercicio 5" },
-            { label: "Ejercicio 6" },
-            { label: "Ejercicio 7" },
-            { label: "Ejercicio 8" },
-            { label: "Ejercicio 9" },
-            { label: "Ejercicio 10" }
-          ]
-        },
-        {
-          label: "LECCION 8",
-          submenu: [
-            { label: "Ejercicio 1" },
-            { label: "Ejercicio 2" },
-            { label: "Ejercicio 3" },
-            { label: "Ejercicio 4" },
-            { label: "Ejercicio 5" },
-            { label: "Ejercicio 6" },
-            { label: "Ejercicio 7" },
-            { label: "Ejercicio 8" },
-            { label: "Ejercicio 9" },
-            { label: "Ejercicio 10" }
-          ]
-        },
-        {
-          label: "LECCION 9",
-          submenu: [
-            { label: "Ejercicio 1" },
-            { label: "Ejercicio 2" },
-            { label: "Ejercicio 3" },
-            { label: "Ejercicio 4" },
-            { label: "Ejercicio 5" },
-            { label: "Ejercicio 6" },
-            { label: "Ejercicio 7" },
-            { label: "Ejercicio 8" },
-            { label: "Ejercicio 9" },
-            { label: "Ejercicio 10" }
-          ]
-        },
-        {
-          label: "LECCION 10",
-          submenu: [
-            { label: "Ejercicio 1" },
-            { label: "Ejercicio 2" },
-            { label: "Ejercicio 3" },
-            { label: "Ejercicio 4" },
-            { label: "Ejercicio 5" },
-            { label: "Ejercicio 6" },
-            { label: "Ejercicio 7" },
-            { label: "Ejercicio 8" },
-            { label: "Ejercicio 9" },
-            { label: "Ejercicio 10" }
-          ]
-        }
-      ]
+      submenu: submenus
     }
-  ];
-
-  const menu = Menu.buildFromTemplate(menuTemplate);
+  ]);
   Menu.setApplicationMenu(menu);
 }
 
