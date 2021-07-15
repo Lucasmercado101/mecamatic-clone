@@ -9,6 +9,9 @@ type State = {
   areKeysColored: boolean;
   exerciseSelected: string | null;
   sentenceCursorPosition: number;
+  lessonCategory?: string;
+  lessonNumber?: number;
+  exerciseNumber?: number;
 };
 
 export const initialModel: State = {
@@ -27,7 +30,12 @@ interface Action<T extends {}> {
   payload: T;
 }
 
-type SelectedLessonAction = Action<{ selectedLessonText: string }>;
+type SelectedLessonAction = Action<{
+  selectedLessonText: string;
+  lessonCategory: string;
+  lessonNumber?: number;
+  exerciseNumber: number;
+}>;
 type KeyPressedAction = Action<{ keyPressed: string }>;
 
 type Actions = SelectedLessonAction | KeyPressedAction;
@@ -44,7 +52,12 @@ export function modelReducer(
           ...state,
           exerciseSelected: (action as SelectedLessonAction).payload
             .selectedLessonText,
-          sentenceCursorPosition: SENTENCE_POSITION.NOT_STARTED
+          sentenceCursorPosition: SENTENCE_POSITION.NOT_STARTED,
+          lessonCategory: (action as SelectedLessonAction).payload
+            .lessonCategory,
+          lessonNumber: (action as SelectedLessonAction).payload.lessonNumber,
+          exerciseNumber: (action as SelectedLessonAction).payload
+            .exerciseNumber
         })
       ],
       [

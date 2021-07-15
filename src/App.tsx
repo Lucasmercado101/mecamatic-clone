@@ -92,7 +92,14 @@ export default function App() {
   const [keyPressed, setKeyPressed] = useState<null | string>(null);
   const [startedTyping, setStartedTyping] = useState(false);
   const [seconds, setSeconds] = useState(0);
-  const { areKeysColored, exerciseSelected, sentenceCursorPosition } = state;
+  const {
+    areKeysColored,
+    exerciseSelected,
+    sentenceCursorPosition,
+    exerciseNumber,
+    lessonCategory,
+    lessonNumber
+  } = state;
   const classes = useStyles({
     areKeysColored,
     isEnterHighlighted: sentenceCursorPosition === SENTENCE_POSITION.NOT_STARTED
@@ -111,12 +118,28 @@ export default function App() {
   }, [startedTyping]);
 
   useEffect(() => {
-    electron?.ipcRenderer?.on("exercise", (event, lessonText) => {
-      dispatch({
-        type: ACTION_TYPE.LESSON_SELECTED,
-        payload: { selectedLessonText: lessonText }
-      });
-    });
+    electron?.ipcRenderer?.on(
+      "exercise",
+      (
+        event,
+        lessonText,
+        {
+          category,
+          lesson,
+          exercise
+        }: { category: string; exercise: number; lesson?: number }
+      ) => {
+        dispatch({
+          type: ACTION_TYPE.LESSON_SELECTED,
+          payload: {
+            selectedLessonText: lessonText,
+            lessonCategory: category,
+            lessonNumber: lesson,
+            exerciseNumber: exercise
+          }
+        });
+      }
+    );
   }, []);
 
   return (
@@ -1285,9 +1308,13 @@ export default function App() {
           <div>
             Lucas
             <br />
-            {/* Aprendizaje
-            <br />
-            Lección 1 - Ejercicio 1 */}
+            <div style={{ marginTop: 8 }}>
+              {lessonCategory === "learning" && "Aprendizaje"}
+              <br />
+              {lessonNumber && `Lección ${lessonNumber}`}{" "}
+              {exerciseNumber && lessonNumber && "-"}{" "}
+              {exerciseNumber && `Ejercicio ${exerciseNumber}`}
+            </div>
           </div>
         </div>
 

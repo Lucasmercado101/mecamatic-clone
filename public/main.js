@@ -34,7 +34,11 @@ function createWindow() {
           label: el,
           click() {
             fs.readFile(path.join(lessonsPath, el), "utf8", (err, data) => {
-              win.webContents.send("exercise", data);
+              win.webContents.send("exercise", data, {
+                category: "learning",
+                lesson: i / 10,
+                exercise: el.split("txt")[0]
+              });
             });
           }
         }))
