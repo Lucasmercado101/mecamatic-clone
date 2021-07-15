@@ -94,13 +94,22 @@ export default function App() {
 
   useEffect(() => {
     electron?.ipcRenderer?.on("lesson-1-exercise-1", (event, lessonText) => {
-      dispatch({ type: ACTION_TYPE.LESSON_SELECTED, payload: lessonText });
+      dispatch({
+        type: ACTION_TYPE.LESSON_SELECTED,
+        payload: { selectedLessonText: lessonText }
+      });
     });
     electron?.ipcRenderer?.on("lesson-1-exercise-2", (event, lessonText) => {
-      dispatch({ type: ACTION_TYPE.LESSON_SELECTED, payload: lessonText });
+      dispatch({
+        type: ACTION_TYPE.LESSON_SELECTED,
+        payload: { selectedLessonText: lessonText }
+      });
     });
     electron?.ipcRenderer?.on("lesson-1-exercise-3", (event, lessonText) => {
-      dispatch({ type: ACTION_TYPE.LESSON_SELECTED, payload: lessonText });
+      dispatch({
+        type: ACTION_TYPE.LESSON_SELECTED,
+        payload: { selectedLessonText: lessonText }
+      });
     });
   }, []);
 
@@ -111,7 +120,7 @@ export default function App() {
           key: keyPressed
           //  code: keyCode
         } = e;
-        dispatch({ type: ACTION_TYPE.KEY_PRESSED, payload: keyPressed });
+        dispatch({ type: ACTION_TYPE.KEY_PRESSED, payload: { keyPressed } });
 
         // setKeyPressed(keyPressed);
         // // console.log(e.code === "");

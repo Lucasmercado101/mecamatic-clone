@@ -1,9 +1,9 @@
 import { cond, equals, pipe } from "ramda";
 
-const SENTENCE_POSITION = {
-  NOT_STARTED: -1,
-  FIRST_LETTER: 0
-};
+enum SENTENCE_POSITION {
+  NOT_STARTED = -1,
+  FIRST_LETTER = 0
+}
 
 type State = {
   areKeysColored: boolean;
@@ -22,19 +22,19 @@ export enum ACTION_TYPE {
   KEY_PRESSED
 }
 
-type Action<T> = {
+interface Action<T extends {}> {
   type: ACTION_TYPE;
   payload: T;
-};
+}
 
-type SelectedLessonAction = Action<string>;
-type KeyPressedAction = Action<string>;
+type SelectedLessonAction = Action<{ selectedLessonText: string }>;
+type KeyPressedAction = Action<{ keyPressed: string }>;
 
 type Actions = SelectedLessonAction | KeyPressedAction;
 
 export function modelReducer(
   state: State = initialModel,
-  { type, payload }: Actions
+  action: Actions
 ): State {
   return cond(
     [
@@ -42,7 +42,8 @@ export function modelReducer(
         equals(ACTION_TYPE.LESSON_SELECTED),
         () => ({
           ...state,
-          exerciseSelected: payload,
+          exerciseSelected: (action as SelectedLessonAction).payload
+            .selectedLessonText,
           sentenceCursorPosition: SENTENCE_POSITION.NOT_STARTED
         })
       ],
@@ -51,7 +52,7 @@ export function modelReducer(
         () => {
           // no exercise is selected
           if (!state.exerciseSelected) return state;
-          const keyPressed = payload;
+          const { keyPressed } = (action as KeyPressedAction).payload;
 
           const { sentenceCursorPosition, exerciseSelected } = state;
 
@@ -78,5 +79,5 @@ export function modelReducer(
       ]
     ]
     // @ts-ignore
-  )(type);
+  )(action.type);
 }
