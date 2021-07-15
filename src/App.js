@@ -2,6 +2,11 @@ import { useState, useEffect, useReducer } from "react";
 import "./styles.css";
 import { makeStyles } from "@material-ui/styles";
 import { modelReducer, initialModel, MESSAGES } from "./model";
+const electron = window.require("electron");
+
+// const electron = require("electron");
+// import * as electron from "electron";
+
 // import {} from "ramda"
 
 // ------------------- ENUMS -------------------
@@ -145,12 +150,12 @@ export default function App() {
             // padding: 15
           }}
         >
-          <WelcomeMessage />
-          {/* {sentenceTest.map((letter, i) => (
-            <span className={currentLetter === i ? "key-selected" : ""}>
+          {/* <WelcomeMessage /> */}
+          {sentenceTest.map((letter, i) => (
+            <span key={i} className={currentLetter === i ? "key-selected" : ""}>
               {letter}
             </span>
-          ))} */}
+          ))}
         </div>
 
         {/* Keyboard */}

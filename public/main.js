@@ -6,10 +6,15 @@ function createWindow() {
     width: 805,
     height: 580,
     minWidth: 805,
-    minHeight: 580
+    minHeight: 580,
+    title: "MecaMatic 3.0",
+    webPreferences: {
+      nodeIntegration: true,
+      enableRemoteModule: true,
+      contextIsolation: false
+    }
   });
   win.loadURL("http://localhost:3000/");
-  win.setTitle("MecaMatic 3.0");
 
   // Open the DevTools.
   win.webContents.openDevTools();
