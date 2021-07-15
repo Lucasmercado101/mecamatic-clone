@@ -1,7 +1,12 @@
 import { useState, useEffect, useReducer } from "react";
 import "./styles.css";
 import { makeStyles } from "@material-ui/styles";
-import { modelReducer, initialModel, ACTION_TYPE } from "./model";
+import {
+  modelReducer,
+  initialModel,
+  ACTION_TYPE,
+  SENTENCE_POSITION
+} from "./model";
 import React from "react";
 const electron = window?.require?.("electron");
 
@@ -35,7 +40,13 @@ const useStyles = makeStyles({
     transform: "translateY(-50%)",
     padding: "0 1px"
   },
-  enterBottom: ({ areKeysColored }: { areKeysColored: boolean }) => ({
+  enterBottom: ({
+    areKeysColored,
+    isEnterHighlighted
+  }: {
+    areKeysColored: boolean;
+    isEnterHighlighted: boolean;
+  }) => ({
     position: "relative",
     "&::after": {
       content: "''",
@@ -44,7 +55,11 @@ const useStyles = makeStyles({
       left: -3,
       top: 0,
       bottom: 10,
-      backgroundColor: areKeysColored ? KEY_FINGER_COLORS.PINKY : "#e0e0e0",
+      backgroundColor: isEnterHighlighted
+        ? "#ff8080"
+        : areKeysColored
+        ? KEY_FINGER_COLORS.PINKY
+        : "#e0e0e0",
       borderLeft: "3px solid #808080",
       borderRight: "3px solid #808080",
       transform: "translateY(-65%)"
@@ -78,7 +93,10 @@ export default function App() {
   const [startedTyping, setStartedTyping] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const { areKeysColored, exerciseSelected, sentenceCursorPosition } = state;
-  const classes = useStyles({ areKeysColored });
+  const classes = useStyles({
+    areKeysColored,
+    isEnterHighlighted: sentenceCursorPosition === SENTENCE_POSITION.NOT_STARTED
+  });
 
   useEffect(() => {
     let timer1 = setInterval(() => {
@@ -121,29 +139,6 @@ export default function App() {
           //  code: keyCode
         } = e;
         dispatch({ type: ACTION_TYPE.KEY_PRESSED, payload: { keyPressed } });
-
-        // setKeyPressed(keyPressed);
-        // // console.log(e.code === "");
-
-        // if (currentLetter !== sentenceTest.length) {
-        //   if (
-        //     keyPressed === sentenceTest[currentLetter] &&
-        //     currentLetter === 0
-        //   ) {
-        //     setStartedTyping(true);
-        //   }
-
-        //   if (keyPressed === sentenceTest[currentLetter]) {
-        //     setCurrentLetter((prev) => {
-        //       if (prev + 1 === sentenceTest.length) {
-        //         setStartedTyping(false);
-        //       }
-        //       return prev + 1;
-        //     });
-        //   } else if (keyPressed === BACKSPACE && currentLetter !== 0) {
-        //     setCurrentLetter((prev) => prev - 1);
-        //   }
-        // }
       }}
       tabIndex={0}
       style={{
@@ -675,14 +670,26 @@ export default function App() {
               letter="&#11134;"
             />
             <Key
+              isHighlighted={
+                exerciseSelected?.[sentenceCursorPosition]?.toLowerCase() ===
+                "q"
+              }
               letter="Q"
               color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
             />
             <Key
+              isHighlighted={
+                exerciseSelected?.[sentenceCursorPosition]?.toLowerCase() ===
+                "w"
+              }
               letter="W"
               color={areKeysColored ? KEY_FINGER_COLORS.RING_FINGER : ""}
             />
             <Key
+              isHighlighted={
+                exerciseSelected?.[sentenceCursorPosition]?.toLowerCase() ===
+                "e"
+              }
               letter={
                 <div
                   style={{
@@ -718,30 +725,58 @@ export default function App() {
               color={areKeysColored ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
             />
             <Key
+              isHighlighted={
+                exerciseSelected?.[sentenceCursorPosition]?.toLowerCase() ===
+                "r"
+              }
               letter="R"
               color={areKeysColored ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
             />
             <Key
+              isHighlighted={
+                exerciseSelected?.[sentenceCursorPosition]?.toLowerCase() ===
+                "t"
+              }
               letter="T"
               color={areKeysColored ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
             />
             <Key
+              isHighlighted={
+                exerciseSelected?.[sentenceCursorPosition]?.toLowerCase() ===
+                "y"
+              }
               letter="Y"
               color={areKeysColored ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""}
             />
             <Key
+              isHighlighted={
+                exerciseSelected?.[sentenceCursorPosition]?.toLowerCase() ===
+                "u"
+              }
               letter="U"
               color={areKeysColored ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""}
             />
             <Key
+              isHighlighted={
+                exerciseSelected?.[sentenceCursorPosition]?.toLowerCase() ===
+                "i"
+              }
               letter="I"
               color={areKeysColored ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
             />
             <Key
+              isHighlighted={
+                exerciseSelected?.[sentenceCursorPosition]?.toLowerCase() ===
+                "o"
+              }
               letter="O"
               color={areKeysColored ? KEY_FINGER_COLORS.RING_FINGER : ""}
             />
             <Key
+              isHighlighted={
+                exerciseSelected?.[sentenceCursorPosition]?.toLowerCase() ===
+                "p"
+              }
               letter="P"
               color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
             />
@@ -797,6 +832,9 @@ export default function App() {
             />
             <Key
               color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
+              isHighlighted={
+                sentenceCursorPosition === SENTENCE_POSITION.NOT_STARTED
+              }
               style={{
                 width: 52,
                 fontSize: "0.7rem",
@@ -820,18 +858,34 @@ export default function App() {
               letter="Mayús"
             />
             <Key
+              isHighlighted={
+                exerciseSelected?.[sentenceCursorPosition]?.toLowerCase() ===
+                "a"
+              }
               letter="A"
               color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
             />
             <Key
+              isHighlighted={
+                exerciseSelected?.[sentenceCursorPosition]?.toLowerCase() ===
+                "s"
+              }
               letter="S"
               color={areKeysColored ? KEY_FINGER_COLORS.RING_FINGER : ""}
             />
             <Key
+              isHighlighted={
+                exerciseSelected?.[sentenceCursorPosition]?.toLowerCase() ===
+                "d"
+              }
               letter="D"
               color={areKeysColored ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
             />
             <Key
+              isHighlighted={
+                exerciseSelected?.[sentenceCursorPosition]?.toLowerCase() ===
+                "f"
+              }
               color={areKeysColored ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
               letter={
                 <div style={{ lineHeight: 0.3, paddingTop: 5 }}>
@@ -840,14 +894,26 @@ export default function App() {
               }
             />
             <Key
+              isHighlighted={
+                exerciseSelected?.[sentenceCursorPosition]?.toLowerCase() ===
+                "g"
+              }
               letter="G"
               color={areKeysColored ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
             />
             <Key
+              isHighlighted={
+                exerciseSelected?.[sentenceCursorPosition]?.toLowerCase() ===
+                "h"
+              }
               letter="H"
               color={areKeysColored ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""}
             />
             <Key
+              isHighlighted={
+                exerciseSelected?.[sentenceCursorPosition]?.toLowerCase() ===
+                "j"
+              }
               color={areKeysColored ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""}
               letter={
                 <div style={{ lineHeight: 0.3, paddingTop: 5 }}>
@@ -856,18 +922,34 @@ export default function App() {
               }
             />
             <Key
+              isHighlighted={
+                exerciseSelected?.[sentenceCursorPosition]?.toLowerCase() ===
+                "k"
+              }
               letter="K"
               color={areKeysColored ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
             />
             <Key
+              isHighlighted={
+                exerciseSelected?.[sentenceCursorPosition]?.toLowerCase() ===
+                "l"
+              }
               letter="L"
               color={areKeysColored ? KEY_FINGER_COLORS.RING_FINGER : ""}
             />
             <Key
+              isHighlighted={
+                exerciseSelected?.[sentenceCursorPosition]?.toLowerCase() ===
+                "ñ"
+              }
               letter="Ñ"
               color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
             />
             <Key
+              isHighlighted={
+                exerciseSelected?.[sentenceCursorPosition]?.toLowerCase() ===
+                "{"
+              }
               color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
               letter={
                 <div
@@ -893,6 +975,10 @@ export default function App() {
               }
             />
             <Key
+              isHighlighted={
+                exerciseSelected?.[sentenceCursorPosition]?.toLowerCase() ===
+                "}"
+              }
               color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
               letter={
                 <div
@@ -930,11 +1016,17 @@ export default function App() {
               className={classes.enterBottom}
               style={{ width: 41, paddingTop: 7 }}
               letter="&crarr;"
+              isHighlighted={
+                sentenceCursorPosition === SENTENCE_POSITION.NOT_STARTED
+              }
             />
           </div>
 
           <div style={{ display: "flex", gap: 4 }}>
             <Key
+              isHighlighted={[";", ":", "_"].some(
+                (char) => exerciseSelected?.[sentenceCursorPosition] === char
+              )}
               color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
               style={{
                 width: 44,
@@ -946,6 +1038,9 @@ export default function App() {
             />
             <Key
               color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
+              isHighlighted={["<", ">"].some(
+                (char) => exerciseSelected?.[sentenceCursorPosition] === char
+              )}
               letter={
                 <div style={{ lineHeight: 0.65 }}>
                   &gt; <br /> &lt;
@@ -953,34 +1048,65 @@ export default function App() {
               }
             />
             <Key
+              isHighlighted={
+                exerciseSelected?.[sentenceCursorPosition]?.toLowerCase() ===
+                "z"
+              }
               letter="Z"
               color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
             />
             <Key
+              isHighlighted={
+                exerciseSelected?.[sentenceCursorPosition]?.toLowerCase() ===
+                "x"
+              }
               letter="X"
               color={areKeysColored ? KEY_FINGER_COLORS.RING_FINGER : ""}
             />
             <Key
+              isHighlighted={
+                exerciseSelected?.[sentenceCursorPosition]?.toLowerCase() ===
+                "c"
+              }
               letter="C"
               color={areKeysColored ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
             />
             <Key
+              isHighlighted={
+                exerciseSelected?.[sentenceCursorPosition]?.toLowerCase() ===
+                "v"
+              }
               letter="V"
               color={areKeysColored ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
             />
             <Key
+              isHighlighted={
+                exerciseSelected?.[sentenceCursorPosition]?.toLowerCase() ===
+                "b"
+              }
               letter="B"
               color={areKeysColored ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
             />
             <Key
+              isHighlighted={
+                exerciseSelected?.[sentenceCursorPosition]?.toLowerCase() ===
+                "n"
+              }
               letter="N"
               color={areKeysColored ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""}
             />
             <Key
+              isHighlighted={
+                exerciseSelected?.[sentenceCursorPosition]?.toLowerCase() ===
+                "m"
+              }
               letter="M"
               color={areKeysColored ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""}
             />
             <Key
+              isHighlighted={[",", ";"].some(
+                (char) => exerciseSelected?.[sentenceCursorPosition] === char
+              )}
               color={areKeysColored ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
               letter={
                 <div
@@ -996,6 +1122,9 @@ export default function App() {
               }
             />
             <Key
+              isHighlighted={[".", ":"].some(
+                (char) => exerciseSelected?.[sentenceCursorPosition] === char
+              )}
               color={areKeysColored ? KEY_FINGER_COLORS.RING_FINGER : ""}
               letter={
                 <div
@@ -1011,6 +1140,9 @@ export default function App() {
               }
             />
             <Key
+              isHighlighted={["-", "_"].some(
+                (char) => exerciseSelected?.[sentenceCursorPosition] === char
+              )}
               color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
               letter={
                 <div
@@ -1027,6 +1159,7 @@ export default function App() {
               }
             />
             <Key
+              isHighlighted={exerciseSelected?.[sentenceCursorPosition] === ">"}
               color={areKeysColored ? KEY_FINGER_COLORS.PINKY : ""}
               style={{
                 width: 93,
@@ -1064,7 +1197,11 @@ export default function App() {
               }}
               letter="Alt"
             />
-            <Key style={{ width: 159 }} />
+            <Key
+              style={{ width: 159 }}
+              isHighlighted={exerciseSelected?.[sentenceCursorPosition] === " "}
+              color="#ffc0c0"
+            />
             <Key
               style={{
                 width: 48,
@@ -1400,6 +1537,7 @@ interface KeyProps {
   letter?: React.ReactElement | string;
   color?: string;
   isSelected?: boolean;
+  isHighlighted?: boolean;
   style?: React.CSSProperties | null;
 }
 
@@ -1407,13 +1545,14 @@ function Key({
   color,
   letter,
   style,
+  isHighlighted,
   ...otherProps
 }: KeyProps & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       {...otherProps}
       style={{
-        backgroundColor: color || "#e0e0e0",
+        backgroundColor: isHighlighted ? "#ff8080" : color || "#e0e0e0",
         width: 32,
         height: 32,
         border: "3px solid #808080",
