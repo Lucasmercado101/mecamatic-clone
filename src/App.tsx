@@ -1,7 +1,8 @@
 import { useState, useEffect, useReducer } from "react";
 import "./styles.css";
 import { makeStyles } from "@material-ui/styles";
-import { modelReducer, initialModel, MESSAGES } from "./model";
+import { modelReducer, initialModel, ACTION_TYPE } from "./model";
+import React from "react";
 const electron = window?.require?.("electron");
 
 // const electron = require("electron");
@@ -20,7 +21,7 @@ const KEY_FINGER_COLORS = {
 };
 
 const BACKSPACE = "Backspace";
-const WPM = (typedEntries, mins) => typedEntries / 5 / mins;
+const WPM = (typedEntries: number, mins: number) => typedEntries / 5 / mins;
 // ----------------------------------
 
 const useStyles = makeStyles({
@@ -34,7 +35,7 @@ const useStyles = makeStyles({
     transform: "translateY(-50%)",
     padding: "0 1px"
   },
-  enterBottom: ({ areKeysColored }) => ({
+  enterBottom: ({ areKeysColored }: { areKeysColored: boolean }) => ({
     position: "relative",
     "&::after": {
       content: "''",
@@ -73,10 +74,10 @@ const WelcomeMessage = () => (
 export default function App() {
   const [state, dispatch] = useReducer(modelReducer, initialModel);
   const [currentLetter, setCurrentLetter] = useState(0);
-  const [keyPressed, setKeyPressed] = useState(null);
+  const [keyPressed, setKeyPressed] = useState<null | string>(null);
   const [startedTyping, setStartedTyping] = useState(false);
   const [seconds, setSeconds] = useState(0);
-  const { areKeysColored, exerciseSelected } = state;
+  const { areKeysColored, exerciseSelected, sentenceCursorPosition } = state;
   const classes = useStyles({ areKeysColored });
 
   useEffect(() => {
@@ -93,13 +94,13 @@ export default function App() {
 
   useEffect(() => {
     electron?.ipcRenderer?.on("lesson-1-exercise-1", (event, lessonText) => {
-      dispatch({ type: MESSAGES.LESSON_SELECTED, payload: lessonText });
+      dispatch({ type: ACTION_TYPE.LESSON_SELECTED, payload: lessonText });
     });
     electron?.ipcRenderer?.on("lesson-1-exercise-2", (event, lessonText) => {
-      dispatch({ type: MESSAGES.LESSON_SELECTED, payload: lessonText });
+      dispatch({ type: ACTION_TYPE.LESSON_SELECTED, payload: lessonText });
     });
     electron?.ipcRenderer?.on("lesson-1-exercise-3", (event, lessonText) => {
-      dispatch({ type: MESSAGES.LESSON_SELECTED, payload: lessonText });
+      dispatch({ type: ACTION_TYPE.LESSON_SELECTED, payload: lessonText });
     });
   }, []);
 
@@ -161,7 +162,9 @@ export default function App() {
             Array.from(exerciseSelected).map((letter, i) => (
               <span
                 key={i}
-                className={currentLetter === i ? "key-selected" : ""}
+                style={{
+                  backgroundColor: currentLetter === i ? "#ff8a7e" : "none"
+                }}
               >
                 {letter}
               </span>
@@ -1374,7 +1377,19 @@ export default function App() {
 //   );
 // }
 
-function Key({ color, letter, style, ...otherProps }) {
+interface KeyProps {
+  letter?: React.ReactElement | string;
+  color?: string;
+  isSelected?: boolean;
+  style?: React.CSSProperties | null;
+}
+
+function Key({
+  color,
+  letter,
+  style,
+  ...otherProps
+}: KeyProps & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       {...otherProps}

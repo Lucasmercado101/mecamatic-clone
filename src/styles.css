@@ -21,25 +21,6 @@
   animation: flickerColor 2s infinite step-start;
 }
 
-.key-pressed {
-  animation: keyPressed 1s step-start;
-}
-
-@keyframes keyPressed {
-  0% {
-    background-color: #ff8a7e;
-  }
-  50% {
-    background-color: #ff8a7e;
-  }
-  51% {
-    background-color: none;
-  }
-  100% {
-    background-color: none;
-  }
-}
-
 @keyframes flickerColor {
   0% {
     background-color: #eb817e;
