@@ -11,11 +11,6 @@ const electron = window?.require?.("electron");
 
 // ------------------- ENUMS -------------------
 
-const SENTENCE_POSITION = {
-  NOT_STARTED: -1,
-  FIRST_LETTER: 0
-};
-
 const KEY_FINGER_COLORS = {
   PINKY: "#ffffc0",
   RING_FINGER: "#c0ffc0",
@@ -81,7 +76,7 @@ export default function App() {
   const [keyPressed, setKeyPressed] = useState(null);
   const [startedTyping, setStartedTyping] = useState(false);
   const [seconds, setSeconds] = useState(0);
-  const { areKeysColored } = state;
+  const { areKeysColored, exerciseSelected } = state;
   const classes = useStyles({ areKeysColored });
 
   useEffect(() => {
@@ -98,7 +93,13 @@ export default function App() {
 
   useEffect(() => {
     electron?.ipcRenderer?.on("lesson-1-exercise-1", (event, lessonText) => {
-      console.log(lessonText);
+      dispatch({ type: MESSAGES.LESSON_SELECTED, payload: lessonText });
+    });
+    electron?.ipcRenderer?.on("lesson-1-exercise-2", (event, lessonText) => {
+      dispatch({ type: MESSAGES.LESSON_SELECTED, payload: lessonText });
+    });
+    electron?.ipcRenderer?.on("lesson-1-exercise-3", (event, lessonText) => {
+      dispatch({ type: MESSAGES.LESSON_SELECTED, payload: lessonText });
     });
   }, []);
 
@@ -156,12 +157,18 @@ export default function App() {
             // padding: 15
           }}
         >
-          <WelcomeMessage />
-          {/* {sentenceTest.map((letter, i) => (
-            <span key={i} className={currentLetter === i ? "key-selected" : ""}>
-              {letter}
-            </span>
-          ))} */}
+          {exerciseSelected ? (
+            Array.from(exerciseSelected).map((letter, i) => (
+              <span
+                key={i}
+                className={currentLetter === i ? "key-selected" : ""}
+              >
+                {letter}
+              </span>
+            ))
+          ) : (
+            <WelcomeMessage />
+          )}
         </div>
 
         {/* Keyboard */}
