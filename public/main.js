@@ -26,7 +26,12 @@ function createWindow() {
         {
           label: "LECCION 1",
           submenu: [
-            { label: "Ejercicio 1" },
+            {
+              label: "Ejercicio 1",
+              click() {
+                win.webContents.send("lesson-1-exercise-1");
+              }
+            },
             { label: "Ejercicio 2" },
             { label: "Ejercicio 3" },
             { label: "Ejercicio 4" },

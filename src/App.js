@@ -96,6 +96,14 @@ export default function App() {
     };
   }, [startedTyping]);
 
+  useEffect(() => {
+    console.log(
+      electron.ipcRenderer.on("lesson-1-exercise-1", (event) => {
+        console.log("lesson-1-exercise-1");
+      })
+    );
+  }, []);
+
   return (
     <div
       onKeyDown={(e) => {
