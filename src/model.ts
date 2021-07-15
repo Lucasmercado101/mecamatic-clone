@@ -1,4 +1,4 @@
-import { cond, equals, assoc, pipe } from "ramda";
+import { cond, equals, pipe } from "ramda";
 
 const SENTENCE_POSITION = {
   NOT_STARTED: -1,
@@ -18,27 +18,63 @@ export const initialModel: State = {
 };
 
 export enum ACTION_TYPE {
-  LESSON_SELECTED = 0
+  LESSON_SELECTED,
+  KEY_PRESSED
 }
 
-type Action = {
+type Action<T> = {
   type: ACTION_TYPE;
-  payload: any;
+  payload: T;
 };
+
+type SelectedLessonAction = Action<string>;
+type KeyPressedAction = Action<string>;
+
+type Actions = SelectedLessonAction | KeyPressedAction;
 
 export function modelReducer(
   state: State = initialModel,
-  { type, payload }: Action
+  { type, payload }: Actions
 ): State {
   return cond(
     [
       [
         equals(ACTION_TYPE.LESSON_SELECTED),
-        () =>
-          pipe(
-            assoc("exerciseSelected", payload),
-            assoc("sentenceCursorPosition", SENTENCE_POSITION.NOT_STARTED)
-          )(state)
+        () => ({
+          ...state,
+          exerciseSelected: payload,
+          sentenceCursorPosition: SENTENCE_POSITION.NOT_STARTED
+        })
+      ],
+      [
+        equals(ACTION_TYPE.KEY_PRESSED),
+        () => {
+          // no exercise is selected
+          if (!state.exerciseSelected) return state;
+          const keyPressed = payload;
+
+          const { sentenceCursorPosition, exerciseSelected } = state;
+
+          // if the exercise is selected and hasn't started
+          if (sentenceCursorPosition === SENTENCE_POSITION.NOT_STARTED) {
+            // if enter is pressed, then the exercise starts
+            if (keyPressed === "Enter")
+              return {
+                ...state,
+                sentenceCursorPosition: SENTENCE_POSITION.FIRST_LETTER
+              };
+            else return state;
+          }
+
+          const currentLetter = exerciseSelected[sentenceCursorPosition];
+          // if the current letter is the same as the key pressed
+          if (currentLetter === keyPressed) {
+            return {
+              ...state,
+              sentenceCursorPosition: sentenceCursorPosition + 1
+            };
+          } else return state;
+        }
       ]
     ]
     // @ts-ignore

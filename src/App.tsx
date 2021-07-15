@@ -107,29 +107,34 @@ export default function App() {
   return (
     <div
       onKeyDown={(e) => {
-        const { key: keyPressed, code: keyCode } = e;
-        setKeyPressed(keyPressed);
-        // console.log(e.code === "");
+        const {
+          key: keyPressed
+          //  code: keyCode
+        } = e;
+        dispatch({ type: ACTION_TYPE.KEY_PRESSED, payload: keyPressed });
 
-        if (currentLetter !== sentenceTest.length) {
-          if (
-            keyPressed === sentenceTest[currentLetter] &&
-            currentLetter === 0
-          ) {
-            setStartedTyping(true);
-          }
+        // setKeyPressed(keyPressed);
+        // // console.log(e.code === "");
 
-          if (keyPressed === sentenceTest[currentLetter]) {
-            setCurrentLetter((prev) => {
-              if (prev + 1 === sentenceTest.length) {
-                setStartedTyping(false);
-              }
-              return prev + 1;
-            });
-          } else if (keyPressed === BACKSPACE && currentLetter !== 0) {
-            setCurrentLetter((prev) => prev - 1);
-          }
-        }
+        // if (currentLetter !== sentenceTest.length) {
+        //   if (
+        //     keyPressed === sentenceTest[currentLetter] &&
+        //     currentLetter === 0
+        //   ) {
+        //     setStartedTyping(true);
+        //   }
+
+        //   if (keyPressed === sentenceTest[currentLetter]) {
+        //     setCurrentLetter((prev) => {
+        //       if (prev + 1 === sentenceTest.length) {
+        //         setStartedTyping(false);
+        //       }
+        //       return prev + 1;
+        //     });
+        //   } else if (keyPressed === BACKSPACE && currentLetter !== 0) {
+        //     setCurrentLetter((prev) => prev - 1);
+        //   }
+        // }
       }}
       tabIndex={0}
       style={{
@@ -155,20 +160,25 @@ export default function App() {
             border: "thin solid",
             borderStyle: "inset"
             // fontSize: "1.2rem",
-            // padding: 15
+            // padding: 15,
           }}
         >
           {exerciseSelected ? (
-            Array.from(exerciseSelected).map((letter, i) => (
-              <span
-                key={i}
-                style={{
-                  backgroundColor: currentLetter === i ? "#ff8a7e" : "none"
-                }}
-              >
-                {letter}
-              </span>
-            ))
+            <div style={{ padding: 4 }}>
+              {Array.from(exerciseSelected).map((letter, i) => (
+                <span
+                  key={i}
+                  style={{
+                    backgroundColor:
+                      sentenceCursorPosition === i ? "#ff8a7e" : "transparent",
+                    whiteSpace: "break-spaces"
+                    // minWidth: 13
+                  }}
+                >
+                  {letter}
+                </span>
+              ))}
+            </div>
           ) : (
             <WelcomeMessage />
           )}
