@@ -5,7 +5,7 @@ const lessonsPath = path.join(__dirname, "..", "lessons");
 
 function createWindow() {
   // Create the browser window.
-  win = new BrowserWindow({
+  const win = new BrowserWindow({
     width: 805,
     height: 580,
     minWidth: 805,
@@ -20,7 +20,7 @@ function createWindow() {
   win.loadURL("http://localhost:3000/");
 
   // Open the DevTools.
-  // win.webContents.openDevTools();
+  win.webContents.openDevTools();
 
   const menuTemplate = [
     {
