@@ -1,6 +1,6 @@
 import { cond, equals, pipe } from "ramda";
 
-enum SENTENCE_POSITION {
+export enum SENTENCE_POSITION {
   NOT_STARTED = -1,
   FIRST_LETTER = 0
 }
