@@ -20,7 +20,7 @@ function createWindow() {
   win.loadURL("http://localhost:3000/");
 
   // Open the DevTools.
-  win.webContents.openDevTools();
+  // win.webContents.openDevTools();
 
   const menuTemplate = [
     {
@@ -41,8 +41,30 @@ function createWindow() {
                 );
               }
             },
-            { label: "Ejercicio 2" },
-            { label: "Ejercicio 3" },
+            {
+              label: "Ejercicio 2",
+              click() {
+                fs.readFile(
+                  path.join(lessonsPath, "2.txt"),
+                  "utf8",
+                  (err, data) => {
+                    win.webContents.send("lesson-1-exercise-2", data);
+                  }
+                );
+              }
+            },
+            {
+              label: "Ejercicio 3",
+              click() {
+                fs.readFile(
+                  path.join(lessonsPath, "3.txt"),
+                  "utf8",
+                  (err, data) => {
+                    win.webContents.send("lesson-1-exercise-3", data);
+                  }
+                );
+              }
+            },
             { label: "Ejercicio 4" },
             { label: "Ejercicio 5" },
             { label: "Ejercicio 6" },
