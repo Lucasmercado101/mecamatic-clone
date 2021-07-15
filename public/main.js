@@ -1,4 +1,7 @@
 const { app, BrowserWindow, Menu } = require("electron");
+const fs = require("fs");
+const path = require("path");
+const lessonsPath = path.join(__dirname, "..", "lessons");
 
 function createWindow() {
   // Create the browser window.
@@ -29,7 +32,13 @@ function createWindow() {
             {
               label: "Ejercicio 1",
               click() {
-                win.webContents.send("lesson-1-exercise-1");
+                fs.readFile(
+                  path.join(lessonsPath, "1.txt"),
+                  "utf8",
+                  (err, data) => {
+                    win.webContents.send("lesson-1-exercise-1", data);
+                  }
+                );
               }
             },
             { label: "Ejercicio 2" },

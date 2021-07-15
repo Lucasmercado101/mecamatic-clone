@@ -2,7 +2,7 @@ import { useState, useEffect, useReducer } from "react";
 import "./styles.css";
 import { makeStyles } from "@material-ui/styles";
 import { modelReducer, initialModel, MESSAGES } from "./model";
-const electron = window.require("electron");
+const electron = window?.require?.("electron");
 
 // const electron = require("electron");
 // import * as electron from "electron";
@@ -97,11 +97,9 @@ export default function App() {
   }, [startedTyping]);
 
   useEffect(() => {
-    console.log(
-      electron.ipcRenderer.on("lesson-1-exercise-1", (event) => {
-        console.log("lesson-1-exercise-1");
-      })
-    );
+    electron?.ipcRenderer?.on("lesson-1-exercise-1", (event, lessonText) => {
+      console.log(lessonText);
+    });
   }, []);
 
   return (
@@ -158,12 +156,12 @@ export default function App() {
             // padding: 15
           }}
         >
-          {/* <WelcomeMessage /> */}
-          {sentenceTest.map((letter, i) => (
+          <WelcomeMessage />
+          {/* {sentenceTest.map((letter, i) => (
             <span key={i} className={currentLetter === i ? "key-selected" : ""}>
               {letter}
             </span>
-          ))}
+          ))} */}
         </div>
 
         {/* Keyboard */}
