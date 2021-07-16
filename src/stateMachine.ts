@@ -78,7 +78,7 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
   {
     initial: stateTypes.DEFAULT,
     context: {
-      isTutorEnabled: false,
+      isTutorEnabled: true, // TODO: default should be undefined
       exerciseCursorPosition: EXERCISE_CURSOR_POSITION.NOT_STARTED,
       // settings
       soundOnKeysTap: false,
