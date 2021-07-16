@@ -43,7 +43,7 @@ interface stateContext {
   minSpeed?: number; // fixed number or depends on the exercise settings
   // maximum amount of errors allowed (%):
   // fixed number or depends on the exercise settings
-  errorsCoefficient: number;
+  errorsCoefficient: number; // default is 2
   showKeyboard?: boolean; // always show, never show, or depends on the exercise settings
   isTutorActive?: boolean; // always active, never active, or depends on the exercise settings
   // ---- options -----
