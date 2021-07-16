@@ -1312,13 +1312,15 @@ export default function App() {
           <div>
             Lucas
             <br />
-            <div style={{ marginTop: 8 }}>
-              {lessonCategory === "learning" && "Aprendizaje"}
-              <br />
-              {lessonNumber && `Lección ${lessonNumber}`}{" "}
-              {exerciseNumber && lessonNumber && "-"}{" "}
-              {exerciseNumber && `Ejercicio ${exerciseNumber}`}
-            </div>
+            {state.matches(stateTypes.EXERCISE_SELECTED) && (
+              <div style={{ marginTop: 8 }}>
+                {lessonCategory === "learning" && "Aprendizaje"}
+                <br />
+                {lessonNumber && `Lección ${lessonNumber}`}{" "}
+                {exerciseNumber && lessonNumber && "-"}{" "}
+                {exerciseNumber && `Ejercicio ${exerciseNumber}`}
+              </div>
+            )}
           </div>
         </div>
 
