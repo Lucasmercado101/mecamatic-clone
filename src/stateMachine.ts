@@ -33,7 +33,6 @@ enum guardTypes {
 
 /** ---------- settings --------------
  *
- * // always, never, or dependent on the exercise settings
  * type tutorPreferences = true | false | null
  *
  * ----------------------------------
@@ -47,6 +46,17 @@ interface stateContext {
   lessonNumber?: number;
   exerciseCursorPosition: number;
   exerciseNumber?: number;
+  // ------------ global settings ---------------
+  minSpeed?: number; // fixed number or depends on the exercise settings
+  errorsCoefficient?: number; // fixed number or depends on the exercise settings
+  keyboard?: boolean; // always show, never show, or depends on the exercise settings
+  tutorPreferences?: boolean; // always active, never active, or depends on the exercise settings
+  // ---- options -----
+  // errorBlock
+  soundOnKeysTap: boolean;
+  soundOnError: boolean;
+  infoPanelOnTheLeft: boolean;
+  showResultsWhileDoingExercise: boolean;
 }
 
 type ExerciseSelectedEvent = {
@@ -69,7 +79,12 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
     initial: stateTypes.DEFAULT,
     context: {
       isTutorEnabled: false,
-      exerciseCursorPosition: EXERCISE_CURSOR_POSITION.NOT_STARTED
+      exerciseCursorPosition: EXERCISE_CURSOR_POSITION.NOT_STARTED,
+      // settings
+      soundOnKeysTap: false,
+      soundOnError: false,
+      infoPanelOnTheLeft: false,
+      showResultsWhileDoingExercise: false
     },
     states: {
       [stateTypes.DEFAULT]: {},
