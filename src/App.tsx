@@ -8,8 +8,9 @@ import {
   SENTENCE_POSITION
 } from "./model";
 import React from "react";
+import { stateMachine, eventTypes } from "./stateMachine";
+import { useMachine } from "@xstate/react";
 const electron = window?.require?.("electron");
-
 // const electron = require("electron");
 // import * as electron from "electron";
 
@@ -87,6 +88,7 @@ const WelcomeMessage = () => (
 );
 
 export default function App() {
+  const [stateM, send] = useMachine(stateMachine);
   const [state, dispatch] = useReducer(modelReducer, initialModel);
   const [currentLetter, setCurrentLetter] = useState(0);
   const [keyPressed, setKeyPressed] = useState<null | string>(null);
@@ -129,14 +131,12 @@ export default function App() {
           exercise
         }: { category: string; exercise: number; lesson?: number }
       ) => {
-        dispatch({
-          type: ACTION_TYPE.LESSON_SELECTED,
-          payload: {
-            selectedLessonText: lessonText,
-            lessonCategory: category,
-            lessonNumber: lesson,
-            exerciseNumber: exercise
-          }
+        send({
+          type: eventTypes.EXERCISE_SELECTED,
+          selectedLessonText: lessonText,
+          lessonCategory: category,
+          lessonNumber: lesson,
+          exerciseNumber: exercise
         });
       }
     );
@@ -160,6 +160,7 @@ export default function App() {
         gap: 15
       }}
     >
+      {JSON.stringify(stateM.context)}
       {/* {seconds} Seconds <br />
       WPM: {WPM(currentLetter, seconds / 60).toFixed(0)} */}
       <div>
