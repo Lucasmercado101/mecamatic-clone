@@ -1334,19 +1334,39 @@ export default function App() {
           }}
         >
           <div className={classes.riseTitleText}>Incidencias</div>
-          <div
-            style={{
-              backgroundColor: "#ff8080",
-              border: "2px solid",
-              borderStyle: "inset",
-              color: "white",
-              height: "100%",
-              width: "100%",
-              padding: 5
-            }}
-          >
-            Seleccione un ejercicio
-          </div>
+          {!state.matches(stateTypes.EXERCISE_SELECTED) && (
+            <div
+              style={{
+                backgroundColor: "#ff8080",
+                border: "2px solid",
+                borderStyle: "inset",
+                color: "white",
+                height: "100%",
+                width: "100%",
+                padding: 5
+              }}
+            >
+              Seleccione un ejercicio
+            </div>
+          )}
+
+          {state.matches({
+            [stateTypes.EXERCISE_SELECTED]: stateTypes.EXERCISE_FINISHED
+          }) && (
+            <div
+              style={{
+                backgroundColor: "#ff8080",
+                border: "2px solid",
+                borderStyle: "inset",
+                color: "white",
+                height: "100%",
+                width: "100%",
+                padding: 5
+              }}
+            >
+              Ha realizado el ejercicio con exito
+            </div>
+          )}
         </div>
 
         <div
