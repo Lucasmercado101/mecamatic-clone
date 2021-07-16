@@ -26,7 +26,7 @@ function createWindow() {
 
   let exercises = [];
   for (let i = 1; i <= 100; i++) {
-    exercises.push(`${i % 10 === 0 ? 10 : i % 10}.txt`);
+    exercises.push(`${i}.txt`);
     if (i % 10 === 0) {
       submenus.push({
         label: `LECCION ${i / 10}`,
