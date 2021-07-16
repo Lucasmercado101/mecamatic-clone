@@ -156,11 +156,11 @@ export default function App() {
         gap: 15
       }}
     >
-      {/* {JSON.stringify(
+      {JSON.stringify(
         state.matches({
-          [stateTypes.EXERCISE_SELECTED]: stateTypes.EXERCISE_STARTED
+          [stateTypes.EXERCISE_SELECTED]: stateTypes.EXERCISE_FINISHED
         })
-      )} */}
+      )}
       {/* {JSON.stringify(state.context)} */}
       {/* {seconds} Seconds <br />
       WPM: {WPM(currentLetter, seconds / 60).toFixed(0)} */}

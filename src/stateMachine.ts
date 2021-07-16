@@ -27,7 +27,8 @@ enum actionTypes {
 
 enum guardTypes {
   ENTER_WAS_PRESSED = "ENTER_WAS_PRESSED",
-  PRESSED_CORRECT_LETTER = "PRESSED_CORRECT_LETTER"
+  PRESSED_CORRECT_LETTER = "PRESSED_CORRECT_LETTER",
+  PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER = "PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER"
 }
 
 /** ---------- settings --------------
@@ -89,12 +90,14 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
             on: {
               [eventTypes.KEY_PRESSED]: [
                 {
-                  target: stateTypes.EXERCISE_ONGOING,
-                  cond: guardTypes.PRESSED_CORRECT_LETTER,
+                  target: stateTypes.EXERCISE_FINISHED,
+                  cond: guardTypes.PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER,
                   actions: actionTypes.MOVE_CURSOR_BY_ONE
                 },
                 {
-                  target: stateTypes.EXERCISE_ONGOING
+                  target: stateTypes.EXERCISE_ONGOING,
+                  cond: guardTypes.PRESSED_CORRECT_LETTER,
+                  actions: actionTypes.MOVE_CURSOR_BY_ONE
                 }
               ]
             }
@@ -145,6 +148,16 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
       [guardTypes.PRESSED_CORRECT_LETTER]: (ctx, event) => {
         const { key } = event as KeyPressedEvent;
         return key === ctx.selectedLessonText?.[ctx.exerciseCursorPosition];
+      },
+      [guardTypes.PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER]: (
+        ctx,
+        event
+      ) => {
+        const { key } = event as KeyPressedEvent;
+        return (
+          key === ctx.selectedLessonText?.[ctx.exerciseCursorPosition] &&
+          ctx.selectedLessonText?.length - 1 === ctx.exerciseCursorPosition
+        );
       }
     }
   }
