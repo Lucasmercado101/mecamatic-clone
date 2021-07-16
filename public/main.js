@@ -3,6 +3,13 @@ const fs = require("fs");
 const path = require("path");
 const lessonsPath = path.join(__dirname, "..", "lessons");
 
+const readJson = (path, cb) => {
+  fs.readFile(require.resolve(path), (err, data) => {
+    if (err) cb(err);
+    else cb(null, JSON.parse(data));
+  });
+};
+
 function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
