@@ -97,7 +97,8 @@ export default function App() {
     lessonCategory,
     exerciseCursorPosition,
     lessonNumber,
-    errorsCoefficient
+    errorsCoefficient,
+    minimumWPMNeededToCompleteExerciseSuccessfully
   } = state.context;
   const classes = useStyles({
     isTutorActive,
@@ -1444,7 +1445,7 @@ export default function App() {
                   fontWeight: "bold"
                 }}
               >
-                50
+                {minimumWPMNeededToCompleteExerciseSuccessfully}
               </div>
             </div>
           </div>
