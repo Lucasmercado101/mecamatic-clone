@@ -1,7 +1,6 @@
 import { useState, useEffect, useReducer } from "react";
 import "./styles.css";
 import { makeStyles } from "@material-ui/styles";
-import { modelReducer, initialModel, ACTION_TYPE } from "./model";
 import React from "react";
 import {
   stateMachine,
@@ -88,9 +87,6 @@ const WelcomeMessage = () => (
 
 export default function App() {
   const [state, send] = useMachine(stateMachine);
-  // const [state, dispatch] = useReducer(modelReducer, initialModel);
-  const [currentLetter, setCurrentLetter] = useState(0);
-  const [keyPressed, setKeyPressed] = useState<null | string>(null);
   const [startedTyping, setStartedTyping] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const {
