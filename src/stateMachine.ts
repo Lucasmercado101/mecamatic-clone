@@ -21,7 +21,8 @@ export enum stateTypes {
 enum actionTypes {
   SET_EXERCISE_DATA = "SET_EXERCISE_DATA",
   SET_CURSOR_TO_NOT_STARTED = "SET_CURSOR_TO_NOT_STARTED",
-  SET_CURSOR_TO_FIRST_LETTER = "SET_CURSOR_TO_FIRST_LETTER"
+  SET_CURSOR_TO_FIRST_LETTER = "SET_CURSOR_TO_FIRST_LETTER",
+  MOVE_CURSOR_BY_ONE = "MOVE_CURSOR_BY_ONE"
 }
 
 enum guardTypes {
@@ -88,8 +89,9 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
             on: {
               [eventTypes.KEY_PRESSED]: [
                 {
-                  target: stateTypes.EXERCISE_FINISHED,
-                  cond: guardTypes.PRESSED_CORRECT_LETTER
+                  target: stateTypes.EXERCISE_ONGOING,
+                  cond: guardTypes.PRESSED_CORRECT_LETTER,
+                  actions: actionTypes.MOVE_CURSOR_BY_ONE
                 },
                 {
                   target: stateTypes.EXERCISE_ONGOING
@@ -127,6 +129,9 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
       }),
       [actionTypes.SET_CURSOR_TO_NOT_STARTED]: assign((_) => ({
         exerciseCursorPosition: EXERCISE_CURSOR_POSITION.NOT_STARTED
+      })),
+      [actionTypes.MOVE_CURSOR_BY_ONE]: assign((ctx) => ({
+        exerciseCursorPosition: ctx.exerciseCursorPosition + 1
       })),
       [actionTypes.SET_CURSOR_TO_FIRST_LETTER]: assign((_) => ({
         exerciseCursorPosition: EXERCISE_CURSOR_POSITION.FIRST_LETTER
