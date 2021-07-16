@@ -1293,7 +1293,8 @@ export default function App() {
           padding: "13px 8px",
           display: "flex",
           gap: 15,
-          flexDirection: "column"
+          flexDirection: "column",
+          userSelect: "none"
         }}
       >
         <div
@@ -1383,7 +1384,10 @@ export default function App() {
         >
           <div className={classes.riseTitleText}>Valores establecidos</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <div style={{ display: "flex", width: "100%", textAlign: "left" }}>
+            <div
+              style={{ display: "flex", width: "100%", textAlign: "left" }}
+              title="Coeficiente máximo de errores permitidos %"
+            >
               <div
                 style={{
                   background: "#e0e0e0",
@@ -1401,14 +1405,20 @@ export default function App() {
                   border: "2px solid",
                   borderStyle: "inset",
                   padding: "1px 4px",
-                  width: "30%"
+                  width: "30%",
+                  textAlign: "center",
+                  fontWeight: "bold",
+                  fontSize: "0.8rem"
                 }}
               >
-                2%
+                2&nbsp;%
               </div>
             </div>
 
-            <div style={{ display: "flex", width: "100%", textAlign: "left" }}>
+            <div
+              style={{ display: "flex", width: "100%", textAlign: "left" }}
+              title="Velocidad minima para realizar el ejercicio"
+            >
               <div
                 style={{
                   background: "#e0e0e0",
@@ -1426,9 +1436,13 @@ export default function App() {
                   border: "2px solid",
                   borderStyle: "inset",
                   padding: "1px 4px",
-                  width: "30%"
+                  width: "30%",
+                  textAlign: "center",
+                  fontWeight: "bold"
                 }}
-              ></div>
+              >
+                50
+              </div>
             </div>
           </div>
         </div>
@@ -1447,7 +1461,10 @@ export default function App() {
         >
           <div className={classes.riseTitleText}>Resultados obtenidos</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <div style={{ display: "flex", width: "100%", textAlign: "left" }}>
+            <div
+              style={{ display: "flex", width: "100%", textAlign: "left" }}
+              title="Pulsaciones brutas realizadas"
+            >
               <div
                 style={{
                   background: "#e0e0e0",
@@ -1465,11 +1482,18 @@ export default function App() {
                   border: "2px solid",
                   borderStyle: "inset",
                   padding: "1px 4px",
-                  width: "30%"
+                  width: "30%",
+                  textAlign: "center",
+                  fontWeight: "bold"
                 }}
-              ></div>
+              >
+                14
+              </div>
             </div>
-            <div style={{ display: "flex", width: "100%", textAlign: "left" }}>
+            <div
+              style={{ display: "flex", width: "100%", textAlign: "left" }}
+              title="Pulsaciones brutas realizadas"
+            >
               <div
                 style={{
                   background: "#e0e0e0",
@@ -1487,12 +1511,19 @@ export default function App() {
                   border: "2px solid",
                   borderStyle: "inset",
                   padding: "1px 4px",
-                  width: "30%"
+                  width: "30%",
+                  textAlign: "center",
+                  fontWeight: "bold"
                 }}
-              ></div>
+              >
+                10
+              </div>
             </div>
 
-            <div style={{ display: "flex", width: "100%", textAlign: "left" }}>
+            <div
+              style={{ display: "flex", width: "100%", textAlign: "left" }}
+              title="Errores cometidos"
+            >
               <div
                 style={{
                   background: "#e0e0e0",
@@ -1510,12 +1541,19 @@ export default function App() {
                   border: "2px solid",
                   borderStyle: "inset",
                   padding: "1px 4px",
-                  width: "30%"
+                  width: "30%",
+                  textAlign: "center",
+                  fontWeight: "bold"
                 }}
-              ></div>
+              >
+                1
+              </div>
             </div>
 
-            <div style={{ display: "flex", width: "100%", textAlign: "left" }}>
+            <div
+              style={{ display: "flex", width: "100%", textAlign: "left" }}
+              title="Porcentage de errores cometidos"
+            >
               <div
                 style={{
                   background: "#e0e0e0",
@@ -1533,12 +1571,19 @@ export default function App() {
                   border: "2px solid",
                   borderStyle: "inset",
                   padding: "1px 4px",
-                  width: "30%"
+                  width: "30%",
+                  textAlign: "center",
+                  fontWeight: "bold"
                 }}
-              ></div>
+              >
+                7.1
+              </div>
             </div>
 
-            <div style={{ display: "flex", width: "100%", textAlign: "left" }}>
+            <div
+              style={{ display: "flex", width: "100%", textAlign: "left" }}
+              title="Pulsaciones por minuto realizadas"
+            >
               <div
                 style={{
                   background: "#e0e0e0",
@@ -1556,14 +1601,21 @@ export default function App() {
                   border: "2px solid",
                   borderStyle: "inset",
                   padding: "1px 4px",
-                  width: "30%"
+                  width: "30%",
+                  textAlign: "center",
+                  fontWeight: "bold"
                 }}
-              ></div>
+              >
+                210
+              </div>
             </div>
           </div>
         </div>
 
-        <div style={{ display: "flex", width: "100%", padding: "0 7px" }}>
+        <div
+          style={{ display: "flex", width: "100%", padding: "0 7px" }}
+          title="Tiempo disponible para realizar el ejercicio"
+        >
           <div
             style={{
               background: "#e0e0e0",
@@ -1571,7 +1623,8 @@ export default function App() {
               borderStyle: "inset",
               padding: "1px 4px",
               fontSize: "0.85rem",
-              width: "60%"
+              width: "60%",
+              paddingTop: 2
             }}
           >
             Tiempo dis.
@@ -1581,9 +1634,15 @@ export default function App() {
               background: "#e0e0e0",
               border: "2px solid",
               borderStyle: "inset",
-              width: "40%"
+              width: "40%",
+              textAlign: "center",
+              fontWeight: "bold",
+              fontSize: "0.9rem",
+              paddingTop: 1
             }}
-          ></div>
+          >
+            00:12
+          </div>
         </div>
       </div>
     </div>
