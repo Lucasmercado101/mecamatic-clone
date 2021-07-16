@@ -96,7 +96,8 @@ export default function App() {
     exerciseNumber,
     lessonCategory,
     exerciseCursorPosition,
-    lessonNumber
+    lessonNumber,
+    errorsCoefficient
   } = state.context;
   const classes = useStyles({
     isTutorActive,
@@ -1413,7 +1414,7 @@ export default function App() {
                   fontSize: "0.8rem"
                 }}
               >
-                2&nbsp;%
+                {errorsCoefficient}&nbsp;%
               </div>
             </div>
 
