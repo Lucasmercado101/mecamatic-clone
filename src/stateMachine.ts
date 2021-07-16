@@ -43,9 +43,11 @@ interface stateContext {
   minSpeed?: number; // fixed number or depends on the exercise settings
   // maximum amount of errors allowed (%):
   // fixed number or depends on the exercise settings
-  errorsCoefficient: number; // default is 2
+  defaultErrorCoefficient: 2;
+  errorsCoefficient: number;
   showKeyboard?: boolean; // always show, never show, or depends on the exercise settings
   isTutorActive?: boolean; // always active, never active, or depends on the exercise settings
+
   // ---- options -----
   soundOnKeysTap: boolean;
   soundOnError: boolean;
@@ -80,7 +82,8 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
     initial: stateTypes.DEFAULT,
     context: {
       exerciseCursorPosition: EXERCISE_CURSOR_POSITION.NOT_STARTED,
-      errorsCoefficient: 2,
+      defaultErrorCoefficient: 2,
+      errorsCoefficient: 2, // TODO: load this from user settings
       // settings
       soundOnKeysTap: false,
       soundOnError: false,
