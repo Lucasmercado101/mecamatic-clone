@@ -41,7 +41,9 @@ enum guardTypes {
 interface stateContext {
   // ----------------- global settings -----------------
   minSpeed?: number; // fixed number or depends on the exercise settings
-  errorsCoefficient?: number; // fixed number or depends on the exercise settings
+  // maximum amount of errors allowed (%):
+  // fixed number or depends on the exercise settings
+  errorsCoefficient?: number;
   showKeyboard?: boolean; // always show, never show, or depends on the exercise settings
   isTutorActive?: boolean; // always active, never active, or depends on the exercise settings
   // ---- options -----
