@@ -43,8 +43,8 @@ interface stateContext {
   minSpeed?: number; // fixed number or depends on the exercise settings
   // maximum amount of errors allowed (%):
   // fixed number or depends on the exercise settings
-  defaultErrorCoefficient: 2;
   errorsCoefficient: number;
+  defaultErrorsCoefficient: number;
   showKeyboard?: boolean; // always show, never show, or depends on the exercise settings
   isTutorActive?: boolean; // always active, never active, or depends on the exercise settings
 
@@ -60,6 +60,7 @@ interface stateContext {
   lessonNumber?: number;
   exerciseCursorPosition: number;
   exerciseNumber?: number;
+  minimumWPMNeededToCompleteExerciseSuccessfully: number;
 }
 
 type ExerciseSelectedEvent = {
@@ -82,9 +83,10 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
     initial: stateTypes.DEFAULT,
     context: {
       exerciseCursorPosition: EXERCISE_CURSOR_POSITION.NOT_STARTED,
-      defaultErrorCoefficient: 2,
-      errorsCoefficient: 2, // TODO: load this from user settings
-      // settings
+      minimumWPMNeededToCompleteExerciseSuccessfully: 20,
+      // global settings
+      defaultErrorsCoefficient: 2,
+      errorsCoefficient: 2, // TODO: load this from user settings,
       soundOnKeysTap: false,
       soundOnError: false,
       infoPanelOnTheLeft: false,
