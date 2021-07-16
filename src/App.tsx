@@ -1,11 +1,12 @@
-import { useState, useEffect, useReducer } from "react";
+import { useState, useEffect } from "react";
 import "./styles.css";
 import { makeStyles } from "@material-ui/styles";
 import React from "react";
 import {
   stateMachine,
   eventTypes,
-  EXERCISE_CURSOR_POSITION
+  EXERCISE_CURSOR_POSITION,
+  stateTypes
 } from "./stateMachine";
 import { useMachine } from "@xstate/react";
 const electron = window?.require?.("electron");
@@ -141,22 +142,25 @@ export default function App() {
 
   return (
     <div
-      onKeyDown={(e) => {
-        const {
-          key: keyPressed
-          //  code: keyCode
-        } = e;
+      onKeyDown={({
+        key: keyPressed
+        //  code: keyCode
+      }) => {
         send({ type: eventTypes.KEY_PRESSED, key: keyPressed });
       }}
       tabIndex={0}
       style={{
         backgroundColor: "#c0c0c0",
-        height: "100vh",
         padding: "10px 0px 0px 25px",
         display: "flex",
         gap: 15
       }}
     >
+      {/* {JSON.stringify(
+        state.matches({
+          [stateTypes.EXERCISE_SELECTED]: stateTypes.EXERCISE_STARTED
+        })
+      )} */}
       {/* {JSON.stringify(state.context)} */}
       {/* {seconds} Seconds <br />
       WPM: {WPM(currentLetter, seconds / 60).toFixed(0)} */}
