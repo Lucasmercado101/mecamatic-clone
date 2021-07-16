@@ -39,24 +39,23 @@ enum guardTypes {
  */
 
 interface stateContext {
-  isTutorEnabled: boolean;
-  // exercise data
+  // ----------------- global settings -----------------
+  minSpeed?: number; // fixed number or depends on the exercise settings
+  errorsCoefficient?: number; // fixed number or depends on the exercise settings
+  showKeyboard?: boolean; // always show, never show, or depends on the exercise settings
+  isTutorActive?: boolean; // always active, never active, or depends on the exercise settings
+  // ---- options -----
+  soundOnKeysTap: boolean;
+  soundOnError: boolean;
+  infoPanelOnTheLeft: boolean;
+  showResultsWhileDoingExercise: boolean;
+
+  // ----------------- exercise data -----------------
   selectedLessonText?: string;
   lessonCategory?: string;
   lessonNumber?: number;
   exerciseCursorPosition: number;
   exerciseNumber?: number;
-  // ------------ global settings ---------------
-  minSpeed?: number; // fixed number or depends on the exercise settings
-  errorsCoefficient?: number; // fixed number or depends on the exercise settings
-  keyboard?: boolean; // always show, never show, or depends on the exercise settings
-  tutorPreferences?: boolean; // always active, never active, or depends on the exercise settings
-  // ---- options -----
-  // errorBlock
-  soundOnKeysTap: boolean;
-  soundOnError: boolean;
-  infoPanelOnTheLeft: boolean;
-  showResultsWhileDoingExercise: boolean;
 }
 
 type ExerciseSelectedEvent = {
@@ -78,7 +77,6 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
   {
     initial: stateTypes.DEFAULT,
     context: {
-      isTutorEnabled: true, // TODO: default should be undefined
       exerciseCursorPosition: EXERCISE_CURSOR_POSITION.NOT_STARTED,
       // settings
       soundOnKeysTap: false,

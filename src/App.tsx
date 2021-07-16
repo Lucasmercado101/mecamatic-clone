@@ -41,10 +41,10 @@ const useStyles = makeStyles({
     padding: "0 1px"
   },
   enterBottom: ({
-    isTutorEnabled,
+    isTutorActive,
     isEnterHighlighted
   }: {
-    isTutorEnabled: boolean;
+    isTutorActive: boolean;
     isEnterHighlighted: boolean;
   }) => ({
     position: "relative",
@@ -57,7 +57,7 @@ const useStyles = makeStyles({
       bottom: 10,
       backgroundColor: isEnterHighlighted
         ? "#ff8080"
-        : isTutorEnabled
+        : isTutorActive
         ? KEY_FINGER_COLORS.PINKY
         : "#e0e0e0",
       borderLeft: "3px solid #808080",
@@ -92,14 +92,14 @@ export default function App() {
   const [seconds, setSeconds] = useState(0);
   const {
     selectedLessonText,
-    isTutorEnabled,
+    isTutorActive = true, // TODO: if no exercise is selected then default to true
     exerciseNumber,
     lessonCategory,
     exerciseCursorPosition,
     lessonNumber
   } = state.context;
   const classes = useStyles({
-    isTutorEnabled,
+    isTutorActive,
     isEnterHighlighted:
       exerciseCursorPosition === EXERCISE_CURSOR_POSITION.NOT_STARTED &&
       !!selectedLessonText
@@ -214,7 +214,7 @@ export default function App() {
         >
           <div style={{ display: "flex", gap: 4 }}>
             <Key
-              color={isTutorEnabled ? KEY_FINGER_COLORS.PINKY : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
               letter={
                 <div
                   style={{
@@ -251,7 +251,7 @@ export default function App() {
               isHighlighted={["1", "!"].some(
                 (char) => selectedLessonText?.[exerciseCursorPosition] === char
               )}
-              color={isTutorEnabled ? KEY_FINGER_COLORS.PINKY : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
               letter={
                 <div
                   style={{
@@ -297,7 +297,7 @@ export default function App() {
               isHighlighted={["2", `"`].some(
                 (char) => selectedLessonText?.[exerciseCursorPosition] === char
               )}
-              color={isTutorEnabled ? KEY_FINGER_COLORS.RING_FINGER : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.RING_FINGER : ""}
               letter={
                 <div
                   style={{
@@ -334,7 +334,7 @@ export default function App() {
               isHighlighted={["3", `#`].some(
                 (char) => selectedLessonText?.[exerciseCursorPosition] === char
               )}
-              color={isTutorEnabled ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
               letter={
                 <div
                   style={{
@@ -371,7 +371,7 @@ export default function App() {
               isHighlighted={["4", `$`].some(
                 (char) => selectedLessonText?.[exerciseCursorPosition] === char
               )}
-              color={isTutorEnabled ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
               letter={
                 <div
                   style={{
@@ -407,7 +407,7 @@ export default function App() {
               isHighlighted={["5", `%`].some(
                 (char) => selectedLessonText?.[exerciseCursorPosition] === char
               )}
-              color={isTutorEnabled ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
               letter={
                 <div
                   style={{
@@ -443,7 +443,7 @@ export default function App() {
               isHighlighted={["6", `&`].some(
                 (char) => selectedLessonText?.[exerciseCursorPosition] === char
               )}
-              color={isTutorEnabled ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""}
               letter={
                 <div
                   style={{
@@ -479,7 +479,7 @@ export default function App() {
               isHighlighted={["7", `/`].some(
                 (char) => selectedLessonText?.[exerciseCursorPosition] === char
               )}
-              color={isTutorEnabled ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""}
               letter={
                 <div
                   style={{
@@ -515,7 +515,7 @@ export default function App() {
               isHighlighted={["8", `(`].some(
                 (char) => selectedLessonText?.[exerciseCursorPosition] === char
               )}
-              color={isTutorEnabled ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
               letter={
                 <div
                   style={{
@@ -551,7 +551,7 @@ export default function App() {
               isHighlighted={["9", `)`].some(
                 (char) => selectedLessonText?.[exerciseCursorPosition] === char
               )}
-              color={isTutorEnabled ? KEY_FINGER_COLORS.RING_FINGER : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.RING_FINGER : ""}
               letter={
                 <div
                   style={{
@@ -587,7 +587,7 @@ export default function App() {
               isHighlighted={["0", `=`].some(
                 (char) => selectedLessonText?.[exerciseCursorPosition] === char
               )}
-              color={isTutorEnabled ? KEY_FINGER_COLORS.PINKY : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
               letter={
                 <div
                   style={{
@@ -623,7 +623,7 @@ export default function App() {
               isHighlighted={["?", "'", "\\"].some(
                 (char) => selectedLessonText?.[exerciseCursorPosition] === char
               )}
-              color={isTutorEnabled ? KEY_FINGER_COLORS.PINKY : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
               letter={
                 <div
                   style={{
@@ -656,7 +656,7 @@ export default function App() {
               }
             />
             <Key
-              color={isTutorEnabled ? KEY_FINGER_COLORS.PINKY : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
               isHighlighted={["¿", "¡"].some(
                 (char) => selectedLessonText?.[exerciseCursorPosition] === char
               )}
@@ -704,7 +704,7 @@ export default function App() {
 
           <div style={{ display: "flex", gap: 4 }}>
             <Key
-              color={isTutorEnabled ? KEY_FINGER_COLORS.PINKY : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
               style={{
                 width: 48,
                 fontSize: "1.1em",
@@ -720,7 +720,7 @@ export default function App() {
                 "q"
               }
               letter="Q"
-              color={isTutorEnabled ? KEY_FINGER_COLORS.PINKY : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
             />
             <Key
               isHighlighted={
@@ -728,7 +728,7 @@ export default function App() {
                 "w"
               }
               letter="W"
-              color={isTutorEnabled ? KEY_FINGER_COLORS.RING_FINGER : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.RING_FINGER : ""}
             />
             <Key
               isHighlighted={
@@ -767,7 +767,7 @@ export default function App() {
                   </p>
                 </div>
               }
-              color={isTutorEnabled ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
             />
             <Key
               isHighlighted={
@@ -775,7 +775,7 @@ export default function App() {
                 "r"
               }
               letter="R"
-              color={isTutorEnabled ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
             />
             <Key
               isHighlighted={
@@ -783,7 +783,7 @@ export default function App() {
                 "t"
               }
               letter="T"
-              color={isTutorEnabled ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
             />
             <Key
               isHighlighted={
@@ -791,7 +791,7 @@ export default function App() {
                 "y"
               }
               letter="Y"
-              color={isTutorEnabled ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""}
             />
             <Key
               isHighlighted={
@@ -799,7 +799,7 @@ export default function App() {
                 "u"
               }
               letter="U"
-              color={isTutorEnabled ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""}
             />
             <Key
               isHighlighted={
@@ -807,7 +807,7 @@ export default function App() {
                 "i"
               }
               letter="I"
-              color={isTutorEnabled ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
             />
             <Key
               isHighlighted={
@@ -815,7 +815,7 @@ export default function App() {
                 "o"
               }
               letter="O"
-              color={isTutorEnabled ? KEY_FINGER_COLORS.RING_FINGER : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.RING_FINGER : ""}
             />
             <Key
               isHighlighted={
@@ -823,10 +823,10 @@ export default function App() {
                 "p"
               }
               letter="P"
-              color={isTutorEnabled ? KEY_FINGER_COLORS.PINKY : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
             />
             <Key
-              color={isTutorEnabled ? KEY_FINGER_COLORS.PINKY : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
               letter={
                 <div
                   style={{
@@ -854,7 +854,7 @@ export default function App() {
               isHighlighted={["+", "*", "~"].some(
                 (char) => selectedLessonText?.[exerciseCursorPosition] === char
               )}
-              color={isTutorEnabled ? KEY_FINGER_COLORS.PINKY : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
               letter={
                 <div
                   style={{
@@ -879,7 +879,7 @@ export default function App() {
               }
             />
             <Key
-              color={isTutorEnabled ? KEY_FINGER_COLORS.PINKY : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
               isHighlighted={
                 exerciseCursorPosition ===
                   EXERCISE_CURSOR_POSITION.NOT_STARTED && !!selectedLessonText
@@ -897,7 +897,7 @@ export default function App() {
 
           <div style={{ display: "flex", gap: 4 }}>
             <Key
-              color={isTutorEnabled ? KEY_FINGER_COLORS.PINKY : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
               style={{
                 width: 59,
                 fontSize: "0.9rem",
@@ -912,7 +912,7 @@ export default function App() {
                 "a"
               }
               letter="A"
-              color={isTutorEnabled ? KEY_FINGER_COLORS.PINKY : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
             />
             <Key
               isHighlighted={
@@ -920,7 +920,7 @@ export default function App() {
                 "s"
               }
               letter="S"
-              color={isTutorEnabled ? KEY_FINGER_COLORS.RING_FINGER : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.RING_FINGER : ""}
             />
             <Key
               isHighlighted={
@@ -928,14 +928,14 @@ export default function App() {
                 "d"
               }
               letter="D"
-              color={isTutorEnabled ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
             />
             <Key
               isHighlighted={
                 selectedLessonText?.[exerciseCursorPosition]?.toLowerCase() ===
                 "f"
               }
-              color={isTutorEnabled ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
               letter={
                 <div style={{ lineHeight: 0.3, paddingTop: 5 }}>
                   F <br /> _
@@ -948,7 +948,7 @@ export default function App() {
                 "g"
               }
               letter="G"
-              color={isTutorEnabled ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
             />
             <Key
               isHighlighted={
@@ -956,14 +956,14 @@ export default function App() {
                 "h"
               }
               letter="H"
-              color={isTutorEnabled ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""}
             />
             <Key
               isHighlighted={
                 selectedLessonText?.[exerciseCursorPosition]?.toLowerCase() ===
                 "j"
               }
-              color={isTutorEnabled ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""}
               letter={
                 <div style={{ lineHeight: 0.3, paddingTop: 5 }}>
                   J <br /> _
@@ -976,7 +976,7 @@ export default function App() {
                 "k"
               }
               letter="K"
-              color={isTutorEnabled ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
             />
             <Key
               isHighlighted={
@@ -984,7 +984,7 @@ export default function App() {
                 "l"
               }
               letter="L"
-              color={isTutorEnabled ? KEY_FINGER_COLORS.RING_FINGER : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.RING_FINGER : ""}
             />
             <Key
               isHighlighted={
@@ -992,14 +992,14 @@ export default function App() {
                 "ñ"
               }
               letter="Ñ"
-              color={isTutorEnabled ? KEY_FINGER_COLORS.PINKY : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
             />
             <Key
               isHighlighted={
                 selectedLessonText?.[exerciseCursorPosition]?.toLowerCase() ===
                 "{"
               }
-              color={isTutorEnabled ? KEY_FINGER_COLORS.PINKY : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
               letter={
                 <div
                   style={{
@@ -1028,7 +1028,7 @@ export default function App() {
                 selectedLessonText?.[exerciseCursorPosition]?.toLowerCase() ===
                 "}"
               }
-              color={isTutorEnabled ? KEY_FINGER_COLORS.PINKY : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
               letter={
                 <div
                   style={{
@@ -1061,7 +1061,7 @@ export default function App() {
               }
             />
             <Key
-              color={isTutorEnabled ? KEY_FINGER_COLORS.PINKY : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
               className={classes.enterBottom}
               style={{ width: 41, paddingTop: 7 }}
               letter="&crarr;"
@@ -1077,7 +1077,7 @@ export default function App() {
               isHighlighted={[";", ":", "_"].some(
                 (char) => selectedLessonText?.[exerciseCursorPosition] === char
               )}
-              color={isTutorEnabled ? KEY_FINGER_COLORS.PINKY : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
               style={{
                 width: 44,
                 fontSize: "0.9rem",
@@ -1087,7 +1087,7 @@ export default function App() {
               letter="&#8679;"
             />
             <Key
-              color={isTutorEnabled ? KEY_FINGER_COLORS.PINKY : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
               isHighlighted={["<", ">"].some(
                 (char) => selectedLessonText?.[exerciseCursorPosition] === char
               )}
@@ -1103,7 +1103,7 @@ export default function App() {
                 "z"
               }
               letter="Z"
-              color={isTutorEnabled ? KEY_FINGER_COLORS.PINKY : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
             />
             <Key
               isHighlighted={
@@ -1111,7 +1111,7 @@ export default function App() {
                 "x"
               }
               letter="X"
-              color={isTutorEnabled ? KEY_FINGER_COLORS.RING_FINGER : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.RING_FINGER : ""}
             />
             <Key
               isHighlighted={
@@ -1119,7 +1119,7 @@ export default function App() {
                 "c"
               }
               letter="C"
-              color={isTutorEnabled ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
             />
             <Key
               isHighlighted={
@@ -1127,7 +1127,7 @@ export default function App() {
                 "v"
               }
               letter="V"
-              color={isTutorEnabled ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
             />
             <Key
               isHighlighted={
@@ -1135,7 +1135,7 @@ export default function App() {
                 "b"
               }
               letter="B"
-              color={isTutorEnabled ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
             />
             <Key
               isHighlighted={
@@ -1143,7 +1143,7 @@ export default function App() {
                 "n"
               }
               letter="N"
-              color={isTutorEnabled ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""}
             />
             <Key
               isHighlighted={
@@ -1151,13 +1151,13 @@ export default function App() {
                 "m"
               }
               letter="M"
-              color={isTutorEnabled ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""}
             />
             <Key
               isHighlighted={[",", ";"].some(
                 (char) => selectedLessonText?.[exerciseCursorPosition] === char
               )}
-              color={isTutorEnabled ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
               letter={
                 <div
                   style={{
@@ -1175,7 +1175,7 @@ export default function App() {
               isHighlighted={[".", ":"].some(
                 (char) => selectedLessonText?.[exerciseCursorPosition] === char
               )}
-              color={isTutorEnabled ? KEY_FINGER_COLORS.RING_FINGER : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.RING_FINGER : ""}
               letter={
                 <div
                   style={{
@@ -1193,7 +1193,7 @@ export default function App() {
               isHighlighted={["-", "_"].some(
                 (char) => selectedLessonText?.[exerciseCursorPosition] === char
               )}
-              color={isTutorEnabled ? KEY_FINGER_COLORS.PINKY : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
               letter={
                 <div
                   style={{
@@ -1212,7 +1212,7 @@ export default function App() {
               isHighlighted={
                 selectedLessonText?.[exerciseCursorPosition] === ">"
               }
-              color={isTutorEnabled ? KEY_FINGER_COLORS.PINKY : ""}
+              color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
               style={{
                 width: 93,
                 fontSize: "0.9rem",
@@ -1254,7 +1254,7 @@ export default function App() {
               isHighlighted={
                 selectedLessonText?.[exerciseCursorPosition] === " "
               }
-              color={isTutorEnabled ? "#ffc0c0" : ""}
+              color={isTutorActive ? "#ffc0c0" : ""}
             />
             <Key
               style={{
