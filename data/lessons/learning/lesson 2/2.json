@@ -1,1 +1,7 @@
-{"text":"xx..xx ..xx.. xx..xx ..xx.. xx..xx ..xx.. xx..xx ..xx.. xx..xx ..xx.. xx..xx ..xx.. xx..xx ..xx.. xx..xx ..xx.. xx..xx ..xx.. xx..xx ..xx.. xx..xx ..xx.. xx..xx ..xx.. xx..xx ..xx.. xx..xx ..xx.. xx..xx ..xx.. xx..xx ..xx.. xx..xx ..xx.. xx..xx ..xx..","isTutorActive":true,"isKeyboardVisible":true,"WPMNeededToPass":20}
+{
+  "text": "xx..xx ..xx.. xx..xx ..xx.. xx..xx ..xx.. xx..xx ..xx.. xx..xx ..xx.. xx..xx ..xx.. xx..xx ..xx.. xx..xx ..xx.. xx..xx ..xx.. xx..xx ..xx.. xx..xx ..xx.. xx..xx ..xx.. xx..xx ..xx.. xx..xx ..xx.. xx..xx ..xx.. xx..xx ..xx.. xx..xx ..xx.. xx..xx ..xx..",
+  "isTutorActive": true,
+  "isKeyboardVisible": true,
+  "WPMNeededToPass": 20,
+  "timeLimitInSeconds": 753
+}
