@@ -82,8 +82,6 @@ const WelcomeMessage = () => (
 
 export default function App() {
   const [state, send] = useMachine(stateMachine);
-  const [startedTyping, setStartedTyping] = useState(false);
-  const [seconds, setSeconds] = useState(0);
   const {
     selectedLessonText,
     exerciseNumber,
