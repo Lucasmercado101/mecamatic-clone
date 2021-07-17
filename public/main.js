@@ -1,8 +1,20 @@
 const { app, BrowserWindow, Menu } = require("electron");
 const fs = require("fs");
 const path = require("path");
-const learningLessonsPath = path.join(__dirname, "..", "lessons", "learning");
-const practiceLessonsPath = path.join(__dirname, "..", "lessons", "practice");
+const learningLessonsPath = path.join(
+  __dirname,
+  "..",
+  "data",
+  "lessons",
+  "learning"
+);
+const practiceLessonsPath = path.join(
+  __dirname,
+  "..",
+  "data",
+  "lessons",
+  "practice"
+);
 
 function createWindow() {
   // Create the browser window.
