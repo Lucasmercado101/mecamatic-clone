@@ -10,27 +10,20 @@ import {
 } from "./stateMachine";
 import { useMachine } from "@xstate/react";
 const electron = window?.require?.("electron");
-// const electron = require("electron");
-// import * as electron from "electron";
 
-// import {} from "ramda"
-
-// ------------------- ENUMS -------------------
-
-const KEY_FINGER_COLORS = {
-  PINKY: "#ffffc0",
-  RING_FINGER: "#c0ffc0",
-  MIDDLE_FINGER: "#c0ffff",
-  INDEX_LEFT_HAND: "#ffc0ff",
-  INDEX_RIGHT_HAND: "#ff96ff"
-};
+enum KEY_FINGER_COLORS {
+  PINKY = "#ffffc0",
+  RING_FINGER = "#c0ffc0",
+  MIDDLE_FINGER = "#c0ffff",
+  INDEX_LEFT_HAND = "#ffc0ff",
+  INDEX_RIGHT_HAND = "#ff96ff"
+}
 
 const calcNetWPM = (
   typedEntries: number,
   seconds: number,
   errors: number
 ): number => (typedEntries / 5 - errors) / (seconds / 60);
-// ----------------------------------
 
 const useStyles = makeStyles({
   riseTitleText: {
@@ -1450,21 +1443,36 @@ export default function App() {
             [stateTypes.EXERCISE_SELECTED]: {
               [stateTypes.EXERCISE_PROGRESS]: stateTypes.EXERCISE_FINISHED
             }
-          }) && (
-            <div
-              style={{
-                backgroundColor: "#ff8080",
-                border: "2px solid",
-                borderStyle: "inset",
-                color: "white",
-                height: "100%",
-                width: "100%",
-                padding: 5
-              }}
-            >
-              Ha realizado el ejercicio con exito
-            </div>
-          )}
+          }) &&
+            (errorsCoefficient < percentageOfErrors ? (
+              <div
+                style={{
+                  backgroundColor: "#ff8080",
+                  border: "2px solid",
+                  borderStyle: "inset",
+                  color: "white",
+                  height: "100%",
+                  width: "100%",
+                  padding: 5
+                }}
+              >
+                Ha superado el % maximo de errores poermitidos
+              </div>
+            ) : (
+              <div
+                style={{
+                  backgroundColor: "#ff8080",
+                  border: "2px solid",
+                  borderStyle: "inset",
+                  color: "white",
+                  height: "100%",
+                  width: "100%",
+                  padding: 5
+                }}
+              >
+                Ha realizado el ejercicio con exito
+              </div>
+            ))}
         </div>
 
         <div
