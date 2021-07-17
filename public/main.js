@@ -45,15 +45,11 @@ function createWindow() {
                       path.join(learningLessonsPath, lessonsFolder, exercise),
                       "utf8",
                       (err, data) => {
-                        const { text, isTutorActive, isKeyboardVisible } =
-                          JSON.parse(data);
                         win.webContents.send("exercise", {
-                          text,
-                          isTutorActive,
-                          isKeyboardVisible,
                           category: "Aprendizaje",
                           lesson: lessonNumber,
-                          exercise: exerciseNumber
+                          exercise: exerciseNumber,
+                          ...JSON.parse(data)
                         });
                       }
                     );
@@ -84,15 +80,11 @@ function createWindow() {
                       path.join(practiceLessonsPath, lessonsFolder, exercise),
                       "utf8",
                       (err, data) => {
-                        const { text, isTutorActive, isKeyboardVisible } =
-                          JSON.parse(data);
                         win.webContents.send("exercise", {
-                          text,
-                          isTutorActive,
-                          isKeyboardVisible,
                           category: "Practica",
                           lesson: lessonNumber,
-                          exercise: exerciseNumber
+                          exercise: exerciseNumber,
+                          ...JSON.parse(data)
                         });
                       }
                     );

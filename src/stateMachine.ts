@@ -83,6 +83,7 @@ type ExerciseSelectedEvent = {
   exerciseNumber: number;
   isTutorActive: boolean;
   isKeyboardVisible: boolean;
+  exerciseMinimumSpeed: number;
 };
 
 type KeyPressedEvent = {
@@ -222,7 +223,8 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
           selectedLessonText,
           lessonNumber,
           isKeyboardVisible,
-          isTutorActive
+          isTutorActive,
+          exerciseMinimumSpeed
         } = event as ExerciseSelectedEvent;
 
         return {
@@ -231,7 +233,8 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
           selectedLessonText,
           lessonNumber,
           isTutorActiveForThisExercise: isTutorActive,
-          isKeyboardVisibleForThisExercise: isKeyboardVisible
+          isKeyboardVisibleForThisExercise: isKeyboardVisible,
+          minimumWPMNeededToCompleteExerciseSuccessfully: exerciseMinimumSpeed
         };
       }),
       [actionTypes.SET_CURSOR_TO_NOT_STARTED]: assign((_) => ({
