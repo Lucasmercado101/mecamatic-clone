@@ -155,7 +155,8 @@ export default function App() {
         backgroundColor: "#c0c0c0",
         padding: "10px 0px 0px 25px",
         display: "flex",
-        gap: 15
+        gap: 15,
+        minHeight: "100vh"
       }}
     >
       {/* {JSON.stringify(state.context)} */}
