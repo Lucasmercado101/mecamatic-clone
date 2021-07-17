@@ -1404,7 +1404,7 @@ export default function App() {
             <br />
             {state.matches(stateTypes.EXERCISE_SELECTED) && (
               <div style={{ marginTop: 8 }}>
-                {lessonCategory === "learning" && "Aprendizaje"}
+                {lessonCategory}
                 <br />
                 {lessonNumber && `Lección ${lessonNumber}`}{" "}
                 {exerciseNumber && lessonNumber && "-"}{" "}
