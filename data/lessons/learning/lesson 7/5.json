@@ -1,1 +1,7 @@
-{"text":"banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana","isTutorActive":true,"isKeyboardVisible":true,"WPMNeededToPass":40}
+{
+  "text": "banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana banana",
+  "isTutorActive": true,
+  "isKeyboardVisible": true,
+  "WPMNeededToPass": 40,
+  "timeLimitInSeconds": 753
+}
