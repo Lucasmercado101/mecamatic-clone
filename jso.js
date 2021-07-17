@@ -33,6 +33,3 @@ finalJSONData.forEach((el, i) => {
     (err) => {}
   );
 });
-
-// fs.readFile(path.join(lessonsPath), "utf-8", (err, data) => {
-//   });
