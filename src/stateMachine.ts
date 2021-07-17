@@ -46,7 +46,10 @@ enum guardTypes {
 
 interface stateContext {
   // ----------------- global settings -----------------
-  minSpeed?: number; // fixed number or depends on the exercise settings
+  // fixed number or depends on the exercise settings
+  // this global number, if set, overrides the minimum speed
+  // of the exercises
+  minSpeed?: number;
   // maximum amount of errors allowed (%):
   // fixed number or depends on the exercise settings
   errorsCoefficient: number;
