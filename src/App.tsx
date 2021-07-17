@@ -95,11 +95,11 @@ export default function App() {
     // isKeyboardVisibleForThisExercise,
     isTutorActiveForThisExercise = true, // if no exercise selected then by default true
     // global settings
-    isTutorActive
+    isTutorGloballyActive
   } = state.context;
 
-  const tutorIsActivatedGlobally = isTutorActive === true;
-  const tutorIsDeactivatedGlobally = isTutorActive === false;
+  const tutorIsActivatedGlobally = isTutorGloballyActive === true;
+  const tutorIsDeactivatedGlobally = isTutorGloballyActive === false;
 
   const isTutorActiveCurrently = tutorIsActivatedGlobally
     ? true

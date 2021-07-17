@@ -38,8 +38,8 @@ interface stateContext {
   // fixed number or depends on the exercise settings
   errorsCoefficient: number;
   defaultErrorsCoefficient: number;
-  showKeyboard?: boolean; // always show, never show, or depends on the exercise settings
-  isTutorActive?: boolean; // always active, never active, or depends on the exercise settings
+  isKeyboardGloballyVisible?: boolean; // always show, never show, or depends on the exercise settings
+  isTutorGloballyActive?: boolean; // always active, never active, or depends on the exercise settings
 
   // ---- options -----
   soundOnKeysTap: boolean;
