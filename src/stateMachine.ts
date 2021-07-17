@@ -54,6 +54,8 @@ interface stateContext {
   exerciseCursorPosition: number;
   exerciseNumber?: number;
   minimumWPMNeededToCompleteExerciseSuccessfully: number;
+  isTutorActiveForThisExercise?: boolean;
+  isKeyboardVisibleForThisExercise?: boolean;
 }
 
 type ExerciseSelectedEvent = {
@@ -136,14 +138,18 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
           exerciseNumber,
           lessonCategory,
           selectedLessonText,
-          lessonNumber
+          lessonNumber,
+          isKeyboardVisible,
+          isTutorActive
         } = event as ExerciseSelectedEvent;
 
         return {
           exerciseNumber,
           lessonCategory,
           selectedLessonText,
-          lessonNumber
+          lessonNumber,
+          isTutorActiveForThisExercise: isTutorActive,
+          isKeyboardVisibleForThisExercise: isKeyboardVisible
         };
       }),
       [actionTypes.SET_CURSOR_TO_NOT_STARTED]: assign((_) => ({
