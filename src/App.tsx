@@ -25,8 +25,11 @@ const KEY_FINGER_COLORS = {
   INDEX_RIGHT_HAND: "#ff96ff"
 };
 
-const BACKSPACE = "Backspace";
-const WPM = (typedEntries: number, mins: number) => typedEntries / 5 / mins;
+const calcNetWPM = (
+  typedEntries: number,
+  seconds: number,
+  errors: number
+): number => (typedEntries / 5 - errors) / (seconds / 60);
 // ----------------------------------
 
 const useStyles = makeStyles({
@@ -80,6 +83,13 @@ const WelcomeMessage = () => (
   </div>
 );
 
+function calculatePercentageOfErrors(
+  errors: number,
+  totalAmount: number
+): number {
+  return (errors / totalAmount) * 100;
+}
+
 export default function App() {
   const [state, send] = useMachine(stateMachine);
   const {
@@ -93,7 +103,11 @@ export default function App() {
     // isKeyboardVisibleForThisExercise,
     isTutorActiveForThisExercise = true, // if no exercise selected then by default true
     // global settings
-    isTutorGloballyActive
+    isTutorGloballyActive,
+    elapsedSeconds,
+    errors,
+    totalNetKeystrokes,
+    totalGrossKeystrokes
   } = state.context;
 
   const tutorIsActivatedGlobally = isTutorGloballyActive === true;
@@ -112,17 +126,10 @@ export default function App() {
       !!selectedLessonText
   });
 
-  // useEffect(() => {
-  //   let timer1 = setInterval(() => {
-  //     if (startedTyping) {
-  //       setSeconds((prev) => prev + 1);
-  //     }
-  //   }, 1000);
-
-  //   return () => {
-  //     clearTimeout(timer1);
-  //   };
-  // }, [startedTyping]);
+  const percentageOfErrors = calculatePercentageOfErrors(
+    errors,
+    exerciseCursorPosition
+  );
 
   useEffect(() => {
     electron?.ipcRenderer?.on(
@@ -175,7 +182,7 @@ export default function App() {
         minHeight: "100vh"
       }}
     >
-      {/* {JSON.stringify(state.context)} */}
+      {/* <pre>{JSON.stringify(state.context, null, 2)}</pre> */}
       {/* {seconds} Seconds <br />
       WPM: {WPM(currentLetter, seconds / 60).toFixed(0)} */}
       <div>
@@ -1572,12 +1579,25 @@ export default function App() {
                   fontWeight: "bold"
                 }}
               >
-                14
+                {[
+                  {
+                    [stateTypes.EXERCISE_SELECTED]: {
+                      [stateTypes.EXERCISE_PROGRESS]:
+                        stateTypes.EXERCISE_ONGOING
+                    }
+                  },
+                  {
+                    [stateTypes.EXERCISE_SELECTED]: {
+                      [stateTypes.EXERCISE_PROGRESS]:
+                        stateTypes.EXERCISE_FINISHED
+                    }
+                  }
+                ].some(state.matches) && totalGrossKeystrokes}
               </div>
             </div>
             <div
               style={{ display: "flex", width: "100%", textAlign: "left" }}
-              title="Pulsaciones brutas realizadas"
+              title="Pulsaciones netas realizadas"
             >
               <div
                 style={{
@@ -1601,7 +1621,20 @@ export default function App() {
                   fontWeight: "bold"
                 }}
               >
-                10
+                {[
+                  {
+                    [stateTypes.EXERCISE_SELECTED]: {
+                      [stateTypes.EXERCISE_PROGRESS]:
+                        stateTypes.EXERCISE_ONGOING
+                    }
+                  },
+                  {
+                    [stateTypes.EXERCISE_SELECTED]: {
+                      [stateTypes.EXERCISE_PROGRESS]:
+                        stateTypes.EXERCISE_FINISHED
+                    }
+                  }
+                ].some(state.matches) && totalNetKeystrokes}
               </div>
             </div>
 
@@ -1631,7 +1664,20 @@ export default function App() {
                   fontWeight: "bold"
                 }}
               >
-                1
+                {[
+                  {
+                    [stateTypes.EXERCISE_SELECTED]: {
+                      [stateTypes.EXERCISE_PROGRESS]:
+                        stateTypes.EXERCISE_ONGOING
+                    }
+                  },
+                  {
+                    [stateTypes.EXERCISE_SELECTED]: {
+                      [stateTypes.EXERCISE_PROGRESS]:
+                        stateTypes.EXERCISE_FINISHED
+                    }
+                  }
+                ].some(state.matches) && errors}
               </div>
             </div>
 
@@ -1661,7 +1707,23 @@ export default function App() {
                   fontWeight: "bold"
                 }}
               >
-                7.1
+                {[
+                  {
+                    [stateTypes.EXERCISE_SELECTED]: {
+                      [stateTypes.EXERCISE_PROGRESS]:
+                        stateTypes.EXERCISE_ONGOING
+                    }
+                  },
+                  {
+                    [stateTypes.EXERCISE_SELECTED]: {
+                      [stateTypes.EXERCISE_PROGRESS]:
+                        stateTypes.EXERCISE_FINISHED
+                    }
+                  }
+                ].some(state.matches) &&
+                  (percentageOfErrors === Infinity || isNaN(percentageOfErrors)
+                    ? ""
+                    : percentageOfErrors.toFixed(1))}
               </div>
             </div>
 
@@ -1691,7 +1753,30 @@ export default function App() {
                   fontWeight: "bold"
                 }}
               >
-                210
+                {[
+                  {
+                    [stateTypes.EXERCISE_SELECTED]: {
+                      [stateTypes.EXERCISE_PROGRESS]:
+                        stateTypes.EXERCISE_ONGOING
+                    }
+                  },
+                  {
+                    [stateTypes.EXERCISE_SELECTED]: {
+                      [stateTypes.EXERCISE_PROGRESS]:
+                        stateTypes.EXERCISE_FINISHED
+                    }
+                  }
+                ].some(state.matches) &&
+                  exerciseCursorPosition > 0 &&
+                  elapsedSeconds > 0 &&
+                  Math.max(
+                    +calcNetWPM(
+                      exerciseCursorPosition,
+                      elapsedSeconds,
+                      errors
+                    ).toFixed(0),
+                    0
+                  )}
               </div>
             </div>
           </div>
@@ -1726,34 +1811,14 @@ export default function App() {
               paddingTop: 1
             }}
           >
-            00:12
+            {elapsedSeconds}
+            {/* 00:12 */}
           </div>
         </div>
       </div>
     </div>
   );
 }
-
-// function Key({ letter, color, isSelected = false }) {
-//   return (
-//     <div
-//       className={isSelected ? "key-pressed" : ""}
-//       style={{
-//         width: "2rem",
-//         height: "2rem",
-//         backgroundColor: color,
-//         padding: "0.2rem",
-//         display: "flex",
-//         justifyContent: "center",
-//         border: "3px solid #808080",
-//         borderRadius: "4px",
-//         margin: "3px"
-//       }}
-//     >
-//       {letter}
-//     </div>
-//   );
-// }
 
 interface KeyProps {
   letter?: React.ReactElement | string;
