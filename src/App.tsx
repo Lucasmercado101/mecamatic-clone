@@ -1444,7 +1444,9 @@ export default function App() {
           )}
 
           {state.matches({
-            [stateTypes.EXERCISE_SELECTED]: stateTypes.EXERCISE_FINISHED
+            [stateTypes.EXERCISE_SELECTED]: {
+              [stateTypes.EXERCISE_PROGRESS]: stateTypes.EXERCISE_FINISHED
+            }
           }) && (
             <div
               style={{
