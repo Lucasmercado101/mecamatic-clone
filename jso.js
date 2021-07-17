@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const lessonsPath = path.resolve(__dirname, "lessons", "practice", "lesson 5");
+const lessonsPath = path.resolve(__dirname, "lessons", "practice", "lesson 6");
 
 const lessonsSourcePath = path.resolve(__dirname, "lessons1");
 
@@ -21,7 +21,7 @@ for (let i = 0; i < 10; i++) {
   const file = files[i];
   const filePath = path.join(lessonsSourcePath, file);
   const content = fs.readFileSync(filePath, "utf-8");
-  finalJSONData.push(dto(content.replace(/(\r\n|\n|\r)/gm, ""), false, true));
+  finalJSONData.push(dto(content.replace(/(\r\n|\n|\r)/gm, ""), false, false));
   fs.rmSync(path.join(lessonsSourcePath, file));
 }
 
