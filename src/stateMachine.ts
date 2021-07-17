@@ -31,13 +31,6 @@ enum guardTypes {
   PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER = "PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER"
 }
 
-/** ---------- settings --------------
- *
- * type tutorPreferences = true | false | null
- *
- * ----------------------------------
- */
-
 interface stateContext {
   // ----------------- global settings -----------------
   minSpeed?: number; // fixed number or depends on the exercise settings
