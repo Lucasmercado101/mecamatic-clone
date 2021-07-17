@@ -1,1 +1,7 @@
-{"text":"Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez","isTutorActive":true,"isKeyboardVisible":true,"WPMNeededToPass":40}
+{
+  "text": "Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez Rodriguez",
+  "isTutorActive": true,
+  "isKeyboardVisible": true,
+  "WPMNeededToPass": 40,
+  "timeLimitInSeconds": 789
+}
