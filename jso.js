@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const lessonsPath = path.resolve(__dirname, "lessons", "practice", "lesson 8");
+const lessonsPath = path.resolve(__dirname, "lessons", "practice", "lesson 9");
 
 const lessonsSourcePath = path.resolve(__dirname, "lessons1");
 
