@@ -67,12 +67,6 @@ const useStyles = makeStyles({
   })
 });
 
-const sentenceTest = Array.from(
-  `Es indispensable que el alumno practique al menos media hora todos los días. Si el alumno tuviera necesidad de dominar la mecanografía rápidamente, deberá aumentar este tiempo a una o dos horas diarias, en cuyo caso el tiempo necesario para escribir con rapidez y precisión disminuirá proporcionalmente al tiempo y el esfuerzo empleado.
-  Lo que desde luego es imprescindible, es escribir todos los días, para adquirir cualquier habilidad se precisa tiempo y constancia.`
-  // "la casa de casa la casa de casa la casa de casa la casa de casa la casa de casa la casa de casa la casa de casa"
-);
-
 const WelcomeMessage = () => (
   <div
     style={{
@@ -124,16 +118,25 @@ export default function App() {
       "exercise",
       (
         event,
-        lessonText,
         {
           category,
+          exercise,
+          isKeyboardVisible,
+          isTutorActive,
           lesson,
-          exercise
-        }: { category: string; exercise: number; lesson?: number }
+          text
+        }: {
+          text: string;
+          isTutorActive: boolean;
+          isKeyboardVisible: boolean;
+          category: "Practica" | "Aprendizaje";
+          lesson: number;
+          exercise: number;
+        }
       ) => {
         send({
           type: eventTypes.EXERCISE_SELECTED,
-          selectedLessonText: lessonText,
+          selectedLessonText: text,
           lessonCategory: category,
           lessonNumber: lesson,
           exerciseNumber: exercise

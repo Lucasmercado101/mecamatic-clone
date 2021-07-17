@@ -1,14 +1,8 @@
 const { app, BrowserWindow, Menu } = require("electron");
 const fs = require("fs");
 const path = require("path");
-const lessonsPath = path.join(__dirname, "..", "lessons");
-
-const readJson = (path, cb) => {
-  fs.readFile(require.resolve(path), (err, data) => {
-    if (err) cb(err);
-    else cb(null, JSON.parse(data));
-  });
-};
+const learningLessonsPath = path.join(__dirname, "..", "lessons", "learning");
+const practiceLessonsPath = path.join(__dirname, "..", "lessons", "practice");
 
 function createWindow() {
   // Create the browser window.
@@ -29,35 +23,84 @@ function createWindow() {
   // Open the DevTools.
   win.webContents.openDevTools();
 
-  const submenus = [];
-
-  let exercises = [];
-  for (let i = 1; i <= 100; i++) {
-    exercises.push(`${i}.txt`);
-    if (i % 10 === 0) {
-      submenus.push({
-        label: `LECCION ${i / 10}`,
-        submenu: exercises.map((el) => ({
-          label: el,
-          click() {
-            fs.readFile(path.join(lessonsPath, el), "utf8", (err, data) => {
-              win.webContents.send("exercise", data, {
-                category: "learning",
-                lesson: i / 10,
-                exercise: el.split("txt")[0]
-              });
-            });
-          }
-        }))
-      });
-      exercises = [];
-    }
-  }
-
   const menu = Menu.buildFromTemplate([
     {
       label: "Aprendizaje",
-      submenu: submenus
+      submenu: fs
+        .readdirSync(learningLessonsPath)
+        .sort((a, b) => +a.split("lesson")[1] - b.split("lesson")[1])
+        .map((lessonsFolder) => {
+          const lessonNumber = +lessonsFolder.split("lesson")[1];
+          return {
+            label: "LECCION " + lessonNumber,
+            submenu: fs
+              .readdirSync(path.join(learningLessonsPath, lessonsFolder))
+              .sort((a, b) => +a.split(".json")[0] - +b.split(".json")[0])
+              .map((exercise) => {
+                const exerciseNumber = +exercise.split(".json")[0];
+                return {
+                  label: "Ejercicio " + exerciseNumber,
+                  click() {
+                    fs.readFile(
+                      path.join(learningLessonsPath, lessonsFolder, exercise),
+                      "utf8",
+                      (err, data) => {
+                        const { text, isTutorActive, isKeyboardVisible } =
+                          JSON.parse(data);
+                        win.webContents.send("exercise", {
+                          text,
+                          isTutorActive,
+                          isKeyboardVisible,
+                          category: "Aprendizaje",
+                          lesson: lessonNumber,
+                          exercise: exerciseNumber
+                        });
+                      }
+                    );
+                  }
+                };
+              })
+          };
+        })
+    },
+    {
+      label: "Practica",
+      submenu: fs
+        .readdirSync(practiceLessonsPath)
+        .sort((a, b) => +a.split("lesson")[1] - b.split("lesson")[1])
+        .map((lessonsFolder) => {
+          const lessonNumber = +lessonsFolder.split("lesson")[1];
+          return {
+            label: "LECCION " + lessonNumber,
+            submenu: fs
+              .readdirSync(path.join(practiceLessonsPath, lessonsFolder))
+              .sort((a, b) => +a.split(".json")[0] - +b.split(".json")[0])
+              .map((exercise) => {
+                const exerciseNumber = +exercise.split(".json")[0];
+                return {
+                  label: "Ejercicio " + exerciseNumber,
+                  click() {
+                    fs.readFile(
+                      path.join(practiceLessonsPath, lessonsFolder, exercise),
+                      "utf8",
+                      (err, data) => {
+                        const { text, isTutorActive, isKeyboardVisible } =
+                          JSON.parse(data);
+                        win.webContents.send("exercise", {
+                          text,
+                          isTutorActive,
+                          isKeyboardVisible,
+                          category: "Practica",
+                          lesson: lessonNumber,
+                          exercise: exerciseNumber
+                        });
+                      }
+                    );
+                  }
+                };
+              })
+          };
+        })
     }
   ]);
   Menu.setApplicationMenu(menu);
