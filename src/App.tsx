@@ -139,7 +139,9 @@ export default function App() {
           selectedLessonText: text,
           lessonCategory: category,
           lessonNumber: lesson,
-          exerciseNumber: exercise
+          exerciseNumber: exercise,
+          isKeyboardVisible,
+          isTutorActive,
         });
       }
     );

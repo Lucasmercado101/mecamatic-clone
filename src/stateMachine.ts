@@ -62,6 +62,8 @@ type ExerciseSelectedEvent = {
   lessonCategory: string;
   lessonNumber?: number;
   exerciseNumber: number;
+  isTutorActive: boolean;
+  isKeyboardVisible: boolean;
 };
 
 type KeyPressedEvent = {
