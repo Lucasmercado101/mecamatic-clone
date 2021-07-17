@@ -1,1 +1,7 @@
-{"text":"abcdefghijklmnñopqrstuvwxyz abcdefghijklmn ñopqrstuvwxyz abcdefghijklmnñopqrstuvwxyz abcdefghijklmnñopqrstuvwxyz abcdefghijklmn ñopqrstuvwxyz abcdefghijklmnñopqrstuvwxyz abcdefghijklmnñopqrstuvwxyz abcdefghijklmn ñopqrstuvwxyz abcdefghijklmnñopqrstuvwxyz","isTutorActive":true,"isKeyboardVisible":true,"WPMNeededToPass":20}
+{
+  "text": "abcdefghijklmnñopqrstuvwxyz abcdefghijklmn ñopqrstuvwxyz abcdefghijklmnñopqrstuvwxyz abcdefghijklmnñopqrstuvwxyz abcdefghijklmn ñopqrstuvwxyz abcdefghijklmnñopqrstuvwxyz abcdefghijklmnñopqrstuvwxyz abcdefghijklmn ñopqrstuvwxyz abcdefghijklmnñopqrstuvwxyz",
+  "isTutorActive": true,
+  "isKeyboardVisible": true,
+  "WPMNeededToPass": 20,
+  "timeLimitInSeconds": 762
+}
