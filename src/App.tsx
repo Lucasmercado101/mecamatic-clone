@@ -100,8 +100,12 @@ export default function App() {
     elapsedSeconds,
     errors,
     totalNetKeystrokes,
-    totalGrossKeystrokes
+    totalGrossKeystrokes,
+    timeLimitInSeconds
   } = state.context;
+
+  const timeLimitMinutes = ~~((timeLimitInSeconds - elapsedSeconds) / 60);
+  const timeLimitSeconds = (timeLimitInSeconds - elapsedSeconds) % 60;
 
   const tutorIsActivatedGlobally = isTutorGloballyActive === true;
   const tutorIsDeactivatedGlobally = isTutorGloballyActive === false;
@@ -1824,8 +1828,8 @@ export default function App() {
               paddingTop: 1
             }}
           >
-            {elapsedSeconds}
-            {/* 00:12 */}
+            {timeLimitMinutes < 9 ? `0${timeLimitMinutes}` : timeLimitMinutes}:
+            {timeLimitSeconds < 9 ? `0${timeLimitSeconds}` : timeLimitSeconds}
           </div>
         </div>
       </div>
