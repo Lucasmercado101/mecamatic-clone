@@ -69,7 +69,6 @@ interface stateContext {
   lessonNumber?: number;
   exerciseCursorPosition: number;
   exerciseNumber?: number;
-  minimumWPMNeededToCompleteExerciseSuccessfully: number;
   isTutorActiveForThisExercise?: boolean;
   isKeyboardVisibleForThisExercise?: boolean;
   totalNetKeystrokes?: number;
@@ -86,7 +85,6 @@ type ExerciseSelectedEvent = {
   exerciseNumber: number;
   isTutorActive: boolean;
   isKeyboardVisible: boolean;
-  exerciseMinimumSpeed: number;
 };
 
 type KeyPressedEvent = {
@@ -109,7 +107,6 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
     initial: stateTypes.DEFAULT,
     context: {
       exerciseCursorPosition: EXERCISE_CURSOR_POSITION.NOT_STARTED,
-      minimumWPMNeededToCompleteExerciseSuccessfully: 20,
       elapsedSeconds: 0,
       errors: 0,
       // global settings
@@ -226,8 +223,7 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
           selectedLessonText,
           lessonNumber,
           isKeyboardVisible,
-          isTutorActive,
-          exerciseMinimumSpeed
+          isTutorActive
         } = event as ExerciseSelectedEvent;
 
         return {
@@ -236,8 +232,7 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
           selectedLessonText,
           lessonNumber,
           isTutorActiveForThisExercise: isTutorActive,
-          isKeyboardVisibleForThisExercise: isKeyboardVisible,
-          minimumWPMNeededToCompleteExerciseSuccessfully: exerciseMinimumSpeed
+          isKeyboardVisibleForThisExercise: isKeyboardVisible
         };
       }),
       [actionTypes.SET_CURSOR_TO_NOT_STARTED]: assign((_) => ({
