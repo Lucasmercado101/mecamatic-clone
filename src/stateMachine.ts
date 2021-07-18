@@ -56,6 +56,7 @@ interface stateContext {
   defaultErrorsCoefficient: number;
   isKeyboardGloballyVisible?: boolean; // always show, never show, or depends on the exercise settings
   isTutorGloballyActive?: boolean; // always active, never active, or depends on the exercise settings
+  timeLimitInSeconds: number;
 
   // ---- options -----
   soundOnKeysTap: boolean;
@@ -112,6 +113,7 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
       minimumWPMNeededToCompleteExerciseSuccessfully: 20,
       elapsedSeconds: 0,
       errors: 0,
+      timeLimitInSeconds: 900, // 15 minutes default time limit
       // global settings
       defaultErrorsCoefficient: 2,
       errorsCoefficient: 2, // TODO: load this from user settings,
