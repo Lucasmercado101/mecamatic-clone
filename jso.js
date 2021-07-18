@@ -6,7 +6,7 @@ const lessonsPath = path.resolve(
   "data",
   "lessons",
   "perfecting",
-  "lesson 9"
+  "lesson 10"
 );
 
 const lessonsSourcePath = path.resolve(__dirname, "lessons1");
@@ -15,7 +15,7 @@ const dto = (text, isTutorActive, isKeyboardVisible) => ({
   text,
   isTutorActive,
   isKeyboardVisible,
-  WPMNeededToPass: 320
+  WPMNeededToPass: 340
 });
 
 const files = fs
