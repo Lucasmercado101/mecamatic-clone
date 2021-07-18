@@ -6,7 +6,7 @@ const lessonsPath = path.resolve(
   "data",
   "lessons",
   "perfecting",
-  "lesson 3"
+  "lesson 4"
 );
 
 const lessonsSourcePath = path.resolve(__dirname, "lessons1");
