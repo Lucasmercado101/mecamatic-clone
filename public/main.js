@@ -15,6 +15,13 @@ const practiceLessonsPath = path.join(
   "lessons",
   "practice"
 );
+const perfectionLessonsPath = path.join(
+  __dirname,
+  "..",
+  "data",
+  "lessons",
+  "perfecting"
+);
 
 function createWindow() {
   // Create the browser window.
@@ -90,6 +97,41 @@ function createWindow() {
                   click() {
                     fs.readFile(
                       path.join(practiceLessonsPath, lessonsFolder, exercise),
+                      "utf8",
+                      (err, data) => {
+                        win.webContents.send("exercise", {
+                          category: "Practica",
+                          lesson: lessonNumber,
+                          exercise: exerciseNumber,
+                          ...JSON.parse(data)
+                        });
+                      }
+                    );
+                  }
+                };
+              })
+          };
+        })
+    },
+    {
+      label: "Perfeccionamiento",
+      submenu: fs
+        .readdirSync(perfectionLessonsPath)
+        .sort((a, b) => +a.split("lesson")[1] - b.split("lesson")[1])
+        .map((lessonsFolder) => {
+          const lessonNumber = +lessonsFolder.split("lesson")[1];
+          return {
+            label: "LECCION " + lessonNumber,
+            submenu: fs
+              .readdirSync(path.join(perfectionLessonsPath, lessonsFolder))
+              .sort((a, b) => +a.split(".json")[0] - +b.split(".json")[0])
+              .map((exercise) => {
+                const exerciseNumber = +exercise.split(".json")[0];
+                return {
+                  label: "Ejercicio " + exerciseNumber,
+                  click() {
+                    fs.readFile(
+                      path.join(perfectionLessonsPath, lessonsFolder, exercise),
                       "utf8",
                       (err, data) => {
                         win.webContents.send("exercise", {
