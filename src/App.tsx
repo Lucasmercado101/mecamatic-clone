@@ -92,7 +92,6 @@ export default function App() {
     exerciseCursorPosition,
     lessonNumber,
     errorsCoefficient,
-    minimumWPMNeededToCompleteExerciseSuccessfully,
     // isKeyboardVisibleForThisExercise,
     isTutorActiveForThisExercise = true, // if no exercise selected then by default true
     // global settings
