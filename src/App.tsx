@@ -92,6 +92,7 @@ export default function App() {
     exerciseCursorPosition,
     lessonNumber,
     errorsCoefficient,
+    minimumWPMNeededToCompleteExerciseSuccessfully,
     // isKeyboardVisibleForThisExercise,
     isTutorActiveForThisExercise = true, // if no exercise selected then by default true
     // global settings
@@ -134,7 +135,8 @@ export default function App() {
           isKeyboardVisible,
           isTutorActive,
           lesson,
-          text
+          text,
+          WPMNeededToPass
         }: {
           text: string;
           isTutorActive: boolean;
@@ -142,6 +144,7 @@ export default function App() {
           category: "Practica" | "Aprendizaje";
           lesson: number;
           exercise: number;
+          WPMNeededToPass: number;
         }
       ) => {
         send({
@@ -151,7 +154,8 @@ export default function App() {
           lessonNumber: lesson,
           exerciseNumber: exercise,
           isKeyboardVisible,
-          isTutorActive
+          isTutorActive,
+          exerciseMinimumSpeed: WPMNeededToPass
         });
       }
     );
