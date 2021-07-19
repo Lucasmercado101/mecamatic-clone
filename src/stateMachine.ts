@@ -47,7 +47,7 @@ enum guardTypes {
   PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER = "PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER"
 }
 
-interface stateContext {
+export interface stateContext {
   // ----------------- global settings -----------------
   // fixed number or depends on the exercise settings
   // this global number, if set, overrides the minimum speed
