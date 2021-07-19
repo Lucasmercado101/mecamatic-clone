@@ -202,7 +202,7 @@ ipcMain.on("is-on-main-view", () => {
 ipcMain.on("open-global-settings-window", () => {
   // const mainWin = BrowserWindow.getFocusedWindow();
   const win = new BrowserWindow({
-    width: 520,
+    width: 645,
     height: 280,
     resizable: false,
     fullscreen: false,
