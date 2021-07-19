@@ -35,3 +35,30 @@
     background-color: none;
   }
 }
+
+.top-toolbar {
+  background-color: #f0f0f0;
+  padding-left: 5px;
+}
+
+.top-toolbar-menu-item {
+  display: flex;
+  background-color: transparent;
+  align-items: center;
+  border: none;
+  gap: 8px;
+  padding: 0 4px;
+}
+
+.top-toolbar-menu-item:hover {
+  display: flex;
+  align-items: center;
+  border: thin solid outset;
+}
+
+.toolbar-separator {
+  width: 2px;
+  background-color: #a0a0a0;
+  border-right: 1px solid #ffffff;
+  margin: 2px 2px;
+}

@@ -202,9 +202,9 @@ function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
     width: 810,
-    height: 580,
+    height: 590,
     minWidth: 810,
-    minHeight: 580,
+    minHeight: 590,
     title: "MecaMatic 3.0",
     webPreferences: {
       nodeIntegration: true,
