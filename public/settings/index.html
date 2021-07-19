@@ -13,18 +13,20 @@
         <fieldset class="group group-small">
           <p class="group__title">Velocidad minima</p>
           <label class="group-option">
-            <input type="radio" />
+            <input name="speed" type="radio" />
             Predeterminada
           </label>
           <label class="group-option">
-            <input type="radio" />
+            <input name="speed" type="radio" />
             Personalizar
           </label>
           <label class="group-option">
             Nueva velocidad:
             <input
+              name="speed"
+              disabled
               type="number"
-              value="2"
+              value="20"
               min="1"
               class="custom-amount-input"
             />
@@ -33,16 +35,18 @@
         <fieldset class="group group-small">
           <p class="group__title">Coeficiente de errores</p>
           <label class="group-option">
-            <input type="radio" />
+            <input name="errors-coefficient" type="radio" />
             Predeterminada
           </label>
           <label class="group-option">
-            <input type="radio" />
+            <input name="errors-coefficient" type="radio" />
             Personalizar
           </label>
           <label class="group-option">
             Nuevo coeficiente:
             <input
+              name="errors-coefficient"
+              disabled
               type="number"
               value="2"
               min="1"
@@ -55,30 +59,30 @@
         <fieldset class="group group-small group-radio-only">
           <p class="group__title">Teclado</p>
           <label class="group-option">
-            <input type="radio" />
+            <input name="keyboard-visibility" type="radio" />
             Predeterminada
           </label>
           <label class="group-option">
-            <input type="radio" />
+            <input name="keyboard-visibility" type="radio" />
             Personalizar
           </label>
           <label class="group-option">
-            <input type="radio" />
+            <input name="keyboard-visibility" type="radio" />
             Nunca visible
           </label>
         </fieldset>
         <fieldset class="group group-small group-radio-only">
           <p class="group__title">Tutor</p>
           <label class="group-option">
-            <input type="radio" />
+            <input name="tutor" type="radio" />
             Predeterminada
           </label>
           <label class="group-option">
-            <input type="radio" />
+            <input name="tutor" type="radio" />
             Personalizar
           </label>
           <label class="group-option">
-            <input type="radio" />
+            <input name="tutor" type="radio" />
             Nunca visible
           </label>
         </fieldset>
