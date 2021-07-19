@@ -66,7 +66,7 @@ function createWindow() {
       label: "Aprendizaje",
       submenu: fs
         .readdirSync(learningLessonsPath)
-        .sort((a, b) => +a.split("lesson")[1] - b.split("lesson")[1])
+        .sort((a, b) => +a.split("lesson")[1] - +b.split("lesson")[1])
         .map((lessonsFolder) => {
           const lessonNumber = +lessonsFolder.split("lesson")[1];
           return {
@@ -101,7 +101,7 @@ function createWindow() {
       label: "Practica",
       submenu: fs
         .readdirSync(practiceLessonsPath)
-        .sort((a, b) => +a.split("lesson")[1] - b.split("lesson")[1])
+        .sort((a, b) => +a.split("lesson")[1] - +b.split("lesson")[1])
         .map((lessonsFolder) => {
           const lessonNumber = +lessonsFolder.split("lesson")[1];
           return {
@@ -136,7 +136,7 @@ function createWindow() {
       label: "Perfeccionamiento",
       submenu: fs
         .readdirSync(perfectionLessonsPath)
-        .sort((a, b) => +a.split("lesson")[1] - b.split("lesson")[1])
+        .sort((a, b) => +a.split("lesson")[1] - +b.split("lesson")[1])
         .map((lessonsFolder) => {
           const lessonNumber = +lessonsFolder.split("lesson")[1];
           return {
