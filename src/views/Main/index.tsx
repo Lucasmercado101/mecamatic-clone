@@ -122,7 +122,7 @@ function calculatePercentageOfErrors(
 
 function Index({ send, state }: Props) {
   useEffect(() => {
-    electron.ipcRenderer.sendSync("is-on-main-view");
+    electron.ipcRenderer.send("is-on-main-view");
   }, []);
 
   const {
