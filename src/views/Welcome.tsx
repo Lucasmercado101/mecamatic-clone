@@ -64,6 +64,7 @@ function Welcome({
         </datalist>
         <button
           onClick={() => {
+            if (userName.length === 0) return;
             if (userNames.includes(userName)) {
               electron.ipcRenderer
                 .invoke("load-user-profile", userName)
