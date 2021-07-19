@@ -37,7 +37,8 @@ enum actionTypes {
   INCREASE_ERRORS_BY_ONE = "INCREASE_ERRORS_BY_ONE",
   RESET_ERRORS_TO_0 = "RESET_ERRORS_TO_0",
   RESET_GROSS_KEYWORDS_TYPED_TO_0 = "RESET_GROSS_KEYWORDS_TYPED_TO_0",
-  RESET_NET_KEYWORDS_TYPED_TO_0 = "RESET_NET_KEYWORDS_TYPED_TO_0"
+  RESET_NET_KEYWORDS_TYPED_TO_0 = "RESET_NET_KEYWORDS_TYPED_TO_0",
+  SET_USER_DATA = "SET_USER_DATA"
 }
 
 enum guardTypes {
@@ -59,6 +60,7 @@ interface stateContext {
   isKeyboardGloballyVisible?: boolean; // always show, never show, or depends on the exercise settings
   isTutorGloballyActive?: boolean; // always active, never active, or depends on the exercise settings
   timeLimitInSeconds: number;
+  userName: string;
 
   // ---- options -----
   soundOnKeysTap: boolean;
@@ -119,6 +121,7 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
   {
     initial: stateTypes.WELCOME_VIEW,
     context: {
+      userName: "",
       exerciseCursorPosition: EXERCISE_CURSOR_POSITION.NOT_STARTED,
       minimumWPMNeededToCompleteExerciseSuccessfully: 20,
       elapsedSeconds: 0,
@@ -136,7 +139,8 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
       [stateTypes.WELCOME_VIEW]: {
         on: {
           [eventTypes.USER_DATA_LOADED]: {
-            target: stateTypes.EXERCISE_NOT_SELECTED
+            target: stateTypes.EXERCISE_NOT_SELECTED,
+            actions: actionTypes.SET_USER_DATA
           }
         }
       },
@@ -298,7 +302,11 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
       })),
       [actionTypes.RESET_ERRORS_TO_0]: assign((ctx) => ({
         errors: 0
-      }))
+      })),
+      [actionTypes.SET_USER_DATA]: assign((_, e) => {
+        const { userName } = e as UserDataLoadedEvent;
+        return { userName };
+      })
     },
     guards: {
       [guardTypes.ENTER_WAS_PRESSED]: (_, event) => {

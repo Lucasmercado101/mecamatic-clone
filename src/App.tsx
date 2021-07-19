@@ -102,7 +102,8 @@ export default function App() {
     errors,
     totalNetKeystrokes,
     totalGrossKeystrokes,
-    timeLimitInSeconds
+    timeLimitInSeconds,
+    userName
   } = state.context;
 
   const timeLimitMinutes = ~~((timeLimitInSeconds - elapsedSeconds) / 60);
@@ -1486,7 +1487,7 @@ export default function App() {
             <div className={classes.riseTitleText}>Alumno y nivel actual</div>
             <br />
             <div>
-              Lucas
+              {userName}
               <br />
               {state.matches(stateTypes.EXERCISE_SELECTED) && (
                 <div style={{ marginTop: 8 }}>
