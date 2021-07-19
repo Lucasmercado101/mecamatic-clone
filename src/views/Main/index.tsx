@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect } from "react";
 import { Event, EventData, SingleOrArray, State } from "xstate";
 import {
   eventTypes,
@@ -8,6 +8,7 @@ import {
   stateTypes
 } from "../../stateMachine";
 import { makeStyles } from "@material-ui/styles";
+const electron = window?.require?.("electron");
 
 enum KEY_FINGER_COLORS {
   PINKY = "#ffffc0",
@@ -119,6 +120,10 @@ function calculatePercentageOfErrors(
 }
 
 function Index({ send, state }: Props) {
+  useEffect(() => {
+    electron.ipcRenderer.sendSync("is-on-main-view");
+  }, []);
+
   const {
     selectedLessonText,
     exerciseNumber,
