@@ -48,6 +48,17 @@ ipcMain.handle("create-user-profile-and-load-user-it", (event, userName) => {
   return { userName, ...userSettings };
 });
 
+ipcMain.handle("load-user-profile", (event, userName) => {
+  const userProfileDir = path.join(userProfilesPath, userName);
+
+  const userSettings = fs.readFileSync(
+    path.join(userProfileDir, "settings.json"),
+    { encoding: "utf8" }
+  );
+
+  return { userName, ...JSON.parse(userSettings) };
+});
+
 function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({

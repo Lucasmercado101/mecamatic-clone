@@ -3,6 +3,10 @@ import { Event, EventData, SingleOrArray } from "xstate";
 import { eventTypes, stateEvents } from "../stateMachine";
 const electron = window?.require?.("electron");
 
+interface userData {
+  userName: string;
+}
+
 function Welcome({
   send
 }: {
@@ -35,11 +39,15 @@ function Welcome({
       <button
         onClick={() => {
           if (userNames.includes(userName)) {
-            electron.ipcRenderer.invoke("load-user-profile", userName);
+            electron.ipcRenderer
+              .invoke("load-user-profile", userName)
+              .then(({ userName }: userData) => {
+                send({ type: eventTypes.USER_DATA_LOADED, userName });
+              });
           } else {
             electron.ipcRenderer
               .invoke("create-user-profile-and-load-user-it", userName)
-              .then(({ userName }: { userName: string }) => {
+              .then(({ userName }: userData) => {
                 send({ type: eventTypes.USER_DATA_LOADED, userName });
               });
           }
