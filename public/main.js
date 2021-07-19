@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, ipcMain } = require("electron");
+const { app, BrowserWindow, Menu, ipcMain, dialog } = require("electron");
 const fs = require("fs");
 const path = require("path");
 const learningLessonsPath = path.join(
@@ -59,6 +59,33 @@ ipcMain.handle("load-user-profile", (event, userName) => {
   return { userName, ...JSON.parse(userSettings) };
 });
 
+ipcMain.handle(
+  "send-selected-user-name-to-confirm-deletion",
+  (event, userName) => {
+    const userProfileDir = path.join(userProfilesPath, userName);
+    if (fs.existsSync(userProfileDir) && userName.length > 0) {
+      const selectedOption = dialog.showMessageBoxSync({
+        type: "warning",
+        buttons: ["Si", "No"],
+        title: "Eliminar usuario",
+        message: `¿Desea continuar?`,
+        detail: `Esta acción es irreversible y eliminará los datos, la configuracion y los ejercicios que haya creado el usuario: ${userName}`,
+        noLink: true
+      });
+
+      const YES = selectedOption === 0;
+      if (YES) {
+        fs.rmSync(userProfileDir, { recursive: true, force: true });
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      dialog.showErrorBox("Error", `El usuario ${userName} no existe.`);
+    }
+  }
+);
+
 function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
@@ -80,111 +107,119 @@ function createWindow() {
 
   const menu = Menu.buildFromTemplate([
     {
-      label: "Aprendizaje",
-      submenu: fs
-        .readdirSync(learningLessonsPath)
-        .sort((a, b) => +a.split("lesson")[1] - +b.split("lesson")[1])
-        .map((lessonsFolder) => {
-          const lessonNumber = +lessonsFolder.split("lesson")[1];
-          return {
-            label: "LECCION " + lessonNumber,
-            submenu: fs
-              .readdirSync(path.join(learningLessonsPath, lessonsFolder))
-              .sort((a, b) => +a.split(".json")[0] - +b.split(".json")[0])
-              .map((exercise) => {
-                const exerciseNumber = +exercise.split(".json")[0];
-                return {
-                  label: "Ejercicio " + exerciseNumber,
-                  click() {
-                    fs.readFile(
-                      path.join(learningLessonsPath, lessonsFolder, exercise),
-                      "utf8",
-                      (err, data) => {
-                        win.webContents.send("exercise", {
-                          category: "Aprendizaje",
-                          lesson: lessonNumber,
-                          exercise: exerciseNumber,
-                          ...JSON.parse(data)
-                        });
-                      }
-                    );
-                  }
-                };
-              })
-          };
-        })
-    },
-    {
-      label: "Practica",
-      submenu: fs
-        .readdirSync(practiceLessonsPath)
-        .sort((a, b) => +a.split("lesson")[1] - +b.split("lesson")[1])
-        .map((lessonsFolder) => {
-          const lessonNumber = +lessonsFolder.split("lesson")[1];
-          return {
-            label: "LECCION " + lessonNumber,
-            submenu: fs
-              .readdirSync(path.join(practiceLessonsPath, lessonsFolder))
-              .sort((a, b) => +a.split(".json")[0] - +b.split(".json")[0])
-              .map((exercise) => {
-                const exerciseNumber = +exercise.split(".json")[0];
-                return {
-                  label: "Ejercicio " + exerciseNumber,
-                  click() {
-                    fs.readFile(
-                      path.join(practiceLessonsPath, lessonsFolder, exercise),
-                      "utf8",
-                      (err, data) => {
-                        win.webContents.send("exercise", {
-                          category: "Practica",
-                          lesson: lessonNumber,
-                          exercise: exerciseNumber,
-                          ...JSON.parse(data)
-                        });
-                      }
-                    );
-                  }
-                };
-              })
-          };
-        })
-    },
-    {
-      label: "Perfeccionamiento",
-      submenu: fs
-        .readdirSync(perfectionLessonsPath)
-        .sort((a, b) => +a.split("lesson")[1] - +b.split("lesson")[1])
-        .map((lessonsFolder) => {
-          const lessonNumber = +lessonsFolder.split("lesson")[1];
-          return {
-            label: "LECCION " + lessonNumber,
-            submenu: fs
-              .readdirSync(path.join(perfectionLessonsPath, lessonsFolder))
-              .sort((a, b) => +a.split(".json")[0] - +b.split(".json")[0])
-              .map((exercise) => {
-                const exerciseNumber = +exercise.split(".json")[0];
-                return {
-                  label: "Ejercicio " + exerciseNumber,
-                  click() {
-                    fs.readFile(
-                      path.join(perfectionLessonsPath, lessonsFolder, exercise),
-                      "utf8",
-                      (err, data) => {
-                        win.webContents.send("exercise", {
-                          category: "Practica",
-                          lesson: lessonNumber,
-                          exercise: exerciseNumber,
-                          ...JSON.parse(data)
-                        });
-                      }
-                    );
-                  }
-                };
-              })
-          };
-        })
+      label: "Eliminar Usuario",
+      click() {
+        win.webContents.send("get-selected-user");
+      }
     }
   ]);
+  // const menu = Menu.buildFromTemplate([
+  //   {
+  //     label: "Aprendizaje",
+  //     submenu: fs
+  //       .readdirSync(learningLessonsPath)
+  //       .sort((a, b) => +a.split("lesson")[1] - +b.split("lesson")[1])
+  //       .map((lessonsFolder) => {
+  //         const lessonNumber = +lessonsFolder.split("lesson")[1];
+  //         return {
+  //           label: "LECCION " + lessonNumber,
+  //           submenu: fs
+  //             .readdirSync(path.join(learningLessonsPath, lessonsFolder))
+  //             .sort((a, b) => +a.split(".json")[0] - +b.split(".json")[0])
+  //             .map((exercise) => {
+  //               const exerciseNumber = +exercise.split(".json")[0];
+  //               return {
+  //                 label: "Ejercicio " + exerciseNumber,
+  //                 click() {
+  //                   fs.readFile(
+  //                     path.join(learningLessonsPath, lessonsFolder, exercise),
+  //                     "utf8",
+  //                     (err, data) => {
+  //                       win.webContents.send("exercise", {
+  //                         category: "Aprendizaje",
+  //                         lesson: lessonNumber,
+  //                         exercise: exerciseNumber,
+  //                         ...JSON.parse(data)
+  //                       });
+  //                     }
+  //                   );
+  //                 }
+  //               };
+  //             })
+  //         };
+  //       })
+  //   },
+  //   {
+  //     label: "Practica",
+  //     submenu: fs
+  //       .readdirSync(practiceLessonsPath)
+  //       .sort((a, b) => +a.split("lesson")[1] - +b.split("lesson")[1])
+  //       .map((lessonsFolder) => {
+  //         const lessonNumber = +lessonsFolder.split("lesson")[1];
+  //         return {
+  //           label: "LECCION " + lessonNumber,
+  //           submenu: fs
+  //             .readdirSync(path.join(practiceLessonsPath, lessonsFolder))
+  //             .sort((a, b) => +a.split(".json")[0] - +b.split(".json")[0])
+  //             .map((exercise) => {
+  //               const exerciseNumber = +exercise.split(".json")[0];
+  //               return {
+  //                 label: "Ejercicio " + exerciseNumber,
+  //                 click() {
+  //                   fs.readFile(
+  //                     path.join(practiceLessonsPath, lessonsFolder, exercise),
+  //                     "utf8",
+  //                     (err, data) => {
+  //                       win.webContents.send("exercise", {
+  //                         category: "Practica",
+  //                         lesson: lessonNumber,
+  //                         exercise: exerciseNumber,
+  //                         ...JSON.parse(data)
+  //                       });
+  //                     }
+  //                   );
+  //                 }
+  //               };
+  //             })
+  //         };
+  //       })
+  //   },
+  //   {
+  //     label: "Perfeccionamiento",
+  //     submenu: fs
+  //       .readdirSync(perfectionLessonsPath)
+  //       .sort((a, b) => +a.split("lesson")[1] - +b.split("lesson")[1])
+  //       .map((lessonsFolder) => {
+  //         const lessonNumber = +lessonsFolder.split("lesson")[1];
+  //         return {
+  //           label: "LECCION " + lessonNumber,
+  //           submenu: fs
+  //             .readdirSync(path.join(perfectionLessonsPath, lessonsFolder))
+  //             .sort((a, b) => +a.split(".json")[0] - +b.split(".json")[0])
+  //             .map((exercise) => {
+  //               const exerciseNumber = +exercise.split(".json")[0];
+  //               return {
+  //                 label: "Ejercicio " + exerciseNumber,
+  //                 click() {
+  //                   fs.readFile(
+  //                     path.join(perfectionLessonsPath, lessonsFolder, exercise),
+  //                     "utf8",
+  //                     (err, data) => {
+  //                       win.webContents.send("exercise", {
+  //                         category: "Practica",
+  //                         lesson: lessonNumber,
+  //                         exercise: exerciseNumber,
+  //                         ...JSON.parse(data)
+  //                       });
+  //                     }
+  //                   );
+  //                 }
+  //               };
+  //             })
+  //         };
+  //       })
+  //   }
+  // ]);
   Menu.setApplicationMenu(menu);
 }
 

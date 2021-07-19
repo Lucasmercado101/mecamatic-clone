@@ -19,6 +19,23 @@ function Welcome({
   const [userNames, setUserNames] = useState<string[]>([]);
 
   useEffect(() => {
+    electron.ipcRenderer.on("get-selected-user", () => {
+      electron.ipcRenderer
+        .invoke("send-selected-user-name-to-confirm-deletion", userName)
+        .then((deletedFiles: boolean) => {
+          if (deletedFiles)
+            electron.ipcRenderer.invoke("get-user-profiles").then((data) => {
+              setUserNames(data);
+            });
+        });
+    });
+
+    return () => {
+      electron.ipcRenderer.removeAllListeners("get-selected-user");
+    };
+  }, [userName]);
+
+  useEffect(() => {
     electron.ipcRenderer.invoke("get-user-profiles").then((data) => {
       setUserNames(data);
     });
