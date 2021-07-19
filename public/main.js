@@ -29,17 +29,23 @@ ipcMain.handle("get-user-profiles", () => {
   return users;
 });
 
-ipcMain.handle("create-user-profile-and-load-user-it", (userName) => {
+ipcMain.handle("create-user-profile-and-load-user-it", (event, userName) => {
   const userProfileDir = path.join(userProfilesPath, userName);
+
   fs.mkdirSync(userProfileDir);
 
-  // const userSettings = {
+  const userSettings = {
+    errorsCoefficient: 2,
+    timeLimitInSeconds: 600
+  };
 
-  // }
+  fs.writeFileSync(
+    path.join(userProfileDir, "settings.json"),
+    JSON.stringify(userSettings),
+    "utf8"
+  );
 
-  // const userSettings = fs.writeSync(path.join(userProfileDir, "settings.json"), )
-
-  // return users;
+  return { userName, ...userSettings };
 });
 
 function createWindow() {

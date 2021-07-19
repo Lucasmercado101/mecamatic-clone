@@ -7,11 +7,13 @@ export enum EXERCISE_CURSOR_POSITION {
 
 export enum eventTypes {
   EXERCISE_SELECTED = "EXERCISE_SELECTED",
-  KEY_PRESSED = "KEY_PRESSED"
+  KEY_PRESSED = "KEY_PRESSED",
+  USER_DATA_LOADED = "USER_DATA_LOADED"
 }
 
 export enum stateTypes {
-  DEFAULT = "DEFAULT",
+  WELCOME_VIEW = "WELCOME_VIEW",
+  EXERCISE_NOT_SELECTED = "EXERCISE_NOT_SELECTED",
   EXERCISE_PROGRESS = "EXERCISE_PROGRESS",
   EXERCISE_SELECTED = "EXERCISE_SELECTED",
   EXERCISE_NOT_STARTED = "EXERCISE_NOT_STARTED",
@@ -95,7 +97,15 @@ type KeyPressedEvent = {
   key: string;
 };
 
-type stateEvents = ExerciseSelectedEvent | KeyPressedEvent;
+type UserDataLoadedEvent = {
+  type: eventTypes.USER_DATA_LOADED;
+  userName: string;
+};
+
+export type stateEvents =
+  | ExerciseSelectedEvent
+  | KeyPressedEvent
+  | UserDataLoadedEvent;
 
 function totalNetKeystrokesTyped(totalKeystrokes: number, errors: number) {
   return totalKeystrokes - errors;
@@ -107,7 +117,7 @@ function totalGrossKeystrokesTyped(totalKeystrokes: number, errors: number) {
 
 export const stateMachine = createMachine<stateContext, stateEvents>(
   {
-    initial: stateTypes.DEFAULT,
+    initial: stateTypes.WELCOME_VIEW,
     context: {
       exerciseCursorPosition: EXERCISE_CURSOR_POSITION.NOT_STARTED,
       minimumWPMNeededToCompleteExerciseSuccessfully: 20,
@@ -123,7 +133,14 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
       showResultsWhileDoingExercise: false
     },
     states: {
-      [stateTypes.DEFAULT]: {},
+      [stateTypes.WELCOME_VIEW]: {
+        on: {
+          [eventTypes.USER_DATA_LOADED]: {
+            target: stateTypes.EXERCISE_NOT_SELECTED
+          }
+        }
+      },
+      [stateTypes.EXERCISE_NOT_SELECTED]: {},
       [stateTypes.EXERCISE_SELECTED]: {
         entry: [
           // TODO: i don't think these computed values should be computed here and not in app.tsx on the fly
