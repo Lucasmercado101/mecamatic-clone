@@ -4,9 +4,31 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./styles.css">
     <title>Document</title>
   </head>
   <body>
-    settings
+    <form>
+        <fieldset class="group group-small">
+            <p class="group__title">Velocidad minima</p>
+            <label class="group-option">
+                <input type="radio"></input>
+                Predeterminada
+            </label>
+            <label class="group-option">
+                <input type="radio"></input>
+                Personalizar
+            </label>
+            <label>
+                Nueva velocidad:
+                <input type="number" value="2" min="1" class="custom-amount-input"></input>
+            </label>
+        </fieldset>
+        <fieldset>
+            <p>Coeficiente de errores</p>
+            <input type="radio">Predeterminada</input>
+            <input type="radio">Personalizar</input>
+        </fieldset>
+    </form>
   </body>
 </html>

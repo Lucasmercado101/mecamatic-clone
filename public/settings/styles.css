@@ -1,0 +1,43 @@
+*,
+*::before,
+*::after {
+  box-sizing: 0;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  background: #f0f0f0;
+  padding: 15px;
+}
+
+.group {
+  border: thin solid #a0a0a0;
+  width: 86px;
+  position: relative;
+  padding: 15px 15px 10px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.group__title {
+  font-weight: bold;
+  position: absolute;
+  top: 0px;
+  left: 2px;
+  padding: 0 4px;
+  transform: translateY(-60%);
+  background: #f0f0f0;
+}
+
+.group-option {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.custom-amount-input {
+  width: 50px;
+  padding: 0 2px;
+}
