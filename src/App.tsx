@@ -182,9 +182,6 @@ export default function App() {
         minHeight: "100vh"
       }}
     >
-      {/* <pre>{JSON.stringify(state.context, null, 2)}</pre> */}
-      {/* {seconds} Seconds <br />
-      WPM: {WPM(currentLetter, seconds / 60).toFixed(0)} */}
       <div>
         <div
           style={{
