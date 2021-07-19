@@ -23,6 +23,7 @@ const perfectionLessonsPath = path.join(
   "perfecting"
 );
 const userProfilesPath = path.join(__dirname, "..", "data", "profiles");
+const { NODE_ENV } = process.env;
 
 ipcMain.handle("get-user-profiles", () => {
   const users = fs.readdirSync(userProfilesPath);
@@ -198,6 +199,36 @@ ipcMain.on("is-on-main-view", () => {
   Menu.setApplicationMenu(menu);
 });
 
+ipcMain.on("open-global-settings-window", () => {
+  // const mainWin = BrowserWindow.getFocusedWindow();
+  const win = new BrowserWindow({
+    width: 520,
+    height: 280,
+    resizable: false,
+    fullscreen: false,
+    skipTaskbar: true,
+    title: "Opciones",
+    modal: true,
+    parent: BrowserWindow.getFocusedWindow(),
+    autoHideMenuBar: true,
+    webPreferences: {
+      nodeIntegration: true,
+      enableRemoteModule: true,
+      contextIsolation: false
+    }
+  });
+
+  win.setMenu(null);
+  win.removeMenu();
+  win.loadURL(`file://${__dirname}/settings/index.html`);
+  // win.loadURL("http://localhost:3000/settings");
+  if (NODE_ENV !== "production") win.webContents.openDevTools();
+
+  win.webContents.on("did-finish-load", () => {
+    win.webContents.send("show-settings");
+  });
+});
+
 function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
@@ -214,8 +245,7 @@ function createWindow() {
   });
   win.loadURL("http://localhost:3000/");
 
-  // Open the DevTools.
-  win.webContents.openDevTools();
+  if (NODE_ENV !== "production") win.webContents.openDevTools();
 
   const menu = Menu.buildFromTemplate([
     {

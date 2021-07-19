@@ -187,7 +187,12 @@ function Index({ send, state }: Props) {
       <div style={{ display: "flex", flexDirection: "column" }}>
         <div className="top-toolbar" style={{ height: 22, display: "flex" }}>
           <div className="toolbar-separator" />
-          <button className="top-toolbar-menu-item">
+          <button
+            onClick={() => {
+              electron.ipcRenderer.send("open-global-settings-window");
+            }}
+            className="top-toolbar-menu-item"
+          >
             <img src={redCheckCheckMark} alt="a red checkmark" />
             Opciones
           </button>
