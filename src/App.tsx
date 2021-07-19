@@ -46,13 +46,20 @@ export default function App() {
     );
   }, [send]);
 
-  if (state.matches(stateTypes.WELCOME_VIEW)) return <Welcome send={send} />;
-
-  if (
-    [stateTypes.EXERCISE_NOT_SELECTED, stateTypes.EXERCISE_SELECTED].some(
+  switch (true) {
+    case state.matches(stateTypes.WELCOME_VIEW):
+      return <Welcome send={send} />;
+    case [stateTypes.EXERCISE_NOT_SELECTED, stateTypes.EXERCISE_SELECTED].some(
       state.matches
-    )
-  )
-    return <Main send={send} state={state} />;
-  return null;
+    ):
+      return <Main state={state} send={send} />;
+    default:
+      return (
+        <div>
+          If you're seeing this then something went wrong somewhere.
+          <br />
+          Please restart the app
+        </div>
+      );
+  }
 }
