@@ -55,7 +55,7 @@ function Welcome({
                 });
             } else {
               electron.ipcRenderer
-                .invoke("create-user-profile-and-load-user-it", userName)
+                .invoke("create-user-profile-and-load-said-user", userName)
                 .then(({ userName }: userData) => {
                   send({ type: eventTypes.USER_DATA_LOADED, userName });
                 });

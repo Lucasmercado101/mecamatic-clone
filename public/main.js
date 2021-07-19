@@ -29,7 +29,7 @@ ipcMain.handle("get-user-profiles", () => {
   return users;
 });
 
-ipcMain.handle("create-user-profile-and-load-user-it", (event, userName) => {
+ipcMain.handle("create-user-profile-and-load-said-user", (event, userName) => {
   const userProfileDir = path.join(userProfilesPath, userName);
 
   fs.mkdirSync(userProfileDir);
