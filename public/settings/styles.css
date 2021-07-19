@@ -69,3 +69,18 @@ form {
   flex-direction: column;
   gap: 25px;
 }
+
+.last-form {
+  gap: 10px;
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.buttons button {
+  width: 45%;
+  height: 20px;
+  border: 2px outset;
+}
