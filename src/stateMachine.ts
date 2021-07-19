@@ -126,6 +126,7 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
       [stateTypes.DEFAULT]: {},
       [stateTypes.EXERCISE_SELECTED]: {
         entry: [
+          // TODO: i don't think these computed values should be computed here and not in app.tsx on the fly
           actionTypes.RESET_ELAPSED_TIME_TO_0,
           actionTypes.RESET_ERRORS_TO_0,
           actionTypes.RESET_GROSS_KEYWORDS_TYPED_TO_0,
