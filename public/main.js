@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu } = require("electron");
+const { app, BrowserWindow, Menu, ipcMain } = require("electron");
 const fs = require("fs");
 const path = require("path");
 const learningLessonsPath = path.join(
@@ -22,6 +22,25 @@ const perfectionLessonsPath = path.join(
   "lessons",
   "perfecting"
 );
+const userProfilesPath = path.join(__dirname, "..", "data", "profiles");
+
+ipcMain.handle("get-user-profiles", () => {
+  const users = fs.readdirSync(userProfilesPath);
+  return users;
+});
+
+ipcMain.handle("create-user-profile-and-load-user-it", (userName) => {
+  const userProfileDir = path.join(userProfilesPath, userName);
+  fs.mkdirSync(userProfileDir);
+
+  // const userSettings = {
+
+  // }
+
+  // const userSettings = fs.writeSync(path.join(userProfileDir, "settings.json"), )
+
+  // return users;
+});
 
 function createWindow() {
   // Create the browser window.
