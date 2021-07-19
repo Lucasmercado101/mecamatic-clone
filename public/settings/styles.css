@@ -13,9 +13,11 @@ body {
 
 .group {
   border: thin solid #a0a0a0;
-  width: 86px;
+  width: 100%;
+  max-width: 173px;
+  min-width: 173px;
   position: relative;
-  padding: 15px 15px 10px 18px;
+  padding: 15px 10px 10px 18px;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -38,6 +40,12 @@ body {
 }
 
 .custom-amount-input {
-  width: 50px;
+  width: 40px;
   padding: 0 2px;
+}
+
+.form-column {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
 }
