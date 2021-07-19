@@ -44,6 +44,10 @@ export default function App() {
         });
       }
     );
+
+    return () => {
+      electron.ipcRenderer.removeAllListeners("exercise");
+    };
   }, [send]);
 
   switch (true) {
