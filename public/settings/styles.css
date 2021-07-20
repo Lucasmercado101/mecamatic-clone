@@ -71,7 +71,7 @@ form {
 }
 
 .last-form {
-  gap: 21px;
+  gap: 27px;
 }
 
 .buttons {
@@ -89,4 +89,9 @@ form {
   width: 45%;
   height: 20px;
   border: 2px inset;
+}
+
+.time-option {
+  display: flex;
+  width: 1500px;
 }

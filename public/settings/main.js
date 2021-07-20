@@ -5503,6 +5503,8 @@ var $elm$html$Html$Events$onSubmit = function (msg) {
 var $elm$html$Html$p = _VirtualDom_node('p');
 var $elm$html$Html$Attributes$pattern = $elm$html$Html$Attributes$stringProperty('pattern');
 var $elm$html$Html$strong = _VirtualDom_node('strong');
+var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
+var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
@@ -5962,6 +5964,45 @@ var $author$project$Main$view = function (model) {
 										$elm$html$Html$text('Mostrar resultados '),
 										A2($elm$html$Html$br, _List_Nil, _List_Nil),
 										$elm$html$Html$text('durante la ejecución')
+									]))
+							])),
+						A2(
+						$elm$html$Html$fieldset,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('group')
+							]),
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$p,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('group__title')
+									]),
+								_List_fromArray(
+									[
+										$elm$html$Html$text('Tiempo disponible')
+									])),
+								A2(
+								$elm$html$Html$label,
+								_List_fromArray(
+									[
+										A2($elm$html$Html$Attributes$style, 'display', 'flex'),
+										A2($elm$html$Html$Attributes$style, 'flex-direction', 'column'),
+										A2($elm$html$Html$Attributes$style, 'gap', '5px')
+									]),
+								_List_fromArray(
+									[
+										$elm$html$Html$text('Minutos:'),
+										A2(
+										$elm$html$Html$input,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$type_('number'),
+												$elm$html$Html$Attributes$min('1')
+											]),
+										_List_Nil)
 									]))
 							])),
 						A2(

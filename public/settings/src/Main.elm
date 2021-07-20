@@ -2,7 +2,7 @@ port module Main exposing (..)
 
 import Browser
 import Html exposing (br, button, div, fieldset, form, input, label, p, strong, text)
-import Html.Attributes as Attributes exposing (attribute, checked, class, name, pattern, type_, value)
+import Html.Attributes as Attributes exposing (attribute, checked, class, name, pattern, style, type_, value)
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Json.Decode as JD
 
@@ -392,6 +392,16 @@ view model =
                     , br []
                         []
                     , text "durante la ejecución"
+                    ]
+                ]
+            , fieldset [ class "group" ]
+                [ p [ class "group__title" ]
+                    [ text "Tiempo disponible"
+                    ]
+                , label [ style "display" "flex", style "flex-direction" "column", style "gap" "5px" ]
+                    [ text "Minutos:"
+                    , input [ type_ "number", Attributes.min "1" ]
+                        []
                     ]
                 ]
             , div [ class "buttons" ]
