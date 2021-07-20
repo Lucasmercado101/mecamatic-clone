@@ -2,39 +2,90 @@ module Main exposing (..)
 
 import Browser
 import Html exposing (br, button, div, fieldset, form, input, label, p, strong, text)
-import Html.Attributes as Attributes exposing (attribute, class, name, type_, value)
+import Html.Attributes as Attributes exposing (attribute, checked, class, name, type_, value)
+import Html.Events exposing (onClick)
 
 
 
 -- import Html.Events exposing (onClick)
 
 
+main : Program () Model Msg
 main =
-    Browser.sandbox { init = 0, update = update, view = view }
+    Browser.sandbox { init = init, update = update, view = view }
+
+
+
+-- INIT
+
+
+init : Model
+init =
+    { minimumSpeed = Default
+    , errorsCoefficient = Default
+    , isKeyboardVisible = Nothing
+    , isTutorActive = Nothing
+    }
+
+
+type WhenIsItActive
+    = Predetermined
+    | Always
+    | Never
+
+
+type CustomAmount
+    = Default
+    | DefineCustom
+    | Custom Int
+
+
+
+-- MODEL
+
+
+type alias Model =
+    { minimumSpeed : CustomAmount
+    , errorsCoefficient : CustomAmount
+    , isTutorActive : Maybe Bool
+    , isKeyboardVisible : Maybe Bool
+    }
 
 
 type Msg
-    = Increment
-    | Decrement
+    = TutorChoicePick (Maybe Bool)
+    | KeyboardChoicePick (Maybe Bool)
 
 
 
--- update
+-- UPDATE
 
 
+update : Msg -> Model -> Model
 update msg model =
     case msg of
-        Increment ->
-            model + 1
+        TutorChoicePick selection ->
+            case selection of
+                Just bool ->
+                    { model | isTutorActive = Just bool }
 
-        Decrement ->
-            model - 1
+                Nothing ->
+                    { model | isTutorActive = Nothing }
+
+        KeyboardChoicePick selection ->
+            case selection of
+                Just bool ->
+                    { model | isKeyboardVisible = Just bool }
+
+                Nothing ->
+                    { model | isKeyboardVisible = Nothing }
 
 
 
 -- view
 
 
+view : Model -> Html.Html Msg
 view model =
     form []
         [ div [ class "form-column" ]
@@ -44,18 +95,17 @@ view model =
                 , label [ class "group-option" ]
                     [ input [ name "speed", type_ "radio" ]
                         []
-                    , text "Predeterminada          "
+                    , text "Predeterminada"
                     ]
                 , label [ class "group-option" ]
                     [ input [ name "speed", type_ "radio" ]
                         []
-                    , text "Personalizar          "
+                    , text "Personalizar"
                     ]
                 , label [ class "group-option" ]
-                    [ text "Nueva velocidad:            "
+                    [ text "Nueva velocidad:  "
                     , input [ class "custom-amount-input", attribute "disabled" "", Attributes.min "1", name "speed", type_ "number", value "20" ]
                         []
-                    , text "          "
                     ]
                 ]
             , fieldset [ class "group group-small" ]
@@ -64,18 +114,17 @@ view model =
                 , label [ class "group-option" ]
                     [ input [ name "errors-coefficient", type_ "radio" ]
                         []
-                    , text "Predeterminada          "
+                    , text "Predeterminada"
                     ]
                 , label [ class "group-option" ]
                     [ input [ name "errors-coefficient", type_ "radio" ]
                         []
-                    , text "Personalizar          "
+                    , text "Personalizar"
                     ]
                 , label [ class "group-option" ]
-                    [ text "Nuevo coeficiente:            "
+                    [ text "Nuevo coeficiente:  "
                     , input [ class "custom-amount-input", attribute "disabled" "", Attributes.min "1", name "errors-coefficient", type_ "number", value "2" ]
                         []
-                    , text "          "
                     ]
                 ]
             ]
@@ -84,38 +133,38 @@ view model =
                 [ p [ class "group__title" ]
                     [ text "Teclado" ]
                 , label [ class "group-option" ]
-                    [ input [ name "keyboard-visibility", type_ "radio" ]
+                    [ input [ name "keyboard-visibility", type_ "radio", onClick (KeyboardChoicePick Nothing), checked (model.isKeyboardVisible == Nothing) ]
                         []
-                    , text "Predeterminada          "
+                    , text "Predeterminado"
                     ]
                 , label [ class "group-option" ]
-                    [ input [ name "keyboard-visibility", type_ "radio" ]
+                    [ input [ name "keyboard-visibility", type_ "radio", onClick (KeyboardChoicePick (Just True)), checked (model.isKeyboardVisible == Just True) ]
                         []
-                    , text "Personalizar          "
+                    , text "Siempre visible"
                     ]
                 , label [ class "group-option" ]
-                    [ input [ name "keyboard-visibility", type_ "radio" ]
+                    [ input [ name "keyboard-visibility", type_ "radio", onClick (KeyboardChoicePick (Just False)), checked (model.isKeyboardVisible == Just False) ]
                         []
-                    , text "Nunca visible          "
+                    , text "Nunca visible"
                     ]
                 ]
             , fieldset [ class "group group-small group-radio-only" ]
                 [ p [ class "group__title" ]
                     [ text "Tutor" ]
                 , label [ class "group-option" ]
-                    [ input [ name "tutor", type_ "radio" ]
+                    [ input [ name "tutor", type_ "radio", onClick (TutorChoicePick Nothing), checked (model.isTutorActive == Nothing) ]
                         []
-                    , text "Predeterminada          "
+                    , text "Predeterminado"
                     ]
                 , label [ class "group-option" ]
-                    [ input [ name "tutor", type_ "radio" ]
+                    [ input [ name "tutor", type_ "radio", onClick (TutorChoicePick (Just True)), checked (model.isTutorActive == Just True) ]
                         []
-                    , text "Personalizar          "
+                    , text "Siempre activo"
                     ]
                 , label [ class "group-option" ]
-                    [ input [ name "tutor", type_ "radio" ]
+                    [ input [ name "tutor", type_ "radio", onClick (TutorChoicePick (Just False)), checked (model.isTutorActive == Just False) ]
                         []
-                    , text "Nunca visible          "
+                    , text "Nunca activo"
                     ]
                 ]
             ]
@@ -123,20 +172,21 @@ view model =
             [ fieldset [ class "group group-large" ]
                 [ p [ class "group__title" ]
                     [ text "Opciones" ]
+
+                -- , label [ class "group-option" ]
+                --     [ input [ type_ "checkbox" ]
+                --         []
+                --     , text "Bloqueo de errores"
+                --     ]
                 , label [ class "group-option" ]
                     [ input [ type_ "checkbox" ]
                         []
-                    , text "Bloqueo de errores          "
+                    , text "Señal sonora, Teclas"
                     ]
                 , label [ class "group-option" ]
                     [ input [ type_ "checkbox" ]
                         []
-                    , text "Señal sonora, Teclas          "
-                    ]
-                , label [ class "group-option" ]
-                    [ input [ type_ "checkbox" ]
-                        []
-                    , text "Señal sonora, Error          "
+                    , text "Señal sonora, Error"
                     ]
                 , label [ class "group-option" ]
                     [ input [ type_ "checkbox" ]
@@ -144,7 +194,7 @@ view model =
                     , text "Panel informativo"
                     , br []
                         []
-                    , text "a la izquierda          "
+                    , text "a la izquierda"
                     ]
                 , label [ class "group-option" ]
                     [ input [ type_ "checkbox" ]
@@ -152,7 +202,7 @@ view model =
                     , text "Mostrar resultados "
                     , br []
                         []
-                    , text "durante la ejecución          "
+                    , text "durante la ejecución"
                     ]
                 ]
             , div [ class "buttons" ]
@@ -164,4 +214,5 @@ view model =
                     [ text "Cerrar" ]
                 ]
             ]
+        , text (Debug.toString model)
         ]
