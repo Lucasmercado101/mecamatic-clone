@@ -243,6 +243,8 @@ ipcMain.on("open-global-settings-window", (e, userName) => {
       { encoding: "utf8" },
       () => {
         BrowserWindow.getFocusedWindow().close();
+        const mainWindow = BrowserWindow.getFocusedWindow();
+        mainWindow.send("reload-user-settings", data);
       }
     );
   });

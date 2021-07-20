@@ -9,7 +9,8 @@ export enum EXERCISE_CURSOR_POSITION {
 export enum eventTypes {
   EXERCISE_SELECTED = "EXERCISE_SELECTED",
   KEY_PRESSED = "KEY_PRESSED",
-  USER_DATA_LOADED = "USER_DATA_LOADED"
+  USER_DATA_LOADED = "USER_DATA_LOADED",
+  USER_DATA_RELOADED = "USER_DATA_RELOADED"
 }
 
 export enum stateTypes {
@@ -104,10 +105,15 @@ type UserDataLoadedEvent = {
   type: eventTypes.USER_DATA_LOADED;
 } & userData;
 
+type UserDataReloadedEvent = {
+  type: eventTypes.USER_DATA_RELOADED;
+} & userData;
+
 export type stateEvents =
   | ExerciseSelectedEvent
   | KeyPressedEvent
-  | UserDataLoadedEvent;
+  | UserDataLoadedEvent
+  | UserDataReloadedEvent;
 
 function totalNetKeystrokesTyped(totalKeystrokes: number, errors: number) {
   return totalKeystrokes - errors;
@@ -238,6 +244,9 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
       [eventTypes.EXERCISE_SELECTED]: {
         target: stateTypes.EXERCISE_SELECTED,
         actions: actionTypes.SET_EXERCISE_DATA
+      },
+      [eventTypes.USER_DATA_RELOADED]: {
+        actions: actionTypes.SET_USER_DATA
       }
     }
   },
