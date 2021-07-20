@@ -258,26 +258,35 @@ view model =
                 --         []
                 --     , text "Bloqueo de errores"
                 --     ]
+                -- , label [ class "group-option" ]
+                --     [ input [ type_ "checkbox" ]
+                --         []
+                --     , text "Señal sonora, Teclas"
+                --     ]
+                -- , label [ class "group-option" ]
+                --     [ input [ type_ "checkbox" ]
+                --         []
+                --     , text "Señal sonora, Error"
+                --     ]
+                -- , label [ class "group-option" ]
+                --     [ input [ type_ "checkbox" ]
+                --         []
+                --     , text "Panel informativo"
+                --     , br []
+                --         []
+                --     , text "a la izquierda"
+                --     ]
+                -- , label [ class "group-option" ]
+                --     [ input [ type_ "checkbox" ]
+                --         []
+                --     , text "Mostrar resultados "
+                --     , br []
+                --         []
+                --     , text "durante la ejecución"
+                --     ]
+                -- TODO: uncomment and add above, un-disable and add below
                 , label [ class "group-option" ]
-                    [ input [ type_ "checkbox" ]
-                        []
-                    , text "Señal sonora, Teclas"
-                    ]
-                , label [ class "group-option" ]
-                    [ input [ type_ "checkbox" ]
-                        []
-                    , text "Señal sonora, Error"
-                    ]
-                , label [ class "group-option" ]
-                    [ input [ type_ "checkbox" ]
-                        []
-                    , text "Panel informativo"
-                    , br []
-                        []
-                    , text "a la izquierda"
-                    ]
-                , label [ class "group-option" ]
-                    [ input [ type_ "checkbox" ]
+                    [ input [ type_ "checkbox", checked True, attribute "disabled" "" ]
                         []
                     , text "Mostrar resultados "
                     , br []
@@ -286,11 +295,11 @@ view model =
                     ]
                 ]
             , div [ class "buttons" ]
-                [ button []
+                [ button [ type_ "submit" ]
                     [ strong []
                         [ text "Aceptar" ]
                     ]
-                , button []
+                , button [ type_ "button" ]
                     [ text "Cerrar" ]
                 ]
             ]
