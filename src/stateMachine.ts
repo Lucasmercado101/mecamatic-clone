@@ -1,4 +1,5 @@
 import { createMachine, assign } from "xstate";
+import { userData } from "./views/Welcome";
 
 export enum EXERCISE_CURSOR_POSITION {
   NOT_STARTED = -1,
@@ -101,8 +102,7 @@ type KeyPressedEvent = {
 
 type UserDataLoadedEvent = {
   type: eventTypes.USER_DATA_LOADED;
-  userName: string;
-};
+} & userData;
 
 export type stateEvents =
   | ExerciseSelectedEvent
@@ -129,7 +129,7 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
       timeLimitInSeconds: 900, // 15 minutes default time limit
       // global settings
       defaultErrorsCoefficient: 2,
-      errorsCoefficient: 2, // TODO: load this from user settings,
+      errorsCoefficient: 2, // initially 2, then loaded from user settings,
       soundOnKeysTap: false,
       soundOnError: false,
       infoPanelOnTheLeft: false,
@@ -304,8 +304,20 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
         errors: 0
       })),
       [actionTypes.SET_USER_DATA]: assign((_, e) => {
-        const { userName } = e as UserDataLoadedEvent;
-        return { userName };
+        const {
+          userName,
+          errorsCoefficient,
+          timeLimitInSeconds,
+          isKeyboardGloballyVisible,
+          isTutorGloballyActive
+        } = e as UserDataLoadedEvent;
+        return {
+          userName,
+          errorsCoefficient,
+          timeLimitInSeconds,
+          isKeyboardGloballyVisible,
+          isTutorGloballyActive
+        };
       })
     },
     guards: {

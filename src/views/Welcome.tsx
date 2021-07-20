@@ -3,8 +3,12 @@ import { Event, EventData, SingleOrArray } from "xstate";
 import { eventTypes, stateEvents } from "../stateMachine";
 const electron = window?.require?.("electron");
 
-interface userData {
+export interface userData {
   userName: string;
+  errorsCoefficient: number;
+  isKeyboardGloballyVisible?: boolean;
+  isTutorGloballyActive?: boolean;
+  timeLimitInSeconds: number;
 }
 
 function Welcome({
@@ -68,14 +72,14 @@ function Welcome({
             if (userNames.includes(userName)) {
               electron.ipcRenderer
                 .invoke("load-user-profile", userName)
-                .then(({ userName }: userData) => {
-                  send({ type: eventTypes.USER_DATA_LOADED, userName });
+                .then((userData: userData) => {
+                  send({ type: eventTypes.USER_DATA_LOADED, ...userData });
                 });
             } else {
               electron.ipcRenderer
                 .invoke("create-user-profile-and-load-said-user", userName)
-                .then(({ userName }: userData) => {
-                  send({ type: eventTypes.USER_DATA_LOADED, userName });
+                .then((userData: userData) => {
+                  send({ type: eventTypes.USER_DATA_LOADED, ...userData });
                 });
             }
           }}
