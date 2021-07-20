@@ -204,7 +204,9 @@ ipcMain.on("open-global-settings-window", (e, userName) => {
   const win = new BrowserWindow({
     width: 645,
     height: 280,
-    resizable: false,
+    minWidth: 645,
+    minHeight: 280,
+    resizable: NODE_ENV === "production" ? false : true,
     fullscreen: false,
     skipTaskbar: true,
     title: "Opciones",
@@ -233,6 +235,10 @@ ipcMain.on("open-global-settings-window", (e, userName) => {
       });
     }
   );
+});
+
+ipcMain.on("new-global-settings-sent", (e, data) => {
+  console.log(data);
 });
 
 function createWindow() {

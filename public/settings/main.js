@@ -5210,6 +5210,66 @@ var $author$project$Main$Custom = function (a) {
 };
 var $elm$core$String$fromFloat = _String_fromNumber;
 var $elm$core$Basics$neq = _Utils_notEqual;
+var $elm$json$Json$Encode$bool = _Json_wrap;
+var $elm$core$Maybe$destruct = F3(
+	function (_default, func, maybe) {
+		if (maybe.$ === 'Just') {
+			var a = maybe.a;
+			return func(a);
+		} else {
+			return _default;
+		}
+	});
+var $elm$json$Json$Encode$float = _Json_wrap;
+var $elm$json$Json$Encode$int = _Json_wrap;
+var $elm$json$Json$Encode$null = _Json_encodeNull;
+var $elm$json$Json$Encode$object = function (pairs) {
+	return _Json_wrap(
+		A3(
+			$elm$core$List$foldl,
+			F2(
+				function (_v0, obj) {
+					var k = _v0.a;
+					var v = _v0.b;
+					return A3(_Json_addField, k, v, obj);
+				}),
+			_Json_emptyObject(_Utils_Tuple0),
+			pairs));
+};
+var $author$project$Main$sendNewSettings = _Platform_outgoingPort(
+	'sendNewSettings',
+	function ($) {
+		return $elm$json$Json$Encode$object(
+			_List_fromArray(
+				[
+					_Utils_Tuple2(
+					'errorsCoefficient',
+					$elm$json$Json$Encode$float($.errorsCoefficient)),
+					_Utils_Tuple2(
+					'isKeyboardGloballyVisible',
+					function ($) {
+						return A3($elm$core$Maybe$destruct, $elm$json$Json$Encode$null, $elm$json$Json$Encode$bool, $);
+					}($.isKeyboardGloballyVisible)),
+					_Utils_Tuple2(
+					'isTutorGloballyActive',
+					function ($) {
+						return A3($elm$core$Maybe$destruct, $elm$json$Json$Encode$null, $elm$json$Json$Encode$bool, $);
+					}($.isTutorGloballyActive)),
+					_Utils_Tuple2(
+					'timeLimitInSeconds',
+					$elm$json$Json$Encode$int($.timeLimitInSeconds))
+				]));
+	});
+var $elm$core$String$toFloat = _String_toFloat;
+var $elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
@@ -5286,11 +5346,24 @@ var $author$project$Main$update = F2(
 						model,
 						{
 							customErrorsCoefficientPercententage: $elm$core$String$fromFloat(settings.errorsCoefficient),
-							defaultErrorsCoefficient: true
+							defaultErrorsCoefficient: true,
+							isKeyboardVisible: settings.isKeyboardGloballyVisible,
+							isTutorActive: settings.isTutorGloballyActive
 						}),
 					$elm$core$Platform$Cmd$none);
 			default:
-				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				var newSettings = {
+					errorsCoefficient: A2(
+						$elm$core$Maybe$withDefault,
+						2,
+						$elm$core$String$toFloat(model.customErrorsCoefficientPercententage)),
+					isKeyboardGloballyVisible: model.isKeyboardVisible,
+					isTutorGloballyActive: model.isTutorActive,
+					timeLimitInSeconds: 700
+				};
+				return _Utils_Tuple2(
+					model,
+					$author$project$Main$sendNewSettings(newSettings));
 		}
 	});
 var $author$project$Main$ChangeCustomErrorCoefficientPercentage = function (a) {
@@ -5322,7 +5395,6 @@ var $elm$virtual_dom$VirtualDom$attribute = F2(
 var $elm$html$Html$Attributes$attribute = $elm$virtual_dom$VirtualDom$attribute;
 var $elm$html$Html$br = _VirtualDom_node('br');
 var $elm$html$Html$button = _VirtualDom_node('button');
-var $elm$json$Json$Encode$bool = _Json_wrap;
 var $elm$html$Html$Attributes$boolProperty = F2(
 	function (key, bool) {
 		return A2(
@@ -5426,15 +5498,6 @@ var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $elm$core$Debug$toString = _Debug_toString;
 var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
-var $elm$core$Maybe$withDefault = F2(
-	function (_default, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return value;
-		} else {
-			return _default;
-		}
-	});
 var $author$project$Main$view = function (model) {
 	return A2(
 		$elm$html$Html$form,

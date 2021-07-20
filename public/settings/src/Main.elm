@@ -23,7 +23,9 @@ main =
 
 
 -- PORTS
--- port sendMessage : String -> Cmd msg
+
+
+port sendNewSettings : Settings -> Cmd msg
 
 
 port settingsReceiver : (JD.Value -> msg) -> Sub msg
@@ -181,7 +183,18 @@ update msg model =
             )
 
         HandleSubmit ->
-            ( model, Cmd.none )
+            let
+                newSettings : Settings
+                newSettings =
+                    { errorsCoefficient = Maybe.withDefault 2 (String.toFloat model.customErrorsCoefficientPercententage)
+                    , timeLimitInSeconds = 700
+                    , isTutorGloballyActive = model.isTutorActive
+                    , isKeyboardGloballyVisible = model.isKeyboardVisible
+                    }
+            in
+            ( model
+            , sendNewSettings newSettings
+            )
 
 
 
