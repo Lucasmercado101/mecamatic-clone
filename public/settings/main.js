@@ -5502,6 +5502,9 @@ var $elm$html$Html$Events$onSubmit = function (msg) {
 };
 var $elm$html$Html$p = _VirtualDom_node('p');
 var $elm$html$Html$Attributes$pattern = $elm$html$Html$Attributes$stringProperty('pattern');
+var $elm$html$Html$Attributes$step = function (n) {
+	return A2($elm$html$Html$Attributes$stringProperty, 'step', n);
+};
 var $elm$html$Html$strong = _VirtualDom_node('strong');
 var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
 var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
@@ -6000,7 +6003,8 @@ var $author$project$Main$view = function (model) {
 										_List_fromArray(
 											[
 												$elm$html$Html$Attributes$type_('number'),
-												$elm$html$Html$Attributes$min('1')
+												$elm$html$Html$Attributes$min('1'),
+												$elm$html$Html$Attributes$step('any')
 											]),
 										_List_Nil)
 									]))

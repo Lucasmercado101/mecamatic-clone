@@ -400,7 +400,7 @@ view model =
                     ]
                 , label [ style "display" "flex", style "flex-direction" "column", style "gap" "5px" ]
                     [ text "Minutos:"
-                    , input [ type_ "number", Attributes.min "1" ]
+                    , input [ type_ "number", Attributes.min "1", Attributes.step "any" ]
                         []
                     ]
                 ]
