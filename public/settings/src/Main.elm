@@ -22,11 +22,11 @@ main =
 init : Model
 init =
     { minimumSpeed = Default
-    , errorsCoefficient = Default
+    , defaultErrorsCoefficient = False
     , isKeyboardVisible = Nothing
     , isTutorActive = Nothing
     , customMinimumSpeedAmount = 20
-    , customErrorsCoefficientPercententage = 2
+    , customErrorsCoefficientPercententage = "2"
     }
 
 
@@ -41,11 +41,11 @@ type CustomAmount
 
 type alias Model =
     { minimumSpeed : CustomAmount
-    , errorsCoefficient : CustomAmount
+    , defaultErrorsCoefficient : Bool
+    , customErrorsCoefficientPercententage : String
     , isTutorActive : Maybe Bool
     , isKeyboardVisible : Maybe Bool
     , customMinimumSpeedAmount : Int
-    , customErrorsCoefficientPercententage : Int
     }
 
 
@@ -55,7 +55,7 @@ type Msg
     | PickCustomSpeed Bool
     | ChangeCustomSpeed Int
     | PickCustomErrorsCoefficient Bool
-    | ChangeCustomErrorCoefficientPercentage Int
+    | ChangeCustomErrorCoefficientPercentage String
 
 
 
@@ -99,18 +99,7 @@ update msg model =
             { model | customMinimumSpeedAmount = amount }
 
         PickCustomErrorsCoefficient bool ->
-            if bool == True && model.errorsCoefficient /= Default then
-                model
-
-            else
-                { model
-                    | errorsCoefficient =
-                        if bool == True then
-                            Custom model.customErrorsCoefficientPercententage
-
-                        else
-                            Default
-                }
+            { model | defaultErrorsCoefficient = bool }
 
         ChangeCustomErrorCoefficientPercentage amount ->
             { model | customErrorsCoefficientPercententage = amount }
@@ -175,7 +164,7 @@ view model =
                     [ input
                         [ name "errors-coefficient"
                         , type_ "radio"
-                        , checked (model.errorsCoefficient == Default)
+                        , checked (model.defaultErrorsCoefficient == False)
                         , onClick (PickCustomErrorsCoefficient False)
                         ]
                         []
@@ -187,15 +176,35 @@ view model =
                         , type_ "radio"
                         , onClick (PickCustomErrorsCoefficient True)
                         , checked
-                            (model.errorsCoefficient /= Default)
+                            (model.defaultErrorsCoefficient == True)
                         ]
                         []
                     , text "Personalizar"
                     ]
                 , label [ class "group-option" ]
                     [ text "Nuevo coeficiente:  "
-                    , input [ class "custom-amount-input", attribute "disabled" "", Attributes.min "1", name "errors-coefficient", type_ "number", value "2" ]
-                        []
+                    , if model.defaultErrorsCoefficient == False then
+                        input
+                            [ class "custom-amount-input"
+                            , attribute "disabled" ""
+                            , Attributes.min "1"
+                            , name "errors-coefficient"
+                            , type_ "number"
+                            , value model.customErrorsCoefficientPercententage
+                            ]
+                            []
+
+                      else
+                        input
+                            [ class "custom-amount-input"
+                            , Attributes.min "1"
+                            , name "speed"
+                            , type_ "text"
+                            , value model.customErrorsCoefficientPercententage
+                            , onInput
+                                ChangeCustomErrorCoefficientPercentage
+                            ]
+                            []
                     ]
                 ]
             ]
