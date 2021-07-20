@@ -5248,7 +5248,7 @@ var $author$project$Main$update = F2(
 						model,
 						{customErrorsCoefficientPercententage: amount}),
 					$elm$core$Platform$Cmd$none);
-			default:
+			case 'SettingsReceived':
 				var settings = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
@@ -5258,6 +5258,8 @@ var $author$project$Main$update = F2(
 							defaultErrorsCoefficient: true
 						}),
 					$elm$core$Platform$Cmd$none);
+			default:
+				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		}
 	});
 var $author$project$Main$ChangeCustomErrorCoefficientPercentage = function (a) {
@@ -5266,6 +5268,7 @@ var $author$project$Main$ChangeCustomErrorCoefficientPercentage = function (a) {
 var $author$project$Main$ChangeCustomSpeed = function (a) {
 	return {$: 'ChangeCustomSpeed', a: a};
 };
+var $author$project$Main$HandleSubmit = {$: 'HandleSubmit'};
 var $author$project$Main$KeyboardChoicePick = function (a) {
 	return {$: 'KeyboardChoicePick', a: a};
 };
@@ -5362,7 +5365,30 @@ var $elm$html$Html$Events$onInput = function (tagger) {
 			$elm$html$Html$Events$alwaysStop,
 			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
 };
+var $elm$html$Html$Events$alwaysPreventDefault = function (msg) {
+	return _Utils_Tuple2(msg, true);
+};
+var $elm$virtual_dom$VirtualDom$MayPreventDefault = function (a) {
+	return {$: 'MayPreventDefault', a: a};
+};
+var $elm$html$Html$Events$preventDefaultOn = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$MayPreventDefault(decoder));
+	});
+var $elm$html$Html$Events$onSubmit = function (msg) {
+	return A2(
+		$elm$html$Html$Events$preventDefaultOn,
+		'submit',
+		A2(
+			$elm$json$Json$Decode$map,
+			$elm$html$Html$Events$alwaysPreventDefault,
+			$elm$json$Json$Decode$succeed(msg)));
+};
 var $elm$html$Html$p = _VirtualDom_node('p');
+var $elm$html$Html$Attributes$pattern = $elm$html$Html$Attributes$stringProperty('pattern');
 var $elm$html$Html$strong = _VirtualDom_node('strong');
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
@@ -5381,7 +5407,10 @@ var $elm$core$Maybe$withDefault = F2(
 var $author$project$Main$view = function (model) {
 	return A2(
 		$elm$html$Html$form,
-		_List_Nil,
+		_List_fromArray(
+			[
+				$elm$html$Html$Events$onSubmit($author$project$Main$HandleSubmit)
+			]),
 		_List_fromArray(
 			[
 				A2(
@@ -5585,6 +5614,7 @@ var $author$project$Main$view = function (model) {
 												$elm$html$Html$Attributes$min('1'),
 												$elm$html$Html$Attributes$name('speed'),
 												$elm$html$Html$Attributes$type_('text'),
+												$elm$html$Html$Attributes$pattern('([0-9]*[.])?[0-9]+'),
 												$elm$html$Html$Attributes$value(model.customErrorsCoefficientPercententage),
 												$elm$html$Html$Events$onInput($author$project$Main$ChangeCustomErrorCoefficientPercentage)
 											]),

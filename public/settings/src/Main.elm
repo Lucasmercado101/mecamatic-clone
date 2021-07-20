@@ -2,8 +2,8 @@ port module Main exposing (..)
 
 import Browser
 import Html exposing (br, button, div, fieldset, form, input, label, p, strong, text)
-import Html.Attributes as Attributes exposing (attribute, checked, class, name, type_, value)
-import Html.Events exposing (onClick, onInput)
+import Html.Attributes as Attributes exposing (attribute, checked, class, name, pattern, type_, value)
+import Html.Events exposing (onClick, onInput, onSubmit)
 
 
 
@@ -91,6 +91,7 @@ type Msg
     | PickCustomErrorsCoefficient Bool
     | ChangeCustomErrorCoefficientPercentage String
     | SettingsReceived Settings
+    | HandleSubmit
 
 
 
@@ -149,6 +150,9 @@ update msg model =
             , Cmd.none
             )
 
+        HandleSubmit ->
+            ( model, Cmd.none )
+
 
 
 -- VIEW
@@ -156,7 +160,7 @@ update msg model =
 
 view : Model -> Html.Html Msg
 view model =
-    form []
+    form [ onSubmit HandleSubmit ]
         [ div [ class "form-column" ]
             [ fieldset [ class "group group-small" ]
                 [ p [ class "group__title" ]
@@ -245,6 +249,7 @@ view model =
                             , Attributes.min "1"
                             , name "speed"
                             , type_ "text"
+                            , pattern "([0-9]*[.])?[0-9]+"
                             , value model.customErrorsCoefficientPercententage
                             , onInput
                                 ChangeCustomErrorCoefficientPercentage
