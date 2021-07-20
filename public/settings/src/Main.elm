@@ -3,7 +3,7 @@ module Main exposing (..)
 import Browser
 import Html exposing (br, button, div, fieldset, form, input, label, p, strong, text)
 import Html.Attributes as Attributes exposing (attribute, checked, class, name, type_, value)
-import Html.Events exposing (onClick)
+import Html.Events exposing (onClick, onInput)
 
 
 
@@ -25,18 +25,13 @@ init =
     , errorsCoefficient = Default
     , isKeyboardVisible = Nothing
     , isTutorActive = Nothing
+    , customMinimumSpeedAmount = 20
+    , customErrorsCoefficientPercententage = 2
     }
-
-
-type WhenIsItActive
-    = Predetermined
-    | Always
-    | Never
 
 
 type CustomAmount
     = Default
-    | DefineCustom
     | Custom Int
 
 
@@ -49,12 +44,18 @@ type alias Model =
     , errorsCoefficient : CustomAmount
     , isTutorActive : Maybe Bool
     , isKeyboardVisible : Maybe Bool
+    , customMinimumSpeedAmount : Int
+    , customErrorsCoefficientPercententage : Int
     }
 
 
 type Msg
     = TutorChoicePick (Maybe Bool)
     | KeyboardChoicePick (Maybe Bool)
+    | PickCustomSpeed Bool
+    | ChangeCustomSpeed Int
+    | PickCustomErrorsCoefficient Bool
+    | ChangeCustomErrorCoefficientPercentage Int
 
 
 
@@ -80,9 +81,43 @@ update msg model =
                 Nothing ->
                     { model | isKeyboardVisible = Nothing }
 
+        PickCustomSpeed bool ->
+            if bool == True && model.minimumSpeed /= Default then
+                model
+
+            else
+                { model
+                    | minimumSpeed =
+                        if bool == True then
+                            Custom model.customMinimumSpeedAmount
+
+                        else
+                            Default
+                }
+
+        ChangeCustomSpeed amount ->
+            { model | customMinimumSpeedAmount = amount }
+
+        PickCustomErrorsCoefficient bool ->
+            if bool == True && model.errorsCoefficient /= Default then
+                model
+
+            else
+                { model
+                    | errorsCoefficient =
+                        if bool == True then
+                            Custom model.customErrorsCoefficientPercententage
+
+                        else
+                            Default
+                }
+
+        ChangeCustomErrorCoefficientPercentage amount ->
+            { model | customErrorsCoefficientPercententage = amount }
 
 
--- view
+
+-- VIEW
 
 
 view : Model -> Html.Html Msg
@@ -93,31 +128,67 @@ view model =
                 [ p [ class "group__title" ]
                     [ text "Velocidad minima" ]
                 , label [ class "group-option" ]
-                    [ input [ name "speed", type_ "radio" ]
+                    [ input [ name "speed", type_ "radio", onClick (PickCustomSpeed False), checked (model.minimumSpeed == Default) ]
                         []
                     , text "Predeterminada"
                     ]
                 , label [ class "group-option" ]
-                    [ input [ name "speed", type_ "radio" ]
+                    [ input
+                        [ name "speed"
+                        , type_ "radio"
+                        , onClick (PickCustomSpeed True)
+                        , checked
+                            (model.minimumSpeed /= Default)
+                        ]
                         []
                     , text "Personalizar"
                     ]
                 , label [ class "group-option" ]
                     [ text "Nueva velocidad:  "
-                    , input [ class "custom-amount-input", attribute "disabled" "", Attributes.min "1", name "speed", type_ "number", value "20" ]
-                        []
+                    , if model.minimumSpeed == Default then
+                        input
+                            [ class "custom-amount-input"
+                            , attribute "disabled" ""
+                            , Attributes.min "1"
+                            , name "speed"
+                            , type_ "number"
+                            , value (String.fromInt model.customMinimumSpeedAmount)
+                            ]
+                            []
+
+                      else
+                        input
+                            [ class "custom-amount-input"
+                            , Attributes.min "1"
+                            , name "speed"
+                            , type_ "number"
+                            , value (String.fromInt model.customMinimumSpeedAmount)
+                            , onInput (\l -> ChangeCustomSpeed (Maybe.withDefault model.customMinimumSpeedAmount (String.toInt l)))
+                            ]
+                            []
                     ]
                 ]
             , fieldset [ class "group group-small" ]
                 [ p [ class "group__title" ]
                     [ text "Coeficiente de errores" ]
                 , label [ class "group-option" ]
-                    [ input [ name "errors-coefficient", type_ "radio" ]
+                    [ input
+                        [ name "errors-coefficient"
+                        , type_ "radio"
+                        , checked (model.errorsCoefficient == Default)
+                        , onClick (PickCustomErrorsCoefficient False)
+                        ]
                         []
-                    , text "Predeterminada"
+                    , text "Predeterminado"
                     ]
                 , label [ class "group-option" ]
-                    [ input [ name "errors-coefficient", type_ "radio" ]
+                    [ input
+                        [ name "errors-coefficient"
+                        , type_ "radio"
+                        , onClick (PickCustomErrorsCoefficient True)
+                        , checked
+                            (model.errorsCoefficient /= Default)
+                        ]
                         []
                     , text "Personalizar"
                     ]
