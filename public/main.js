@@ -1,4 +1,5 @@
 const { app, BrowserWindow, Menu, ipcMain, dialog } = require("electron");
+const { observable } = require("mobx");
 const fs = require("fs");
 const path = require("path");
 const learningLessonsPath = path.join(
@@ -24,6 +25,9 @@ const perfectionLessonsPath = path.join(
 );
 const userProfilesPath = path.join(__dirname, "..", "data", "profiles");
 const { NODE_ENV } = process.env;
+
+let currentUser = observable("");
+let settingsWindow = observable();
 
 ipcMain.handle("get-user-profiles", () => {
   const users = fs.readdirSync(userProfilesPath);
@@ -225,6 +229,9 @@ ipcMain.on("open-global-settings-window", (e, userName) => {
   // win.loadURL("http://localhost:3000/settings");
   if (NODE_ENV !== "production") win.webContents.openDevTools();
 
+  currentUser = userName;
+  settingsWindow = win;
+
   fs.readFile(
     path.resolve(userProfilesPath, userName, "settings.json"),
     { encoding: "utf8" },
@@ -234,20 +241,22 @@ ipcMain.on("open-global-settings-window", (e, userName) => {
       });
     }
   );
+});
 
-  ipcMain.on("new-global-settings-sent", (e, data) => {
-    fs.writeFile(
-      path.resolve(userProfilesPath, userName, "settings.json"),
-      JSON.stringify(data),
-      { encoding: "utf8" },
-      () => {
-        // TODO: fix this
-        win.close();
-        const mainWindow = BrowserWindow.getFocusedWindow();
-        mainWindow.send("reload-user-settings", { userName, ...data });
-      }
-    );
-  });
+ipcMain.on("new-global-settings-sent", (e, data) => {
+  fs.writeFile(
+    path.resolve(userProfilesPath, currentUser, "settings.json"),
+    JSON.stringify(data),
+    { encoding: "utf8" },
+    () => {
+      settingsWindow.close();
+      const mainWindow = BrowserWindow.getFocusedWindow();
+      mainWindow.send("reload-user-settings", {
+        userName: currentUser,
+        ...data
+      });
+    }
+  );
 });
 
 ipcMain.on("close-settings-window", (e, data) => {
