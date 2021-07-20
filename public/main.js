@@ -241,7 +241,8 @@ ipcMain.on("open-global-settings-window", (e, userName) => {
       JSON.stringify(data),
       { encoding: "utf8" },
       () => {
-        BrowserWindow.getFocusedWindow().close();
+        // TODO: fix this
+        win.close();
         const mainWindow = BrowserWindow.getFocusedWindow();
         mainWindow.send("reload-user-settings", { userName, ...data });
       }
