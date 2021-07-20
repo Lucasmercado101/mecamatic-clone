@@ -174,6 +174,8 @@ update msg model =
             ( { model
                 | customErrorsCoefficientPercententage = String.fromFloat settings.errorsCoefficient
                 , defaultErrorsCoefficient = True
+                , isTutorActive = settings.isTutorGloballyActive
+                , isKeyboardVisible = settings.isKeyboardGloballyVisible
               }
             , Cmd.none
             )
