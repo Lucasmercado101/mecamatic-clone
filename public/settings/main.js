@@ -5148,7 +5148,7 @@ var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Main$init = function (_v0) {
 	return _Utils_Tuple2(
-		{customErrorsCoefficientPercententage: '2', customMinimumSpeedAmount: 20, defaultErrorsCoefficient: false, defaultMinimumSpeed: 20, defaultMinimumSpeedSelected: false, isKeyboardVisible: $elm$core$Maybe$Nothing, isTutorActive: $elm$core$Maybe$Nothing, timeLimit: '8'},
+		{customErrorsCoefficientPercententage: '2', customMinimumSpeedAmount: 20, defaultErrorsCoefficientSelected: false, defaultMinimumSpeedSelected: false, isKeyboardVisible: $elm$core$Maybe$Nothing, isTutorActive: $elm$core$Maybe$Nothing, timeLimit: '8'},
 		$elm$core$Platform$Cmd$none);
 };
 var $author$project$Main$SettingsReceived = function (a) {
@@ -5181,7 +5181,8 @@ var $elm$json$Json$Decode$maybe = function (decoder) {
 var $author$project$Main$settingsDecoder = A6(
 	$elm$json$Json$Decode$map5,
 	$author$project$Main$Settings,
-	A2($elm$json$Json$Decode$field, 'errorsCoefficient', $elm$json$Json$Decode$float),
+	$elm$json$Json$Decode$maybe(
+		A2($elm$json$Json$Decode$field, 'errorsCoefficient', $elm$json$Json$Decode$float)),
 	A2($elm$json$Json$Decode$field, 'timeLimitInSeconds', $elm$json$Json$Decode$int),
 	$elm$json$Json$Decode$maybe(
 		A2($elm$json$Json$Decode$field, 'isTutorGloballyActive', $elm$json$Json$Decode$bool)),
@@ -5203,16 +5204,17 @@ var $author$project$Main$subscriptions = function (_v0) {
 				} else {
 					return $author$project$Main$SettingsReceived(
 						{
-							errorsCoefficient: 2,
+							errorsCoefficient: $elm$core$Maybe$Nothing,
 							isKeyboardGloballyVisible: $elm$core$Maybe$Nothing,
 							isTutorGloballyActive: $elm$core$Maybe$Nothing,
-							minimumWPM: $elm$core$Maybe$Just(30),
-							timeLimitInSeconds: 2
+							minimumWPM: $elm$core$Maybe$Just(20),
+							timeLimitInSeconds: 60
 						});
 				}
 			}));
 };
 var $elm$core$String$fromFloat = _String_fromNumber;
+var $elm$core$Basics$not = _Basics_not;
 var $elm$core$Basics$round = _Basics_round;
 var $elm$json$Json$Encode$null = _Json_encodeNull;
 var $author$project$Main$sendCloseWindow = _Platform_outgoingPort(
@@ -5253,7 +5255,9 @@ var $author$project$Main$sendNewSettings = _Platform_outgoingPort(
 				[
 					_Utils_Tuple2(
 					'errorsCoefficient',
-					$elm$json$Json$Encode$float($.errorsCoefficient)),
+					function ($) {
+						return A3($elm$core$Maybe$destruct, $elm$json$Json$Encode$null, $elm$json$Json$Encode$float, $);
+					}($.errorsCoefficient)),
 					_Utils_Tuple2(
 					'isKeyboardGloballyVisible',
 					function ($) {
@@ -5342,7 +5346,7 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{defaultErrorsCoefficient: bool}),
+						{defaultErrorsCoefficientSelected: bool}),
 					$elm$core$Platform$Cmd$none);
 			case 'ChangeCustomErrorCoefficientPercentage':
 				var amount = msg.a;
@@ -5357,9 +5361,10 @@ var $author$project$Main$update = F2(
 					_Utils_update(
 						model,
 						{
-							customErrorsCoefficientPercententage: $elm$core$String$fromFloat(settings.errorsCoefficient),
+							customErrorsCoefficientPercententage: $elm$core$String$fromFloat(
+								A2($elm$core$Maybe$withDefault, 2, settings.errorsCoefficient)),
 							customMinimumSpeedAmount: A2($elm$core$Maybe$withDefault, 20, settings.minimumWPM),
-							defaultErrorsCoefficient: true,
+							defaultErrorsCoefficientSelected: true,
 							defaultMinimumSpeedSelected: _Utils_eq(settings.minimumWPM, $elm$core$Maybe$Nothing) ? true : false,
 							isKeyboardVisible: settings.isKeyboardGloballyVisible,
 							isTutorActive: settings.isTutorGloballyActive,
@@ -5377,13 +5382,14 @@ var $author$project$Main$update = F2(
 					}
 				}();
 				var newSettings = {
-					errorsCoefficient: A2(
-						$elm$core$Maybe$withDefault,
-						2,
-						$elm$core$String$toFloat(model.customErrorsCoefficientPercententage)),
+					errorsCoefficient: (!model.defaultErrorsCoefficientSelected) ? $elm$core$Maybe$Just(
+						A2(
+							$elm$core$Maybe$withDefault,
+							2,
+							$elm$core$String$toFloat(model.customErrorsCoefficientPercententage))) : $elm$core$Maybe$Nothing,
 					isKeyboardGloballyVisible: model.isKeyboardVisible,
 					isTutorGloballyActive: model.isTutorActive,
-					minimumWPM: true ? $elm$core$Maybe$Just(model.customMinimumSpeedAmount) : $elm$core$Maybe$Nothing,
+					minimumWPM: model.defaultMinimumSpeedSelected ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(model.customMinimumSpeedAmount),
 					timeLimitInSeconds: newTimeLimit
 				};
 				return _Utils_Tuple2(
@@ -5459,7 +5465,6 @@ var $elm$html$Html$input = _VirtualDom_node('input');
 var $elm$html$Html$label = _VirtualDom_node('label');
 var $elm$html$Html$Attributes$min = $elm$html$Html$Attributes$stringProperty('min');
 var $elm$html$Html$Attributes$name = $elm$html$Html$Attributes$stringProperty('name');
-var $elm$core$Basics$not = _Basics_not;
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 'Normal', a: a};
 };
@@ -5695,7 +5700,7 @@ var $author$project$Main$view = function (model) {
 											[
 												$elm$html$Html$Attributes$name('errors-coefficient'),
 												$elm$html$Html$Attributes$type_('radio'),
-												$elm$html$Html$Attributes$checked(model.defaultErrorsCoefficient),
+												$elm$html$Html$Attributes$checked(model.defaultErrorsCoefficientSelected),
 												$elm$html$Html$Events$onClick(
 												$author$project$Main$UseDefaultErrorsCoefficient(true))
 											]),
@@ -5718,7 +5723,7 @@ var $author$project$Main$view = function (model) {
 												$elm$html$Html$Attributes$type_('radio'),
 												$elm$html$Html$Events$onClick(
 												$author$project$Main$UseDefaultErrorsCoefficient(false)),
-												$elm$html$Html$Attributes$checked(!model.defaultErrorsCoefficient)
+												$elm$html$Html$Attributes$checked(!model.defaultErrorsCoefficientSelected)
 											]),
 										_List_Nil),
 										$elm$html$Html$text('Personalizar')
@@ -5732,7 +5737,7 @@ var $author$project$Main$view = function (model) {
 								_List_fromArray(
 									[
 										$elm$html$Html$text('Nuevo coeficiente:  '),
-										model.defaultErrorsCoefficient ? A2(
+										model.defaultErrorsCoefficientSelected ? A2(
 										$elm$html$Html$input,
 										_List_fromArray(
 											[

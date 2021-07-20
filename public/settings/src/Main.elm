@@ -39,7 +39,7 @@ port sendCloseWindow : () -> Cmd msg
 
 
 type alias Settings =
-    { errorsCoefficient : Float
+    { errorsCoefficient : Maybe Float
     , timeLimitInSeconds : Int
     , isTutorGloballyActive : Maybe Bool
     , isKeyboardGloballyVisible : Maybe Bool
@@ -50,7 +50,7 @@ type alias Settings =
 settingsDecoder : JD.Decoder Settings
 settingsDecoder =
     JD.map5 Settings
-        (JD.field "errorsCoefficient" JD.float)
+        (JD.maybe (JD.field "errorsCoefficient" JD.float))
         (JD.field "timeLimitInSeconds" JD.int)
         (JD.maybe (JD.field "isTutorGloballyActive" JD.bool))
         (JD.maybe (JD.field "isKeyboardGloballyVisible" JD.bool))
@@ -74,11 +74,11 @@ subscriptions _ =
                             SettingsReceived
                                 -- TODO: TEMP, should send instead a port message
                                 -- to show an error dialog box and close
-                                { errorsCoefficient = 2
-                                , timeLimitInSeconds = 2
+                                { errorsCoefficient = Nothing
+                                , timeLimitInSeconds = 60
                                 , isTutorGloballyActive = Nothing
                                 , isKeyboardGloballyVisible = Nothing
-                                , minimumWPM = Just 30
+                                , minimumWPM = Just 20
                                 }
                )
         )
@@ -90,13 +90,12 @@ subscriptions _ =
 
 type alias Model =
     { defaultMinimumSpeedSelected : Bool
-    , defaultErrorsCoefficient : Bool
+    , defaultErrorsCoefficientSelected : Bool
     , customErrorsCoefficientPercententage : String
     , isTutorActive : Maybe Bool
     , isKeyboardVisible : Maybe Bool
     , customMinimumSpeedAmount : Int
     , timeLimit : String
-    , defaultMinimumSpeed : Int
     }
 
 
@@ -107,8 +106,7 @@ type alias Model =
 init : () -> ( Model, Cmd Msg )
 init _ =
     ( { defaultMinimumSpeedSelected = False
-      , defaultMinimumSpeed = 20
-      , defaultErrorsCoefficient = False
+      , defaultErrorsCoefficientSelected = False
       , isKeyboardVisible = Nothing
       , isTutorActive = Nothing
       , customMinimumSpeedAmount = 20
@@ -162,15 +160,15 @@ update msg model =
             ( { model | customMinimumSpeedAmount = amount }, Cmd.none )
 
         UseDefaultErrorsCoefficient bool ->
-            ( { model | defaultErrorsCoefficient = bool }, Cmd.none )
+            ( { model | defaultErrorsCoefficientSelected = bool }, Cmd.none )
 
         ChangeCustomErrorCoefficientPercentage amount ->
             ( { model | customErrorsCoefficientPercententage = amount }, Cmd.none )
 
         SettingsReceived settings ->
             ( { model
-                | customErrorsCoefficientPercententage = String.fromFloat settings.errorsCoefficient
-                , defaultErrorsCoefficient = True
+                | customErrorsCoefficientPercententage = String.fromFloat (Maybe.withDefault 2 settings.errorsCoefficient)
+                , defaultErrorsCoefficientSelected = True
                 , isTutorActive = settings.isTutorGloballyActive
                 , isKeyboardVisible = settings.isKeyboardGloballyVisible
                 , timeLimit = String.fromFloat (toFloat settings.timeLimitInSeconds / 60)
@@ -197,16 +195,21 @@ update msg model =
 
                 newSettings : Settings
                 newSettings =
-                    { errorsCoefficient = Maybe.withDefault 2 (String.toFloat model.customErrorsCoefficientPercententage)
+                    { errorsCoefficient =
+                        if not model.defaultErrorsCoefficientSelected then
+                            Just (Maybe.withDefault 2 (String.toFloat model.customErrorsCoefficientPercententage))
+
+                        else
+                            Nothing
                     , timeLimitInSeconds = newTimeLimit
                     , isTutorGloballyActive = model.isTutorActive
                     , isKeyboardGloballyVisible = model.isKeyboardVisible
                     , minimumWPM =
-                        if True then
-                            Just model.customMinimumSpeedAmount
+                        if model.defaultMinimumSpeedSelected == True then
+                            Nothing
 
                         else
-                            Nothing
+                            Just model.customMinimumSpeedAmount
                     }
             in
             ( model
@@ -279,7 +282,7 @@ view model =
                     [ input
                         [ name "errors-coefficient"
                         , type_ "radio"
-                        , checked (model.defaultErrorsCoefficient == True)
+                        , checked (model.defaultErrorsCoefficientSelected == True)
                         , onClick (UseDefaultErrorsCoefficient True)
                         ]
                         []
@@ -291,14 +294,14 @@ view model =
                         , type_ "radio"
                         , onClick (UseDefaultErrorsCoefficient False)
                         , checked
-                            (model.defaultErrorsCoefficient == False)
+                            (model.defaultErrorsCoefficientSelected == False)
                         ]
                         []
                     , text "Personalizar"
                     ]
                 , label [ class "group-option" ]
                     [ text "Nuevo coeficiente:  "
-                    , if model.defaultErrorsCoefficient then
+                    , if model.defaultErrorsCoefficientSelected then
                         input
                             [ class "custom-amount-input"
                             , attribute "disabled" ""
