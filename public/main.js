@@ -235,10 +235,15 @@ ipcMain.on("open-global-settings-window", (e, userName) => {
       });
     }
   );
-});
 
-ipcMain.on("new-global-settings-sent", (e, data) => {
-  console.log(data);
+  ipcMain.on("new-global-settings-sent", (e, data) => {
+    fs.writeFile(
+      path.resolve(userProfilesPath, userName, "settings.json"),
+      JSON.stringify(data),
+      { encoding: "utf8" },
+      () => {}
+    );
+  });
 });
 
 ipcMain.on("close-settings-window", (e, data) => {
