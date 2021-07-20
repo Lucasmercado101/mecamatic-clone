@@ -70,7 +70,8 @@ subscriptions _ =
 
                         Err _ ->
                             SettingsReceived
-                                -- TODO: TEMP
+                                -- TODO: TEMP, should send instead a port message
+                                -- to show an error dialog box and close
                                 { errorsCoefficient = 2
                                 , timeLimitInSeconds = 2
                                 , isTutorGloballyActive = Nothing
@@ -78,6 +79,21 @@ subscriptions _ =
                                 }
                )
         )
+
+
+
+-- MODEL
+
+
+type alias Model =
+    { minimumSpeed : CustomAmount
+    , defaultErrorsCoefficient : Bool
+    , customErrorsCoefficientPercententage : String
+    , isTutorActive : Maybe Bool
+    , isKeyboardVisible : Maybe Bool
+    , customMinimumSpeedAmount : Int
+    , timeLimit : String
+    }
 
 
 
@@ -92,28 +108,19 @@ init _ =
       , isTutorActive = Nothing
       , customMinimumSpeedAmount = 20
       , customErrorsCoefficientPercententage = "2"
+      , timeLimit = "8"
       }
     , Cmd.none
     )
 
 
+
+-- UPDATE
+
+
 type CustomAmount
     = Default
     | Custom Int
-
-
-
--- MODEL
-
-
-type alias Model =
-    { minimumSpeed : CustomAmount
-    , defaultErrorsCoefficient : Bool
-    , customErrorsCoefficientPercententage : String
-    , isTutorActive : Maybe Bool
-    , isKeyboardVisible : Maybe Bool
-    , customMinimumSpeedAmount : Int
-    }
 
 
 type Msg
@@ -126,10 +133,7 @@ type Msg
     | SettingsReceived Settings
     | HandleSubmit
     | CloseWindow
-
-
-
--- UPDATE
+    | ChangeTimeLimit String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -182,16 +186,25 @@ update msg model =
                 , defaultErrorsCoefficient = True
                 , isTutorActive = settings.isTutorGloballyActive
                 , isKeyboardVisible = settings.isKeyboardGloballyVisible
+                , timeLimit = String.fromFloat (toFloat settings.timeLimitInSeconds / 60)
               }
             , Cmd.none
             )
 
         HandleSubmit ->
             let
+                newTimeLimit =
+                    case String.toFloat model.timeLimit of
+                        Just number ->
+                            round (number * 60)
+
+                        Nothing ->
+                            round (7 * 60)
+
                 newSettings : Settings
                 newSettings =
                     { errorsCoefficient = Maybe.withDefault 2 (String.toFloat model.customErrorsCoefficientPercententage)
-                    , timeLimitInSeconds = 700
+                    , timeLimitInSeconds = newTimeLimit
                     , isTutorGloballyActive = model.isTutorActive
                     , isKeyboardGloballyVisible = model.isKeyboardVisible
                     }
@@ -202,6 +215,9 @@ update msg model =
 
         CloseWindow ->
             ( model, sendCloseWindow () )
+
+        ChangeTimeLimit timeLimit ->
+            ( { model | timeLimit = timeLimit }, Cmd.none )
 
 
 
@@ -400,7 +416,13 @@ view model =
                     ]
                 , label [ style "display" "flex", style "flex-direction" "column", style "gap" "5px" ]
                     [ text "Minutos:"
-                    , input [ type_ "number", Attributes.min "1", Attributes.step "any" ]
+                    , input
+                        [ type_ "number"
+                        , Attributes.min "1"
+                        , Attributes.step "any"
+                        , value model.timeLimit
+                        , onInput ChangeTimeLimit
+                        ]
                         []
                     ]
                 ]

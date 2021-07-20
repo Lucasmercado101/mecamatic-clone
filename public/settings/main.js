@@ -5149,7 +5149,7 @@ var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Main$init = function (_v0) {
 	return _Utils_Tuple2(
-		{customErrorsCoefficientPercententage: '2', customMinimumSpeedAmount: 20, defaultErrorsCoefficient: false, isKeyboardVisible: $elm$core$Maybe$Nothing, isTutorActive: $elm$core$Maybe$Nothing, minimumSpeed: $author$project$Main$Default},
+		{customErrorsCoefficientPercententage: '2', customMinimumSpeedAmount: 20, defaultErrorsCoefficient: false, isKeyboardVisible: $elm$core$Maybe$Nothing, isTutorActive: $elm$core$Maybe$Nothing, minimumSpeed: $author$project$Main$Default, timeLimit: '8'},
 		$elm$core$Platform$Cmd$none);
 };
 var $author$project$Main$SettingsReceived = function (a) {
@@ -5210,6 +5210,7 @@ var $author$project$Main$Custom = function (a) {
 };
 var $elm$core$String$fromFloat = _String_fromNumber;
 var $elm$core$Basics$neq = _Utils_notEqual;
+var $elm$core$Basics$round = _Basics_round;
 var $elm$json$Json$Encode$null = _Json_encodeNull;
 var $author$project$Main$sendCloseWindow = _Platform_outgoingPort(
 	'sendCloseWindow',
@@ -5353,10 +5354,20 @@ var $author$project$Main$update = F2(
 							customErrorsCoefficientPercententage: $elm$core$String$fromFloat(settings.errorsCoefficient),
 							defaultErrorsCoefficient: true,
 							isKeyboardVisible: settings.isKeyboardGloballyVisible,
-							isTutorActive: settings.isTutorGloballyActive
+							isTutorActive: settings.isTutorGloballyActive,
+							timeLimit: $elm$core$String$fromFloat(settings.timeLimitInSeconds / 60)
 						}),
 					$elm$core$Platform$Cmd$none);
 			case 'HandleSubmit':
+				var newTimeLimit = function () {
+					var _v3 = $elm$core$String$toFloat(model.timeLimit);
+					if (_v3.$ === 'Just') {
+						var number = _v3.a;
+						return $elm$core$Basics$round(number * 60);
+					} else {
+						return $elm$core$Basics$round(7 * 60);
+					}
+				}();
 				var newSettings = {
 					errorsCoefficient: A2(
 						$elm$core$Maybe$withDefault,
@@ -5364,15 +5375,22 @@ var $author$project$Main$update = F2(
 						$elm$core$String$toFloat(model.customErrorsCoefficientPercententage)),
 					isKeyboardGloballyVisible: model.isKeyboardVisible,
 					isTutorGloballyActive: model.isTutorActive,
-					timeLimitInSeconds: 700
+					timeLimitInSeconds: newTimeLimit
 				};
 				return _Utils_Tuple2(
 					model,
 					$author$project$Main$sendNewSettings(newSettings));
-			default:
+			case 'CloseWindow':
 				return _Utils_Tuple2(
 					model,
 					$author$project$Main$sendCloseWindow(_Utils_Tuple0));
+			default:
+				var timeLimit = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{timeLimit: timeLimit}),
+					$elm$core$Platform$Cmd$none);
 		}
 	});
 var $author$project$Main$ChangeCustomErrorCoefficientPercentage = function (a) {
@@ -5380,6 +5398,9 @@ var $author$project$Main$ChangeCustomErrorCoefficientPercentage = function (a) {
 };
 var $author$project$Main$ChangeCustomSpeed = function (a) {
 	return {$: 'ChangeCustomSpeed', a: a};
+};
+var $author$project$Main$ChangeTimeLimit = function (a) {
+	return {$: 'ChangeTimeLimit', a: a};
 };
 var $author$project$Main$CloseWindow = {$: 'CloseWindow'};
 var $author$project$Main$HandleSubmit = {$: 'HandleSubmit'};
@@ -6004,7 +6025,9 @@ var $author$project$Main$view = function (model) {
 											[
 												$elm$html$Html$Attributes$type_('number'),
 												$elm$html$Html$Attributes$min('1'),
-												$elm$html$Html$Attributes$step('any')
+												$elm$html$Html$Attributes$step('any'),
+												$elm$html$Html$Attributes$value(model.timeLimit),
+												$elm$html$Html$Events$onInput($author$project$Main$ChangeTimeLimit)
 											]),
 										_List_Nil)
 									]))

@@ -205,7 +205,7 @@ ipcMain.on("is-on-main-view", () => {
 
 ipcMain.on("open-global-settings-window", (e, userName) => {
   const win = new BrowserWindow({
-    width: 645,
+    width: 655,
     height: 280,
     minWidth: 645,
     minHeight: 280,
