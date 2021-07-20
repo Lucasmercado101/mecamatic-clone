@@ -31,6 +31,9 @@ port sendNewSettings : Settings -> Cmd msg
 port settingsReceiver : (JD.Value -> msg) -> Sub msg
 
 
+port sendCloseWindow : () -> Cmd msg
+
+
 
 -- DECODERS
 
@@ -122,6 +125,7 @@ type Msg
     | ChangeCustomErrorCoefficientPercentage String
     | SettingsReceived Settings
     | HandleSubmit
+    | CloseWindow
 
 
 
@@ -195,6 +199,9 @@ update msg model =
             ( model
             , sendNewSettings newSettings
             )
+
+        CloseWindow ->
+            ( model, sendCloseWindow () )
 
 
 
@@ -392,9 +399,10 @@ view model =
                     [ strong []
                         [ text "Aceptar" ]
                     ]
-                , button [ type_ "button" ]
+                , button [ onClick CloseWindow, type_ "button" ]
                     [ text "Cerrar" ]
                 ]
             ]
-        , text (Debug.toString model)
+
+        -- , text (Debug.toString model)
         ]

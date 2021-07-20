@@ -241,6 +241,10 @@ ipcMain.on("new-global-settings-sent", (e, data) => {
   console.log(data);
 });
 
+ipcMain.on("close-settings-window", (e, data) => {
+  BrowserWindow.getFocusedWindow().close();
+});
+
 function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({

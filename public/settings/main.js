@@ -5210,6 +5210,12 @@ var $author$project$Main$Custom = function (a) {
 };
 var $elm$core$String$fromFloat = _String_fromNumber;
 var $elm$core$Basics$neq = _Utils_notEqual;
+var $elm$json$Json$Encode$null = _Json_encodeNull;
+var $author$project$Main$sendCloseWindow = _Platform_outgoingPort(
+	'sendCloseWindow',
+	function ($) {
+		return $elm$json$Json$Encode$null;
+	});
 var $elm$json$Json$Encode$bool = _Json_wrap;
 var $elm$core$Maybe$destruct = F3(
 	function (_default, func, maybe) {
@@ -5222,7 +5228,6 @@ var $elm$core$Maybe$destruct = F3(
 	});
 var $elm$json$Json$Encode$float = _Json_wrap;
 var $elm$json$Json$Encode$int = _Json_wrap;
-var $elm$json$Json$Encode$null = _Json_encodeNull;
 var $elm$json$Json$Encode$object = function (pairs) {
 	return _Json_wrap(
 		A3(
@@ -5351,7 +5356,7 @@ var $author$project$Main$update = F2(
 							isTutorActive: settings.isTutorGloballyActive
 						}),
 					$elm$core$Platform$Cmd$none);
-			default:
+			case 'HandleSubmit':
 				var newSettings = {
 					errorsCoefficient: A2(
 						$elm$core$Maybe$withDefault,
@@ -5364,6 +5369,10 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					model,
 					$author$project$Main$sendNewSettings(newSettings));
+			default:
+				return _Utils_Tuple2(
+					model,
+					$author$project$Main$sendCloseWindow(_Utils_Tuple0));
 		}
 	});
 var $author$project$Main$ChangeCustomErrorCoefficientPercentage = function (a) {
@@ -5372,6 +5381,7 @@ var $author$project$Main$ChangeCustomErrorCoefficientPercentage = function (a) {
 var $author$project$Main$ChangeCustomSpeed = function (a) {
 	return {$: 'ChangeCustomSpeed', a: a};
 };
+var $author$project$Main$CloseWindow = {$: 'CloseWindow'};
 var $author$project$Main$HandleSubmit = {$: 'HandleSubmit'};
 var $author$project$Main$KeyboardChoicePick = function (a) {
 	return {$: 'KeyboardChoicePick', a: a};
@@ -5495,7 +5505,6 @@ var $elm$html$Html$Attributes$pattern = $elm$html$Html$Attributes$stringProperty
 var $elm$html$Html$strong = _VirtualDom_node('strong');
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-var $elm$core$Debug$toString = _Debug_toString;
 var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
 var $author$project$Main$view = function (model) {
@@ -5983,6 +5992,7 @@ var $author$project$Main$view = function (model) {
 								$elm$html$Html$button,
 								_List_fromArray(
 									[
+										$elm$html$Html$Events$onClick($author$project$Main$CloseWindow),
 										$elm$html$Html$Attributes$type_('button')
 									]),
 								_List_fromArray(
@@ -5990,9 +6000,7 @@ var $author$project$Main$view = function (model) {
 										$elm$html$Html$text('Cerrar')
 									]))
 							]))
-					])),
-				$elm$html$Html$text(
-				$elm$core$Debug$toString(model))
+					]))
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$element(
