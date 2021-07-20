@@ -5541,7 +5541,6 @@ var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
 var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-var $elm$core$Debug$toString = _Debug_toString;
 var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
 var $author$project$Main$view = function (model) {
@@ -6077,9 +6076,7 @@ var $author$project$Main$view = function (model) {
 										$elm$html$Html$text('Cerrar')
 									]))
 							]))
-					])),
-				$elm$html$Html$text(
-				$elm$core$Debug$toString(model))
+					]))
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$element(

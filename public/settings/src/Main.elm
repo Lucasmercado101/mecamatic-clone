@@ -435,5 +435,6 @@ view model =
                     [ text "Cerrar" ]
                 ]
             ]
-        , text (Debug.toString model)
+
+        -- , text (Debug.toString model)
         ]
