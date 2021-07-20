@@ -206,7 +206,7 @@ ipcMain.on("open-global-settings-window", (e, userName) => {
   const win = new BrowserWindow({
     width: 655,
     height: 280,
-    minWidth: 645,
+    minWidth: 655,
     minHeight: 280,
     resizable: NODE_ENV === "production" ? false : true,
     fullscreen: false,
