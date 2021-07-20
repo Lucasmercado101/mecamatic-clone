@@ -5,7 +5,7 @@ const electron = window?.require?.("electron");
 
 export interface userData {
   userName: string;
-  errorsCoefficient: number;
+  errorsCoefficient?: number;
   isKeyboardGloballyVisible?: boolean;
   isTutorGloballyActive?: boolean;
   timeLimitInSeconds: number;

@@ -40,7 +40,6 @@ ipcMain.handle("create-user-profile-and-load-said-user", (event, userName) => {
   fs.mkdirSync(userProfileDir);
 
   const userSettings = {
-    errorsCoefficient: 2,
     timeLimitInSeconds: 600
   };
 
