@@ -241,7 +241,9 @@ ipcMain.on("open-global-settings-window", (e, userName) => {
       path.resolve(userProfilesPath, userName, "settings.json"),
       JSON.stringify(data),
       { encoding: "utf8" },
-      () => {}
+      () => {
+        BrowserWindow.getFocusedWindow().close();
+      }
     );
   });
 });
