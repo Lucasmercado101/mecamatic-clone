@@ -5143,36 +5143,141 @@ var $elm$core$Task$perform = F2(
 			$elm$core$Task$Perform(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
+var $elm$browser$Browser$element = _Browser_element;
+var $author$project$Main$Default = {$: 'Default'};
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
-var $elm$core$Platform$Sub$batch = _Platform_batch;
-var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
-var $elm$browser$Browser$sandbox = function (impl) {
-	return _Browser_element(
-		{
-			init: function (_v0) {
-				return _Utils_Tuple2(impl.init, $elm$core$Platform$Cmd$none);
-			},
-			subscriptions: function (_v1) {
-				return $elm$core$Platform$Sub$none;
-			},
-			update: F2(
-				function (msg, model) {
-					return _Utils_Tuple2(
-						A2(impl.update, msg, model),
-						$elm$core$Platform$Cmd$none);
-				}),
-			view: impl.view
-		});
+var $author$project$Main$init = function (_v0) {
+	return _Utils_Tuple2(
+		{customErrorsCoefficientPercententage: '2', customMinimumSpeedAmount: 20, defaultErrorsCoefficient: false, isKeyboardVisible: $elm$core$Maybe$Nothing, isTutorActive: $elm$core$Maybe$Nothing, minimumSpeed: $author$project$Main$Default},
+		$elm$core$Platform$Cmd$none);
 };
+var $author$project$Main$SettingsReceived = function (a) {
+	return {$: 'SettingsReceived', a: a};
+};
+var $elm$json$Json$Decode$andThen = _Json_andThen;
+var $elm$json$Json$Decode$field = _Json_decodeField;
+var $elm$json$Json$Decode$int = _Json_decodeInt;
+var $author$project$Main$settingsReceiver = _Platform_incomingPort(
+	'settingsReceiver',
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (timeLimitInSeconds) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (errorsCoefficient) {
+					return $elm$json$Json$Decode$succeed(
+						{errorsCoefficient: errorsCoefficient, timeLimitInSeconds: timeLimitInSeconds});
+				},
+				A2($elm$json$Json$Decode$field, 'errorsCoefficient', $elm$json$Json$Decode$int));
+		},
+		A2($elm$json$Json$Decode$field, 'timeLimitInSeconds', $elm$json$Json$Decode$int)));
+var $author$project$Main$subscriptions = function (_v0) {
+	return $author$project$Main$settingsReceiver($author$project$Main$SettingsReceived);
+};
+var $author$project$Main$Custom = function (a) {
+	return {$: 'Custom', a: a};
+};
+var $elm$core$Basics$neq = _Utils_notEqual;
 var $author$project$Main$update = F2(
 	function (msg, model) {
-		if (msg.$ === 'Increment') {
-			return model + 1;
-		} else {
-			return model - 1;
+		switch (msg.$) {
+			case 'TutorChoicePick':
+				var selection = msg.a;
+				if (selection.$ === 'Just') {
+					var bool = selection.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								isTutorActive: $elm$core$Maybe$Just(bool)
+							}),
+						$elm$core$Platform$Cmd$none);
+				} else {
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{isTutorActive: $elm$core$Maybe$Nothing}),
+						$elm$core$Platform$Cmd$none);
+				}
+			case 'KeyboardChoicePick':
+				var selection = msg.a;
+				if (selection.$ === 'Just') {
+					var bool = selection.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								isKeyboardVisible: $elm$core$Maybe$Just(bool)
+							}),
+						$elm$core$Platform$Cmd$none);
+				} else {
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{isKeyboardVisible: $elm$core$Maybe$Nothing}),
+						$elm$core$Platform$Cmd$none);
+				}
+			case 'PickCustomSpeed':
+				var bool = msg.a;
+				return (bool && (!_Utils_eq(model.minimumSpeed, $author$project$Main$Default))) ? _Utils_Tuple2(model, $elm$core$Platform$Cmd$none) : _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							minimumSpeed: bool ? $author$project$Main$Custom(model.customMinimumSpeedAmount) : $author$project$Main$Default
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 'ChangeCustomSpeed':
+				var amount = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{customMinimumSpeedAmount: amount}),
+					$elm$core$Platform$Cmd$none);
+			case 'PickCustomErrorsCoefficient':
+				var bool = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{defaultErrorsCoefficient: bool}),
+					$elm$core$Platform$Cmd$none);
+			case 'ChangeCustomErrorCoefficientPercentage':
+				var amount = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{customErrorsCoefficientPercententage: amount}),
+					$elm$core$Platform$Cmd$none);
+			default:
+				var settings = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							customErrorsCoefficientPercententage: $elm$core$String$fromInt(settings.errorsCoefficient),
+							defaultErrorsCoefficient: true
+						}),
+					$elm$core$Platform$Cmd$none);
 		}
 	});
+var $author$project$Main$ChangeCustomErrorCoefficientPercentage = function (a) {
+	return {$: 'ChangeCustomErrorCoefficientPercentage', a: a};
+};
+var $author$project$Main$ChangeCustomSpeed = function (a) {
+	return {$: 'ChangeCustomSpeed', a: a};
+};
+var $author$project$Main$KeyboardChoicePick = function (a) {
+	return {$: 'KeyboardChoicePick', a: a};
+};
+var $author$project$Main$PickCustomErrorsCoefficient = function (a) {
+	return {$: 'PickCustomErrorsCoefficient', a: a};
+};
+var $author$project$Main$PickCustomSpeed = function (a) {
+	return {$: 'PickCustomSpeed', a: a};
+};
+var $author$project$Main$TutorChoicePick = function (a) {
+	return {$: 'TutorChoicePick', a: a};
+};
 var $elm$virtual_dom$VirtualDom$attribute = F2(
 	function (key, value) {
 		return A2(
@@ -5183,6 +5288,15 @@ var $elm$virtual_dom$VirtualDom$attribute = F2(
 var $elm$html$Html$Attributes$attribute = $elm$virtual_dom$VirtualDom$attribute;
 var $elm$html$Html$br = _VirtualDom_node('br');
 var $elm$html$Html$button = _VirtualDom_node('button');
+var $elm$json$Json$Encode$bool = _Json_wrap;
+var $elm$html$Html$Attributes$boolProperty = F2(
+	function (key, bool) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			$elm$json$Json$Encode$bool(bool));
+	});
+var $elm$html$Html$Attributes$checked = $elm$html$Html$Attributes$boolProperty('checked');
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
@@ -5199,12 +5313,71 @@ var $elm$html$Html$input = _VirtualDom_node('input');
 var $elm$html$Html$label = _VirtualDom_node('label');
 var $elm$html$Html$Attributes$min = $elm$html$Html$Attributes$stringProperty('min');
 var $elm$html$Html$Attributes$name = $elm$html$Html$Attributes$stringProperty('name');
+var $elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var $elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var $elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'click',
+		$elm$json$Json$Decode$succeed(msg));
+};
+var $elm$html$Html$Events$alwaysStop = function (x) {
+	return _Utils_Tuple2(x, true);
+};
+var $elm$virtual_dom$VirtualDom$MayStopPropagation = function (a) {
+	return {$: 'MayStopPropagation', a: a};
+};
+var $elm$html$Html$Events$stopPropagationOn = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$MayStopPropagation(decoder));
+	});
+var $elm$json$Json$Decode$at = F2(
+	function (fields, decoder) {
+		return A3($elm$core$List$foldr, $elm$json$Json$Decode$field, decoder, fields);
+	});
+var $elm$json$Json$Decode$string = _Json_decodeString;
+var $elm$html$Html$Events$targetValue = A2(
+	$elm$json$Json$Decode$at,
+	_List_fromArray(
+		['target', 'value']),
+	$elm$json$Json$Decode$string);
+var $elm$html$Html$Events$onInput = function (tagger) {
+	return A2(
+		$elm$html$Html$Events$stopPropagationOn,
+		'input',
+		A2(
+			$elm$json$Json$Decode$map,
+			$elm$html$Html$Events$alwaysStop,
+			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
+};
 var $elm$html$Html$p = _VirtualDom_node('p');
 var $elm$html$Html$strong = _VirtualDom_node('strong');
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $elm$core$Debug$toString = _Debug_toString;
 var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
+var $elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
 var $author$project$Main$view = function (model) {
 	return A2(
 		$elm$html$Html$form,
@@ -5250,10 +5423,14 @@ var $author$project$Main$view = function (model) {
 										_List_fromArray(
 											[
 												$elm$html$Html$Attributes$name('speed'),
-												$elm$html$Html$Attributes$type_('radio')
+												$elm$html$Html$Attributes$type_('radio'),
+												$elm$html$Html$Events$onClick(
+												$author$project$Main$PickCustomSpeed(false)),
+												$elm$html$Html$Attributes$checked(
+												_Utils_eq(model.minimumSpeed, $author$project$Main$Default))
 											]),
 										_List_Nil),
-										$elm$html$Html$text('Predeterminada          ')
+										$elm$html$Html$text('Predeterminada')
 									])),
 								A2(
 								$elm$html$Html$label,
@@ -5268,10 +5445,14 @@ var $author$project$Main$view = function (model) {
 										_List_fromArray(
 											[
 												$elm$html$Html$Attributes$name('speed'),
-												$elm$html$Html$Attributes$type_('radio')
+												$elm$html$Html$Attributes$type_('radio'),
+												$elm$html$Html$Events$onClick(
+												$author$project$Main$PickCustomSpeed(true)),
+												$elm$html$Html$Attributes$checked(
+												!_Utils_eq(model.minimumSpeed, $author$project$Main$Default))
 											]),
 										_List_Nil),
-										$elm$html$Html$text('Personalizar          ')
+										$elm$html$Html$text('Personalizar')
 									])),
 								A2(
 								$elm$html$Html$label,
@@ -5281,8 +5462,8 @@ var $author$project$Main$view = function (model) {
 									]),
 								_List_fromArray(
 									[
-										$elm$html$Html$text('Nueva velocidad:            '),
-										A2(
+										$elm$html$Html$text('Nueva velocidad:  '),
+										_Utils_eq(model.minimumSpeed, $author$project$Main$Default) ? A2(
 										$elm$html$Html$input,
 										_List_fromArray(
 											[
@@ -5291,10 +5472,29 @@ var $author$project$Main$view = function (model) {
 												$elm$html$Html$Attributes$min('1'),
 												$elm$html$Html$Attributes$name('speed'),
 												$elm$html$Html$Attributes$type_('number'),
-												$elm$html$Html$Attributes$value('20')
+												$elm$html$Html$Attributes$value(
+												$elm$core$String$fromInt(model.customMinimumSpeedAmount))
 											]),
-										_List_Nil),
-										$elm$html$Html$text('          ')
+										_List_Nil) : A2(
+										$elm$html$Html$input,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('custom-amount-input'),
+												$elm$html$Html$Attributes$min('1'),
+												$elm$html$Html$Attributes$name('speed'),
+												$elm$html$Html$Attributes$type_('number'),
+												$elm$html$Html$Attributes$value(
+												$elm$core$String$fromInt(model.customMinimumSpeedAmount)),
+												$elm$html$Html$Events$onInput(
+												function (l) {
+													return $author$project$Main$ChangeCustomSpeed(
+														A2(
+															$elm$core$Maybe$withDefault,
+															model.customMinimumSpeedAmount,
+															$elm$core$String$toInt(l)));
+												})
+											]),
+										_List_Nil)
 									]))
 							])),
 						A2(
@@ -5328,10 +5528,13 @@ var $author$project$Main$view = function (model) {
 										_List_fromArray(
 											[
 												$elm$html$Html$Attributes$name('errors-coefficient'),
-												$elm$html$Html$Attributes$type_('radio')
+												$elm$html$Html$Attributes$type_('radio'),
+												$elm$html$Html$Attributes$checked(!model.defaultErrorsCoefficient),
+												$elm$html$Html$Events$onClick(
+												$author$project$Main$PickCustomErrorsCoefficient(false))
 											]),
 										_List_Nil),
-										$elm$html$Html$text('Predeterminada          ')
+										$elm$html$Html$text('Predeterminado')
 									])),
 								A2(
 								$elm$html$Html$label,
@@ -5346,10 +5549,13 @@ var $author$project$Main$view = function (model) {
 										_List_fromArray(
 											[
 												$elm$html$Html$Attributes$name('errors-coefficient'),
-												$elm$html$Html$Attributes$type_('radio')
+												$elm$html$Html$Attributes$type_('radio'),
+												$elm$html$Html$Events$onClick(
+												$author$project$Main$PickCustomErrorsCoefficient(true)),
+												$elm$html$Html$Attributes$checked(model.defaultErrorsCoefficient)
 											]),
 										_List_Nil),
-										$elm$html$Html$text('Personalizar          ')
+										$elm$html$Html$text('Personalizar')
 									])),
 								A2(
 								$elm$html$Html$label,
@@ -5359,8 +5565,8 @@ var $author$project$Main$view = function (model) {
 									]),
 								_List_fromArray(
 									[
-										$elm$html$Html$text('Nuevo coeficiente:            '),
-										A2(
+										$elm$html$Html$text('Nuevo coeficiente:  '),
+										(!model.defaultErrorsCoefficient) ? A2(
 										$elm$html$Html$input,
 										_List_fromArray(
 											[
@@ -5369,10 +5575,20 @@ var $author$project$Main$view = function (model) {
 												$elm$html$Html$Attributes$min('1'),
 												$elm$html$Html$Attributes$name('errors-coefficient'),
 												$elm$html$Html$Attributes$type_('number'),
-												$elm$html$Html$Attributes$value('2')
+												$elm$html$Html$Attributes$value(model.customErrorsCoefficientPercententage)
 											]),
-										_List_Nil),
-										$elm$html$Html$text('          ')
+										_List_Nil) : A2(
+										$elm$html$Html$input,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('custom-amount-input'),
+												$elm$html$Html$Attributes$min('1'),
+												$elm$html$Html$Attributes$name('speed'),
+												$elm$html$Html$Attributes$type_('text'),
+												$elm$html$Html$Attributes$value(model.customErrorsCoefficientPercententage),
+												$elm$html$Html$Events$onInput($author$project$Main$ChangeCustomErrorCoefficientPercentage)
+											]),
+										_List_Nil)
 									]))
 							]))
 					])),
@@ -5415,10 +5631,14 @@ var $author$project$Main$view = function (model) {
 										_List_fromArray(
 											[
 												$elm$html$Html$Attributes$name('keyboard-visibility'),
-												$elm$html$Html$Attributes$type_('radio')
+												$elm$html$Html$Attributes$type_('radio'),
+												$elm$html$Html$Events$onClick(
+												$author$project$Main$KeyboardChoicePick($elm$core$Maybe$Nothing)),
+												$elm$html$Html$Attributes$checked(
+												_Utils_eq(model.isKeyboardVisible, $elm$core$Maybe$Nothing))
 											]),
 										_List_Nil),
-										$elm$html$Html$text('Predeterminada          ')
+										$elm$html$Html$text('Predeterminado')
 									])),
 								A2(
 								$elm$html$Html$label,
@@ -5433,10 +5653,17 @@ var $author$project$Main$view = function (model) {
 										_List_fromArray(
 											[
 												$elm$html$Html$Attributes$name('keyboard-visibility'),
-												$elm$html$Html$Attributes$type_('radio')
+												$elm$html$Html$Attributes$type_('radio'),
+												$elm$html$Html$Events$onClick(
+												$author$project$Main$KeyboardChoicePick(
+													$elm$core$Maybe$Just(true))),
+												$elm$html$Html$Attributes$checked(
+												_Utils_eq(
+													model.isKeyboardVisible,
+													$elm$core$Maybe$Just(true)))
 											]),
 										_List_Nil),
-										$elm$html$Html$text('Personalizar          ')
+										$elm$html$Html$text('Siempre visible')
 									])),
 								A2(
 								$elm$html$Html$label,
@@ -5451,10 +5678,17 @@ var $author$project$Main$view = function (model) {
 										_List_fromArray(
 											[
 												$elm$html$Html$Attributes$name('keyboard-visibility'),
-												$elm$html$Html$Attributes$type_('radio')
+												$elm$html$Html$Attributes$type_('radio'),
+												$elm$html$Html$Events$onClick(
+												$author$project$Main$KeyboardChoicePick(
+													$elm$core$Maybe$Just(false))),
+												$elm$html$Html$Attributes$checked(
+												_Utils_eq(
+													model.isKeyboardVisible,
+													$elm$core$Maybe$Just(false)))
 											]),
 										_List_Nil),
-										$elm$html$Html$text('Nunca visible          ')
+										$elm$html$Html$text('Nunca visible')
 									]))
 							])),
 						A2(
@@ -5488,10 +5722,14 @@ var $author$project$Main$view = function (model) {
 										_List_fromArray(
 											[
 												$elm$html$Html$Attributes$name('tutor'),
-												$elm$html$Html$Attributes$type_('radio')
+												$elm$html$Html$Attributes$type_('radio'),
+												$elm$html$Html$Events$onClick(
+												$author$project$Main$TutorChoicePick($elm$core$Maybe$Nothing)),
+												$elm$html$Html$Attributes$checked(
+												_Utils_eq(model.isTutorActive, $elm$core$Maybe$Nothing))
 											]),
 										_List_Nil),
-										$elm$html$Html$text('Predeterminada          ')
+										$elm$html$Html$text('Predeterminado')
 									])),
 								A2(
 								$elm$html$Html$label,
@@ -5506,10 +5744,17 @@ var $author$project$Main$view = function (model) {
 										_List_fromArray(
 											[
 												$elm$html$Html$Attributes$name('tutor'),
-												$elm$html$Html$Attributes$type_('radio')
+												$elm$html$Html$Attributes$type_('radio'),
+												$elm$html$Html$Events$onClick(
+												$author$project$Main$TutorChoicePick(
+													$elm$core$Maybe$Just(true))),
+												$elm$html$Html$Attributes$checked(
+												_Utils_eq(
+													model.isTutorActive,
+													$elm$core$Maybe$Just(true)))
 											]),
 										_List_Nil),
-										$elm$html$Html$text('Personalizar          ')
+										$elm$html$Html$text('Siempre activo')
 									])),
 								A2(
 								$elm$html$Html$label,
@@ -5524,10 +5769,17 @@ var $author$project$Main$view = function (model) {
 										_List_fromArray(
 											[
 												$elm$html$Html$Attributes$name('tutor'),
-												$elm$html$Html$Attributes$type_('radio')
+												$elm$html$Html$Attributes$type_('radio'),
+												$elm$html$Html$Events$onClick(
+												$author$project$Main$TutorChoicePick(
+													$elm$core$Maybe$Just(false))),
+												$elm$html$Html$Attributes$checked(
+												_Utils_eq(
+													model.isTutorActive,
+													$elm$core$Maybe$Just(false)))
 											]),
 										_List_Nil),
-										$elm$html$Html$text('Nunca visible          ')
+										$elm$html$Html$text('Nunca activo')
 									]))
 							]))
 					])),
@@ -5569,82 +5821,14 @@ var $author$project$Main$view = function (model) {
 										$elm$html$Html$input,
 										_List_fromArray(
 											[
-												$elm$html$Html$Attributes$type_('checkbox')
-											]),
-										_List_Nil),
-										$elm$html$Html$text('Bloqueo de errores          ')
-									])),
-								A2(
-								$elm$html$Html$label,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('group-option')
-									]),
-								_List_fromArray(
-									[
-										A2(
-										$elm$html$Html$input,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$type_('checkbox')
-											]),
-										_List_Nil),
-										$elm$html$Html$text('Señal sonora, Teclas          ')
-									])),
-								A2(
-								$elm$html$Html$label,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('group-option')
-									]),
-								_List_fromArray(
-									[
-										A2(
-										$elm$html$Html$input,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$type_('checkbox')
-											]),
-										_List_Nil),
-										$elm$html$Html$text('Señal sonora, Error          ')
-									])),
-								A2(
-								$elm$html$Html$label,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('group-option')
-									]),
-								_List_fromArray(
-									[
-										A2(
-										$elm$html$Html$input,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$type_('checkbox')
-											]),
-										_List_Nil),
-										$elm$html$Html$text('Panel informativo'),
-										A2($elm$html$Html$br, _List_Nil, _List_Nil),
-										$elm$html$Html$text('a la izquierda          ')
-									])),
-								A2(
-								$elm$html$Html$label,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('group-option')
-									]),
-								_List_fromArray(
-									[
-										A2(
-										$elm$html$Html$input,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$type_('checkbox')
+												$elm$html$Html$Attributes$type_('checkbox'),
+												$elm$html$Html$Attributes$checked(true),
+												A2($elm$html$Html$Attributes$attribute, 'disabled', '')
 											]),
 										_List_Nil),
 										$elm$html$Html$text('Mostrar resultados '),
 										A2($elm$html$Html$br, _List_Nil, _List_Nil),
-										$elm$html$Html$text('durante la ejecución          ')
+										$elm$html$Html$text('durante la ejecución')
 									]))
 							])),
 						A2(
@@ -5657,7 +5841,10 @@ var $author$project$Main$view = function (model) {
 							[
 								A2(
 								$elm$html$Html$button,
-								_List_Nil,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$type_('submit')
+									]),
 								_List_fromArray(
 									[
 										A2(
@@ -5670,16 +5857,21 @@ var $author$project$Main$view = function (model) {
 									])),
 								A2(
 								$elm$html$Html$button,
-								_List_Nil,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$type_('button')
+									]),
 								_List_fromArray(
 									[
 										$elm$html$Html$text('Cerrar')
 									]))
 							]))
-					]))
+					])),
+				$elm$html$Html$text(
+				$elm$core$Debug$toString(model))
 			]));
 };
-var $author$project$Main$main = $elm$browser$Browser$sandbox(
-	{init: 0, update: $author$project$Main$update, view: $author$project$Main$view});
+var $author$project$Main$main = $elm$browser$Browser$element(
+	{init: $author$project$Main$init, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
 	$elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}});}(this));

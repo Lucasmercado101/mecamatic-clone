@@ -189,7 +189,10 @@ function Index({ send, state }: Props) {
           <div className="toolbar-separator" />
           <button
             onClick={() => {
-              electron.ipcRenderer.send("open-global-settings-window");
+              electron.ipcRenderer.send(
+                "open-global-settings-window",
+                state.context.userName
+              );
             }}
             className="top-toolbar-menu-item"
           >

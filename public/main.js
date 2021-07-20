@@ -199,7 +199,7 @@ ipcMain.on("is-on-main-view", () => {
   Menu.setApplicationMenu(menu);
 });
 
-ipcMain.on("open-global-settings-window", () => {
+ipcMain.on("open-global-settings-window", (e, userName) => {
   // const mainWin = BrowserWindow.getFocusedWindow();
   const win = new BrowserWindow({
     width: 645,
@@ -224,9 +224,15 @@ ipcMain.on("open-global-settings-window", () => {
   // win.loadURL("http://localhost:3000/settings");
   if (NODE_ENV !== "production") win.webContents.openDevTools();
 
-  win.webContents.on("did-finish-load", () => {
-    win.webContents.send("show-settings");
-  });
+  fs.readFile(
+    path.resolve(userProfilesPath, userName, "settings.json"),
+    { encoding: "utf8" },
+    (err, data) => {
+      win.webContents.on("did-finish-load", () => {
+        win.webContents.send("settings-conf-json-sent", JSON.parse(data));
+      });
+    }
+  );
 });
 
 function createWindow() {

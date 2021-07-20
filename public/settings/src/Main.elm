@@ -1,4 +1,4 @@
-module Main exposing (..)
+port module Main exposing (..)
 
 import Browser
 import Html exposing (br, button, div, fieldset, form, input, label, p, strong, text)
@@ -12,22 +12,56 @@ import Html.Events exposing (onClick, onInput)
 
 main : Program () Model Msg
 main =
-    Browser.sandbox { init = init, update = update, view = view }
+    Browser.element
+        { init = init
+        , update = update
+        , view = view
+        , subscriptions = subscriptions
+        }
+
+
+
+-- PORTS
+-- port sendMessage : String -> Cmd msg
+
+
+port settingsReceiver : (Settings -> msg) -> Sub msg
+
+
+
+-- DECODERS
+
+
+type alias Settings =
+    { errorsCoefficient : Int
+    , timeLimitInSeconds : Int
+    }
+
+
+
+-- SUBSCRIPTIONS
+
+
+subscriptions : Model -> Sub Msg
+subscriptions _ =
+    settingsReceiver SettingsReceived
 
 
 
 -- INIT
 
 
-init : Model
-init =
-    { minimumSpeed = Default
-    , defaultErrorsCoefficient = False
-    , isKeyboardVisible = Nothing
-    , isTutorActive = Nothing
-    , customMinimumSpeedAmount = 20
-    , customErrorsCoefficientPercententage = "2"
-    }
+init : () -> ( Model, Cmd Msg )
+init _ =
+    ( { minimumSpeed = Default
+      , defaultErrorsCoefficient = False
+      , isKeyboardVisible = Nothing
+      , isTutorActive = Nothing
+      , customMinimumSpeedAmount = 20
+      , customErrorsCoefficientPercententage = "2"
+      }
+    , Cmd.none
+    )
 
 
 type CustomAmount
@@ -56,53 +90,64 @@ type Msg
     | ChangeCustomSpeed Int
     | PickCustomErrorsCoefficient Bool
     | ChangeCustomErrorCoefficientPercentage String
+    | SettingsReceived Settings
 
 
 
 -- UPDATE
 
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         TutorChoicePick selection ->
             case selection of
                 Just bool ->
-                    { model | isTutorActive = Just bool }
+                    ( { model | isTutorActive = Just bool }, Cmd.none )
 
                 Nothing ->
-                    { model | isTutorActive = Nothing }
+                    ( { model | isTutorActive = Nothing }, Cmd.none )
 
         KeyboardChoicePick selection ->
             case selection of
                 Just bool ->
-                    { model | isKeyboardVisible = Just bool }
+                    ( { model | isKeyboardVisible = Just bool }, Cmd.none )
 
                 Nothing ->
-                    { model | isKeyboardVisible = Nothing }
+                    ( { model | isKeyboardVisible = Nothing }, Cmd.none )
 
         PickCustomSpeed bool ->
             if bool == True && model.minimumSpeed /= Default then
-                model
+                ( model, Cmd.none )
 
             else
-                { model
+                ( { model
                     | minimumSpeed =
                         if bool == True then
                             Custom model.customMinimumSpeedAmount
 
                         else
                             Default
-                }
+                  }
+                , Cmd.none
+                )
 
         ChangeCustomSpeed amount ->
-            { model | customMinimumSpeedAmount = amount }
+            ( { model | customMinimumSpeedAmount = amount }, Cmd.none )
 
         PickCustomErrorsCoefficient bool ->
-            { model | defaultErrorsCoefficient = bool }
+            ( { model | defaultErrorsCoefficient = bool }, Cmd.none )
 
         ChangeCustomErrorCoefficientPercentage amount ->
-            { model | customErrorsCoefficientPercententage = amount }
+            ( { model | customErrorsCoefficientPercententage = amount }, Cmd.none )
+
+        SettingsReceived settings ->
+            ( { model
+                | customErrorsCoefficientPercententage = String.fromInt settings.errorsCoefficient
+                , defaultErrorsCoefficient = True
+              }
+            , Cmd.none
+            )
 
 
 
