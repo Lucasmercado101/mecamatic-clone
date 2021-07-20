@@ -5155,29 +5155,60 @@ var $author$project$Main$init = function (_v0) {
 var $author$project$Main$SettingsReceived = function (a) {
 	return {$: 'SettingsReceived', a: a};
 };
-var $elm$json$Json$Decode$andThen = _Json_andThen;
+var $elm$core$Basics$composeR = F3(
+	function (f, g, x) {
+		return g(
+			f(x));
+	});
+var $elm$json$Json$Decode$decodeValue = _Json_run;
+var $author$project$Main$Settings = F4(
+	function (errorsCoefficient, timeLimitInSeconds, isTutorGloballyActive, isKeyboardGloballyVisible) {
+		return {errorsCoefficient: errorsCoefficient, isKeyboardGloballyVisible: isKeyboardGloballyVisible, isTutorGloballyActive: isTutorGloballyActive, timeLimitInSeconds: timeLimitInSeconds};
+	});
+var $elm$json$Json$Decode$bool = _Json_decodeBool;
 var $elm$json$Json$Decode$field = _Json_decodeField;
+var $elm$json$Json$Decode$float = _Json_decodeFloat;
 var $elm$json$Json$Decode$int = _Json_decodeInt;
-var $author$project$Main$settingsReceiver = _Platform_incomingPort(
-	'settingsReceiver',
-	A2(
-		$elm$json$Json$Decode$andThen,
-		function (timeLimitInSeconds) {
-			return A2(
-				$elm$json$Json$Decode$andThen,
-				function (errorsCoefficient) {
-					return $elm$json$Json$Decode$succeed(
-						{errorsCoefficient: errorsCoefficient, timeLimitInSeconds: timeLimitInSeconds});
-				},
-				A2($elm$json$Json$Decode$field, 'errorsCoefficient', $elm$json$Json$Decode$int));
-		},
-		A2($elm$json$Json$Decode$field, 'timeLimitInSeconds', $elm$json$Json$Decode$int)));
+var $elm$json$Json$Decode$map4 = _Json_map4;
+var $elm$json$Json$Decode$oneOf = _Json_oneOf;
+var $elm$json$Json$Decode$maybe = function (decoder) {
+	return $elm$json$Json$Decode$oneOf(
+		_List_fromArray(
+			[
+				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, decoder),
+				$elm$json$Json$Decode$succeed($elm$core$Maybe$Nothing)
+			]));
+};
+var $author$project$Main$settingsDecoder = A5(
+	$elm$json$Json$Decode$map4,
+	$author$project$Main$Settings,
+	A2($elm$json$Json$Decode$field, 'errorsCoefficient', $elm$json$Json$Decode$float),
+	A2($elm$json$Json$Decode$field, 'timeLimitInSeconds', $elm$json$Json$Decode$int),
+	$elm$json$Json$Decode$maybe(
+		A2($elm$json$Json$Decode$field, 'isTutorGloballyActive', $elm$json$Json$Decode$bool)),
+	$elm$json$Json$Decode$maybe(
+		A2($elm$json$Json$Decode$field, 'isKeyboardGloballyVisible', $elm$json$Json$Decode$bool)));
+var $elm$json$Json$Decode$value = _Json_decodeValue;
+var $author$project$Main$settingsReceiver = _Platform_incomingPort('settingsReceiver', $elm$json$Json$Decode$value);
 var $author$project$Main$subscriptions = function (_v0) {
-	return $author$project$Main$settingsReceiver($author$project$Main$SettingsReceived);
+	return $author$project$Main$settingsReceiver(
+		A2(
+			$elm$core$Basics$composeR,
+			$elm$json$Json$Decode$decodeValue($author$project$Main$settingsDecoder),
+			function (l) {
+				if (l.$ === 'Ok') {
+					var b = l.a;
+					return $author$project$Main$SettingsReceived(b);
+				} else {
+					return $author$project$Main$SettingsReceived(
+						{errorsCoefficient: 2, isKeyboardGloballyVisible: $elm$core$Maybe$Nothing, isTutorGloballyActive: $elm$core$Maybe$Nothing, timeLimitInSeconds: 2});
+				}
+			}));
 };
 var $author$project$Main$Custom = function (a) {
 	return {$: 'Custom', a: a};
 };
+var $elm$core$String$fromFloat = _String_fromNumber;
 var $elm$core$Basics$neq = _Utils_notEqual;
 var $author$project$Main$update = F2(
 	function (msg, model) {
@@ -5254,7 +5285,7 @@ var $author$project$Main$update = F2(
 					_Utils_update(
 						model,
 						{
-							customErrorsCoefficientPercententage: $elm$core$String$fromInt(settings.errorsCoefficient),
+							customErrorsCoefficientPercententage: $elm$core$String$fromFloat(settings.errorsCoefficient),
 							defaultErrorsCoefficient: true
 						}),
 					$elm$core$Platform$Cmd$none);

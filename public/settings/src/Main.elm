@@ -4,6 +4,7 @@ import Browser
 import Html exposing (br, button, div, fieldset, form, input, label, p, strong, text)
 import Html.Attributes as Attributes exposing (attribute, checked, class, name, pattern, type_, value)
 import Html.Events exposing (onClick, onInput, onSubmit)
+import Json.Decode as JD
 
 
 
@@ -25,7 +26,7 @@ main =
 -- port sendMessage : String -> Cmd msg
 
 
-port settingsReceiver : (Settings -> msg) -> Sub msg
+port settingsReceiver : (JD.Value -> msg) -> Sub msg
 
 
 
@@ -33,9 +34,20 @@ port settingsReceiver : (Settings -> msg) -> Sub msg
 
 
 type alias Settings =
-    { errorsCoefficient : Int
+    { errorsCoefficient : Float
     , timeLimitInSeconds : Int
+    , isTutorGloballyActive : Maybe Bool
+    , isKeyboardGloballyVisible : Maybe Bool
     }
+
+
+settingsDecoder : JD.Decoder Settings
+settingsDecoder =
+    JD.map4 Settings
+        (JD.field "errorsCoefficient" JD.float)
+        (JD.field "timeLimitInSeconds" JD.int)
+        (JD.maybe (JD.field "isTutorGloballyActive" JD.bool))
+        (JD.maybe (JD.field "isKeyboardGloballyVisible" JD.bool))
 
 
 
@@ -44,7 +56,23 @@ type alias Settings =
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-    settingsReceiver SettingsReceived
+    settingsReceiver
+        (JD.decodeValue settingsDecoder
+            >> (\l ->
+                    case l of
+                        Ok b ->
+                            SettingsReceived b
+
+                        Err _ ->
+                            SettingsReceived
+                                -- TODO: TEMP
+                                { errorsCoefficient = 2
+                                , timeLimitInSeconds = 2
+                                , isTutorGloballyActive = Nothing
+                                , isKeyboardGloballyVisible = Nothing
+                                }
+               )
+        )
 
 
 
@@ -144,7 +172,7 @@ update msg model =
 
         SettingsReceived settings ->
             ( { model
-                | customErrorsCoefficientPercententage = String.fromInt settings.errorsCoefficient
+                | customErrorsCoefficientPercententage = String.fromFloat settings.errorsCoefficient
                 , defaultErrorsCoefficient = True
               }
             , Cmd.none
