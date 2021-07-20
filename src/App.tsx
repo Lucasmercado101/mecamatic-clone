@@ -26,7 +26,7 @@ export default function App() {
           text: string;
           isTutorActive: boolean;
           isKeyboardVisible: boolean;
-          category: "Practica" | "Aprendizaje";
+          category: "Practica" | "Aprendizaje" | "Perfeccionamiento";
           lesson: number;
           exercise: number;
           WPMNeededToPass: number;
