@@ -200,7 +200,6 @@ ipcMain.on("is-on-main-view", () => {
 });
 
 ipcMain.on("open-global-settings-window", (e, userName) => {
-  // const mainWin = BrowserWindow.getFocusedWindow();
   const win = new BrowserWindow({
     width: 645,
     height: 280,
@@ -244,7 +243,7 @@ ipcMain.on("open-global-settings-window", (e, userName) => {
       () => {
         BrowserWindow.getFocusedWindow().close();
         const mainWindow = BrowserWindow.getFocusedWindow();
-        mainWindow.send("reload-user-settings", data);
+        mainWindow.send("reload-user-settings", { userName, ...data });
       }
     );
   });
