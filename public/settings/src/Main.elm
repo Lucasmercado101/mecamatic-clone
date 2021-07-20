@@ -43,16 +43,18 @@ type alias Settings =
     , timeLimitInSeconds : Int
     , isTutorGloballyActive : Maybe Bool
     , isKeyboardGloballyVisible : Maybe Bool
+    , minimumWPM : Maybe Int
     }
 
 
 settingsDecoder : JD.Decoder Settings
 settingsDecoder =
-    JD.map4 Settings
+    JD.map5 Settings
         (JD.field "errorsCoefficient" JD.float)
         (JD.field "timeLimitInSeconds" JD.int)
         (JD.maybe (JD.field "isTutorGloballyActive" JD.bool))
         (JD.maybe (JD.field "isKeyboardGloballyVisible" JD.bool))
+        (JD.maybe (JD.field "minimumWPM" JD.int))
 
 
 
@@ -76,6 +78,7 @@ subscriptions _ =
                                 , timeLimitInSeconds = 2
                                 , isTutorGloballyActive = Nothing
                                 , isKeyboardGloballyVisible = Nothing
+                                , minimumWPM = Just 30
                                 }
                )
         )
@@ -86,13 +89,14 @@ subscriptions _ =
 
 
 type alias Model =
-    { minimumSpeed : CustomAmount
+    { defaultMinimumSpeedSelected : Bool
     , defaultErrorsCoefficient : Bool
     , customErrorsCoefficientPercententage : String
     , isTutorActive : Maybe Bool
     , isKeyboardVisible : Maybe Bool
     , customMinimumSpeedAmount : Int
     , timeLimit : String
+    , defaultMinimumSpeed : Int
     }
 
 
@@ -102,7 +106,8 @@ type alias Model =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { minimumSpeed = Default
+    ( { defaultMinimumSpeedSelected = False
+      , defaultMinimumSpeed = 20
       , defaultErrorsCoefficient = False
       , isKeyboardVisible = Nothing
       , isTutorActive = Nothing
@@ -118,17 +123,12 @@ init _ =
 -- UPDATE
 
 
-type CustomAmount
-    = Default
-    | Custom Int
-
-
 type Msg
     = TutorChoicePick (Maybe Bool)
     | KeyboardChoicePick (Maybe Bool)
-    | PickCustomSpeed Bool
+    | UseDefaultSpeed Bool
     | ChangeCustomSpeed Int
-    | PickCustomErrorsCoefficient Bool
+    | UseDefaultErrorsCoefficient Bool
     | ChangeCustomErrorCoefficientPercentage String
     | SettingsReceived Settings
     | HandleSubmit
@@ -155,26 +155,13 @@ update msg model =
                 Nothing ->
                     ( { model | isKeyboardVisible = Nothing }, Cmd.none )
 
-        PickCustomSpeed bool ->
-            if bool == True && model.minimumSpeed /= Default then
-                ( model, Cmd.none )
-
-            else
-                ( { model
-                    | minimumSpeed =
-                        if bool == True then
-                            Custom model.customMinimumSpeedAmount
-
-                        else
-                            Default
-                  }
-                , Cmd.none
-                )
+        UseDefaultSpeed bool ->
+            ( { model | defaultMinimumSpeedSelected = bool }, Cmd.none )
 
         ChangeCustomSpeed amount ->
             ( { model | customMinimumSpeedAmount = amount }, Cmd.none )
 
-        PickCustomErrorsCoefficient bool ->
+        UseDefaultErrorsCoefficient bool ->
             ( { model | defaultErrorsCoefficient = bool }, Cmd.none )
 
         ChangeCustomErrorCoefficientPercentage amount ->
@@ -187,6 +174,13 @@ update msg model =
                 , isTutorActive = settings.isTutorGloballyActive
                 , isKeyboardVisible = settings.isKeyboardGloballyVisible
                 , timeLimit = String.fromFloat (toFloat settings.timeLimitInSeconds / 60)
+                , customMinimumSpeedAmount = Maybe.withDefault 20 settings.minimumWPM
+                , defaultMinimumSpeedSelected =
+                    if settings.minimumWPM == Nothing then
+                        True
+
+                    else
+                        False
               }
             , Cmd.none
             )
@@ -207,6 +201,12 @@ update msg model =
                     , timeLimitInSeconds = newTimeLimit
                     , isTutorGloballyActive = model.isTutorActive
                     , isKeyboardGloballyVisible = model.isKeyboardVisible
+                    , minimumWPM =
+                        if True then
+                            Just model.customMinimumSpeedAmount
+
+                        else
+                            Nothing
                     }
             in
             ( model
@@ -232,7 +232,7 @@ view model =
                 [ p [ class "group__title" ]
                     [ text "Velocidad minima" ]
                 , label [ class "group-option" ]
-                    [ input [ name "speed", type_ "radio", onClick (PickCustomSpeed False), checked (model.minimumSpeed == Default) ]
+                    [ input [ name "speed", type_ "radio", onClick (UseDefaultSpeed True), checked model.defaultMinimumSpeedSelected ]
                         []
                     , text "Predeterminada"
                     ]
@@ -240,16 +240,16 @@ view model =
                     [ input
                         [ name "speed"
                         , type_ "radio"
-                        , onClick (PickCustomSpeed True)
+                        , onClick (UseDefaultSpeed False)
                         , checked
-                            (model.minimumSpeed /= Default)
+                            (not model.defaultMinimumSpeedSelected)
                         ]
                         []
                     , text "Personalizar"
                     ]
                 , label [ class "group-option" ]
-                    [ text "Nueva velocidad:  "
-                    , if model.minimumSpeed == Default then
+                    [ text "Nueva velocidad:"
+                    , if model.defaultMinimumSpeedSelected then
                         input
                             [ class "custom-amount-input"
                             , attribute "disabled" ""
@@ -279,8 +279,8 @@ view model =
                     [ input
                         [ name "errors-coefficient"
                         , type_ "radio"
-                        , checked (model.defaultErrorsCoefficient == False)
-                        , onClick (PickCustomErrorsCoefficient False)
+                        , checked (model.defaultErrorsCoefficient == True)
+                        , onClick (UseDefaultErrorsCoefficient True)
                         ]
                         []
                     , text "Predeterminado"
@@ -289,16 +289,16 @@ view model =
                     [ input
                         [ name "errors-coefficient"
                         , type_ "radio"
-                        , onClick (PickCustomErrorsCoefficient True)
+                        , onClick (UseDefaultErrorsCoefficient False)
                         , checked
-                            (model.defaultErrorsCoefficient == True)
+                            (model.defaultErrorsCoefficient == False)
                         ]
                         []
                     , text "Personalizar"
                     ]
                 , label [ class "group-option" ]
                     [ text "Nuevo coeficiente:  "
-                    , if model.defaultErrorsCoefficient == False then
+                    , if model.defaultErrorsCoefficient then
                         input
                             [ class "custom-amount-input"
                             , attribute "disabled" ""
@@ -435,6 +435,5 @@ view model =
                     [ text "Cerrar" ]
                 ]
             ]
-
-        -- , text (Debug.toString model)
+        , text (Debug.toString model)
         ]

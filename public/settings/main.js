@@ -5144,12 +5144,11 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$element = _Browser_element;
-var $author$project$Main$Default = {$: 'Default'};
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Main$init = function (_v0) {
 	return _Utils_Tuple2(
-		{customErrorsCoefficientPercententage: '2', customMinimumSpeedAmount: 20, defaultErrorsCoefficient: false, isKeyboardVisible: $elm$core$Maybe$Nothing, isTutorActive: $elm$core$Maybe$Nothing, minimumSpeed: $author$project$Main$Default, timeLimit: '8'},
+		{customErrorsCoefficientPercententage: '2', customMinimumSpeedAmount: 20, defaultErrorsCoefficient: false, defaultMinimumSpeed: 20, defaultMinimumSpeedSelected: false, isKeyboardVisible: $elm$core$Maybe$Nothing, isTutorActive: $elm$core$Maybe$Nothing, timeLimit: '8'},
 		$elm$core$Platform$Cmd$none);
 };
 var $author$project$Main$SettingsReceived = function (a) {
@@ -5161,15 +5160,15 @@ var $elm$core$Basics$composeR = F3(
 			f(x));
 	});
 var $elm$json$Json$Decode$decodeValue = _Json_run;
-var $author$project$Main$Settings = F4(
-	function (errorsCoefficient, timeLimitInSeconds, isTutorGloballyActive, isKeyboardGloballyVisible) {
-		return {errorsCoefficient: errorsCoefficient, isKeyboardGloballyVisible: isKeyboardGloballyVisible, isTutorGloballyActive: isTutorGloballyActive, timeLimitInSeconds: timeLimitInSeconds};
+var $author$project$Main$Settings = F5(
+	function (errorsCoefficient, timeLimitInSeconds, isTutorGloballyActive, isKeyboardGloballyVisible, minimumWPM) {
+		return {errorsCoefficient: errorsCoefficient, isKeyboardGloballyVisible: isKeyboardGloballyVisible, isTutorGloballyActive: isTutorGloballyActive, minimumWPM: minimumWPM, timeLimitInSeconds: timeLimitInSeconds};
 	});
 var $elm$json$Json$Decode$bool = _Json_decodeBool;
 var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$json$Json$Decode$float = _Json_decodeFloat;
 var $elm$json$Json$Decode$int = _Json_decodeInt;
-var $elm$json$Json$Decode$map4 = _Json_map4;
+var $elm$json$Json$Decode$map5 = _Json_map5;
 var $elm$json$Json$Decode$oneOf = _Json_oneOf;
 var $elm$json$Json$Decode$maybe = function (decoder) {
 	return $elm$json$Json$Decode$oneOf(
@@ -5179,15 +5178,17 @@ var $elm$json$Json$Decode$maybe = function (decoder) {
 				$elm$json$Json$Decode$succeed($elm$core$Maybe$Nothing)
 			]));
 };
-var $author$project$Main$settingsDecoder = A5(
-	$elm$json$Json$Decode$map4,
+var $author$project$Main$settingsDecoder = A6(
+	$elm$json$Json$Decode$map5,
 	$author$project$Main$Settings,
 	A2($elm$json$Json$Decode$field, 'errorsCoefficient', $elm$json$Json$Decode$float),
 	A2($elm$json$Json$Decode$field, 'timeLimitInSeconds', $elm$json$Json$Decode$int),
 	$elm$json$Json$Decode$maybe(
 		A2($elm$json$Json$Decode$field, 'isTutorGloballyActive', $elm$json$Json$Decode$bool)),
 	$elm$json$Json$Decode$maybe(
-		A2($elm$json$Json$Decode$field, 'isKeyboardGloballyVisible', $elm$json$Json$Decode$bool)));
+		A2($elm$json$Json$Decode$field, 'isKeyboardGloballyVisible', $elm$json$Json$Decode$bool)),
+	$elm$json$Json$Decode$maybe(
+		A2($elm$json$Json$Decode$field, 'minimumWPM', $elm$json$Json$Decode$int)));
 var $elm$json$Json$Decode$value = _Json_decodeValue;
 var $author$project$Main$settingsReceiver = _Platform_incomingPort('settingsReceiver', $elm$json$Json$Decode$value);
 var $author$project$Main$subscriptions = function (_v0) {
@@ -5201,15 +5202,17 @@ var $author$project$Main$subscriptions = function (_v0) {
 					return $author$project$Main$SettingsReceived(b);
 				} else {
 					return $author$project$Main$SettingsReceived(
-						{errorsCoefficient: 2, isKeyboardGloballyVisible: $elm$core$Maybe$Nothing, isTutorGloballyActive: $elm$core$Maybe$Nothing, timeLimitInSeconds: 2});
+						{
+							errorsCoefficient: 2,
+							isKeyboardGloballyVisible: $elm$core$Maybe$Nothing,
+							isTutorGloballyActive: $elm$core$Maybe$Nothing,
+							minimumWPM: $elm$core$Maybe$Just(30),
+							timeLimitInSeconds: 2
+						});
 				}
 			}));
 };
-var $author$project$Main$Custom = function (a) {
-	return {$: 'Custom', a: a};
-};
 var $elm$core$String$fromFloat = _String_fromNumber;
-var $elm$core$Basics$neq = _Utils_notEqual;
 var $elm$core$Basics$round = _Basics_round;
 var $elm$json$Json$Encode$null = _Json_encodeNull;
 var $author$project$Main$sendCloseWindow = _Platform_outgoingPort(
@@ -5261,6 +5264,11 @@ var $author$project$Main$sendNewSettings = _Platform_outgoingPort(
 					function ($) {
 						return A3($elm$core$Maybe$destruct, $elm$json$Json$Encode$null, $elm$json$Json$Encode$bool, $);
 					}($.isTutorGloballyActive)),
+					_Utils_Tuple2(
+					'minimumWPM',
+					function ($) {
+						return A3($elm$core$Maybe$destruct, $elm$json$Json$Encode$null, $elm$json$Json$Encode$int, $);
+					}($.minimumWPM)),
 					_Utils_Tuple2(
 					'timeLimitInSeconds',
 					$elm$json$Json$Encode$int($.timeLimitInSeconds))
@@ -5315,14 +5323,12 @@ var $author$project$Main$update = F2(
 							{isKeyboardVisible: $elm$core$Maybe$Nothing}),
 						$elm$core$Platform$Cmd$none);
 				}
-			case 'PickCustomSpeed':
+			case 'UseDefaultSpeed':
 				var bool = msg.a;
-				return (bool && (!_Utils_eq(model.minimumSpeed, $author$project$Main$Default))) ? _Utils_Tuple2(model, $elm$core$Platform$Cmd$none) : _Utils_Tuple2(
+				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{
-							minimumSpeed: bool ? $author$project$Main$Custom(model.customMinimumSpeedAmount) : $author$project$Main$Default
-						}),
+						{defaultMinimumSpeedSelected: bool}),
 					$elm$core$Platform$Cmd$none);
 			case 'ChangeCustomSpeed':
 				var amount = msg.a;
@@ -5331,7 +5337,7 @@ var $author$project$Main$update = F2(
 						model,
 						{customMinimumSpeedAmount: amount}),
 					$elm$core$Platform$Cmd$none);
-			case 'PickCustomErrorsCoefficient':
+			case 'UseDefaultErrorsCoefficient':
 				var bool = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
@@ -5352,7 +5358,9 @@ var $author$project$Main$update = F2(
 						model,
 						{
 							customErrorsCoefficientPercententage: $elm$core$String$fromFloat(settings.errorsCoefficient),
+							customMinimumSpeedAmount: A2($elm$core$Maybe$withDefault, 20, settings.minimumWPM),
 							defaultErrorsCoefficient: true,
+							defaultMinimumSpeedSelected: _Utils_eq(settings.minimumWPM, $elm$core$Maybe$Nothing) ? true : false,
 							isKeyboardVisible: settings.isKeyboardGloballyVisible,
 							isTutorActive: settings.isTutorGloballyActive,
 							timeLimit: $elm$core$String$fromFloat(settings.timeLimitInSeconds / 60)
@@ -5375,6 +5383,7 @@ var $author$project$Main$update = F2(
 						$elm$core$String$toFloat(model.customErrorsCoefficientPercententage)),
 					isKeyboardGloballyVisible: model.isKeyboardVisible,
 					isTutorGloballyActive: model.isTutorActive,
+					minimumWPM: true ? $elm$core$Maybe$Just(model.customMinimumSpeedAmount) : $elm$core$Maybe$Nothing,
 					timeLimitInSeconds: newTimeLimit
 				};
 				return _Utils_Tuple2(
@@ -5407,14 +5416,14 @@ var $author$project$Main$HandleSubmit = {$: 'HandleSubmit'};
 var $author$project$Main$KeyboardChoicePick = function (a) {
 	return {$: 'KeyboardChoicePick', a: a};
 };
-var $author$project$Main$PickCustomErrorsCoefficient = function (a) {
-	return {$: 'PickCustomErrorsCoefficient', a: a};
-};
-var $author$project$Main$PickCustomSpeed = function (a) {
-	return {$: 'PickCustomSpeed', a: a};
-};
 var $author$project$Main$TutorChoicePick = function (a) {
 	return {$: 'TutorChoicePick', a: a};
+};
+var $author$project$Main$UseDefaultErrorsCoefficient = function (a) {
+	return {$: 'UseDefaultErrorsCoefficient', a: a};
+};
+var $author$project$Main$UseDefaultSpeed = function (a) {
+	return {$: 'UseDefaultSpeed', a: a};
 };
 var $elm$virtual_dom$VirtualDom$attribute = F2(
 	function (key, value) {
@@ -5450,6 +5459,7 @@ var $elm$html$Html$input = _VirtualDom_node('input');
 var $elm$html$Html$label = _VirtualDom_node('label');
 var $elm$html$Html$Attributes$min = $elm$html$Html$Attributes$stringProperty('min');
 var $elm$html$Html$Attributes$name = $elm$html$Html$Attributes$stringProperty('name');
+var $elm$core$Basics$not = _Basics_not;
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 'Normal', a: a};
 };
@@ -5531,6 +5541,7 @@ var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
 var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $elm$core$Debug$toString = _Debug_toString;
 var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
 var $author$project$Main$view = function (model) {
@@ -5583,9 +5594,8 @@ var $author$project$Main$view = function (model) {
 												$elm$html$Html$Attributes$name('speed'),
 												$elm$html$Html$Attributes$type_('radio'),
 												$elm$html$Html$Events$onClick(
-												$author$project$Main$PickCustomSpeed(false)),
-												$elm$html$Html$Attributes$checked(
-												_Utils_eq(model.minimumSpeed, $author$project$Main$Default))
+												$author$project$Main$UseDefaultSpeed(true)),
+												$elm$html$Html$Attributes$checked(model.defaultMinimumSpeedSelected)
 											]),
 										_List_Nil),
 										$elm$html$Html$text('Predeterminada')
@@ -5605,9 +5615,8 @@ var $author$project$Main$view = function (model) {
 												$elm$html$Html$Attributes$name('speed'),
 												$elm$html$Html$Attributes$type_('radio'),
 												$elm$html$Html$Events$onClick(
-												$author$project$Main$PickCustomSpeed(true)),
-												$elm$html$Html$Attributes$checked(
-												!_Utils_eq(model.minimumSpeed, $author$project$Main$Default))
+												$author$project$Main$UseDefaultSpeed(false)),
+												$elm$html$Html$Attributes$checked(!model.defaultMinimumSpeedSelected)
 											]),
 										_List_Nil),
 										$elm$html$Html$text('Personalizar')
@@ -5620,8 +5629,8 @@ var $author$project$Main$view = function (model) {
 									]),
 								_List_fromArray(
 									[
-										$elm$html$Html$text('Nueva velocidad:  '),
-										_Utils_eq(model.minimumSpeed, $author$project$Main$Default) ? A2(
+										$elm$html$Html$text('Nueva velocidad:'),
+										model.defaultMinimumSpeedSelected ? A2(
 										$elm$html$Html$input,
 										_List_fromArray(
 											[
@@ -5687,9 +5696,9 @@ var $author$project$Main$view = function (model) {
 											[
 												$elm$html$Html$Attributes$name('errors-coefficient'),
 												$elm$html$Html$Attributes$type_('radio'),
-												$elm$html$Html$Attributes$checked(!model.defaultErrorsCoefficient),
+												$elm$html$Html$Attributes$checked(model.defaultErrorsCoefficient),
 												$elm$html$Html$Events$onClick(
-												$author$project$Main$PickCustomErrorsCoefficient(false))
+												$author$project$Main$UseDefaultErrorsCoefficient(true))
 											]),
 										_List_Nil),
 										$elm$html$Html$text('Predeterminado')
@@ -5709,8 +5718,8 @@ var $author$project$Main$view = function (model) {
 												$elm$html$Html$Attributes$name('errors-coefficient'),
 												$elm$html$Html$Attributes$type_('radio'),
 												$elm$html$Html$Events$onClick(
-												$author$project$Main$PickCustomErrorsCoefficient(true)),
-												$elm$html$Html$Attributes$checked(model.defaultErrorsCoefficient)
+												$author$project$Main$UseDefaultErrorsCoefficient(false)),
+												$elm$html$Html$Attributes$checked(!model.defaultErrorsCoefficient)
 											]),
 										_List_Nil),
 										$elm$html$Html$text('Personalizar')
@@ -5724,7 +5733,7 @@ var $author$project$Main$view = function (model) {
 								_List_fromArray(
 									[
 										$elm$html$Html$text('Nuevo coeficiente:  '),
-										(!model.defaultErrorsCoefficient) ? A2(
+										model.defaultErrorsCoefficient ? A2(
 										$elm$html$Html$input,
 										_List_fromArray(
 											[
@@ -6068,7 +6077,9 @@ var $author$project$Main$view = function (model) {
 										$elm$html$Html$text('Cerrar')
 									]))
 							]))
-					]))
+					])),
+				$elm$html$Html$text(
+				$elm$core$Debug$toString(model))
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$element(
