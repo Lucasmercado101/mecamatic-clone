@@ -1975,11 +1975,11 @@ function Index({ send, state }: Props) {
                   paddingTop: 1
                 }}
               >
-                {timeLimitMinutes < 9
+                {timeLimitMinutes <= 9
                   ? `0${timeLimitMinutes}`
                   : timeLimitMinutes}
                 :
-                {timeLimitSeconds < 9
+                {timeLimitSeconds <= 9
                   ? `0${timeLimitSeconds}`
                   : timeLimitSeconds}
               </div>
