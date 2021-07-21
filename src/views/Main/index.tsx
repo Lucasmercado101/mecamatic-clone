@@ -168,12 +168,9 @@ function Index({ send, state }: Props) {
   const timeLimitMinutes = ~~((timeLimitInSeconds - elapsedSeconds) / 60);
   const timeLimitSeconds = (timeLimitInSeconds - elapsedSeconds) % 60;
 
-  const tutorIsActivatedGlobally = isTutorGloballyActive === true;
-  const tutorIsDeactivatedGlobally = isTutorGloballyActive === false;
-
-  const isTutorActiveCurrently = tutorIsActivatedGlobally
+  const isTutorActiveCurrently = isTutorGloballyActive
     ? true
-    : tutorIsDeactivatedGlobally
+    : !isTutorGloballyActive
     ? false
     : isTutorActiveForThisExercise;
 
