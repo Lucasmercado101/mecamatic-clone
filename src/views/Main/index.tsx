@@ -1522,7 +1522,9 @@ function Index({ send, state }: Props) {
               <div>
                 {userName}
                 <br />
-                {state.matches(stateTypes.EXERCISE_SELECTED) && (
+                {state.matches({
+                  [stateTypes.MAIN_VIEW]: stateTypes.EXERCISE_SELECTED
+                }) && (
                   <div style={{ marginTop: 8 }}>
                     {lessonCategory}
                     <br />
@@ -1547,7 +1549,9 @@ function Index({ send, state }: Props) {
               }}
             >
               <div className={classes.riseTitleText}>Incidencias</div>
-              {!state.matches(stateTypes.EXERCISE_SELECTED) && (
+              {!state.matches({
+                [stateTypes.MAIN_VIEW]: stateTypes.EXERCISE_SELECTED
+              }) && (
                 <div
                   style={{
                     backgroundColor: "#ff8080",
@@ -1564,8 +1568,10 @@ function Index({ send, state }: Props) {
               )}
 
               {state.matches({
-                [stateTypes.EXERCISE_SELECTED]: {
-                  [stateTypes.EXERCISE_PROGRESS]: stateTypes.EXERCISE_FINISHED
+                [stateTypes.MAIN_VIEW]: {
+                  [stateTypes.EXERCISE_SELECTED]: {
+                    [stateTypes.EXERCISE_PROGRESS]: stateTypes.EXERCISE_FINISHED
+                  }
                 }
               }) &&
                 (errorsCoefficient < percentageOfErrors ? (
@@ -1718,15 +1724,19 @@ function Index({ send, state }: Props) {
                   >
                     {[
                       {
-                        [stateTypes.EXERCISE_SELECTED]: {
-                          [stateTypes.EXERCISE_PROGRESS]:
-                            stateTypes.EXERCISE_ONGOING
+                        [stateTypes.MAIN_VIEW]: {
+                          [stateTypes.EXERCISE_SELECTED]: {
+                            [stateTypes.EXERCISE_PROGRESS]:
+                              stateTypes.EXERCISE_ONGOING
+                          }
                         }
                       },
                       {
-                        [stateTypes.EXERCISE_SELECTED]: {
-                          [stateTypes.EXERCISE_PROGRESS]:
-                            stateTypes.EXERCISE_FINISHED
+                        [stateTypes.MAIN_VIEW]: {
+                          [stateTypes.EXERCISE_SELECTED]: {
+                            [stateTypes.EXERCISE_PROGRESS]:
+                              stateTypes.EXERCISE_FINISHED
+                          }
                         }
                       }
                     ].some(state.matches) && totalGrossKeystrokes}
@@ -1760,15 +1770,19 @@ function Index({ send, state }: Props) {
                   >
                     {[
                       {
-                        [stateTypes.EXERCISE_SELECTED]: {
-                          [stateTypes.EXERCISE_PROGRESS]:
-                            stateTypes.EXERCISE_ONGOING
+                        [stateTypes.MAIN_VIEW]: {
+                          [stateTypes.EXERCISE_SELECTED]: {
+                            [stateTypes.EXERCISE_PROGRESS]:
+                              stateTypes.EXERCISE_ONGOING
+                          }
                         }
                       },
                       {
-                        [stateTypes.EXERCISE_SELECTED]: {
-                          [stateTypes.EXERCISE_PROGRESS]:
-                            stateTypes.EXERCISE_FINISHED
+                        [stateTypes.MAIN_VIEW]: {
+                          [stateTypes.EXERCISE_SELECTED]: {
+                            [stateTypes.EXERCISE_PROGRESS]:
+                              stateTypes.EXERCISE_FINISHED
+                          }
                         }
                       }
                     ].some(state.matches) && totalNetKeystrokes}
@@ -1803,15 +1817,19 @@ function Index({ send, state }: Props) {
                   >
                     {[
                       {
-                        [stateTypes.EXERCISE_SELECTED]: {
-                          [stateTypes.EXERCISE_PROGRESS]:
-                            stateTypes.EXERCISE_ONGOING
+                        [stateTypes.MAIN_VIEW]: {
+                          [stateTypes.EXERCISE_SELECTED]: {
+                            [stateTypes.EXERCISE_PROGRESS]:
+                              stateTypes.EXERCISE_ONGOING
+                          }
                         }
                       },
                       {
-                        [stateTypes.EXERCISE_SELECTED]: {
-                          [stateTypes.EXERCISE_PROGRESS]:
-                            stateTypes.EXERCISE_FINISHED
+                        [stateTypes.MAIN_VIEW]: {
+                          [stateTypes.EXERCISE_SELECTED]: {
+                            [stateTypes.EXERCISE_PROGRESS]:
+                              stateTypes.EXERCISE_FINISHED
+                          }
                         }
                       }
                     ].some(state.matches) && errors}
@@ -1846,15 +1864,19 @@ function Index({ send, state }: Props) {
                   >
                     {[
                       {
-                        [stateTypes.EXERCISE_SELECTED]: {
-                          [stateTypes.EXERCISE_PROGRESS]:
-                            stateTypes.EXERCISE_ONGOING
+                        [stateTypes.MAIN_VIEW]: {
+                          [stateTypes.EXERCISE_SELECTED]: {
+                            [stateTypes.EXERCISE_PROGRESS]:
+                              stateTypes.EXERCISE_ONGOING
+                          }
                         }
                       },
                       {
-                        [stateTypes.EXERCISE_SELECTED]: {
-                          [stateTypes.EXERCISE_PROGRESS]:
-                            stateTypes.EXERCISE_FINISHED
+                        [stateTypes.MAIN_VIEW]: {
+                          [stateTypes.EXERCISE_SELECTED]: {
+                            [stateTypes.EXERCISE_PROGRESS]:
+                              stateTypes.EXERCISE_FINISHED
+                          }
                         }
                       }
                     ].some(state.matches) &&
@@ -1893,15 +1915,19 @@ function Index({ send, state }: Props) {
                   >
                     {[
                       {
-                        [stateTypes.EXERCISE_SELECTED]: {
-                          [stateTypes.EXERCISE_PROGRESS]:
-                            stateTypes.EXERCISE_ONGOING
+                        [stateTypes.MAIN_VIEW]: {
+                          [stateTypes.EXERCISE_SELECTED]: {
+                            [stateTypes.EXERCISE_PROGRESS]:
+                              stateTypes.EXERCISE_ONGOING
+                          }
                         }
                       },
                       {
-                        [stateTypes.EXERCISE_SELECTED]: {
-                          [stateTypes.EXERCISE_PROGRESS]:
-                            stateTypes.EXERCISE_FINISHED
+                        [stateTypes.MAIN_VIEW]: {
+                          [stateTypes.EXERCISE_SELECTED]: {
+                            [stateTypes.EXERCISE_PROGRESS]:
+                              stateTypes.EXERCISE_FINISHED
+                          }
                         }
                       }
                     ].some(state.matches) &&

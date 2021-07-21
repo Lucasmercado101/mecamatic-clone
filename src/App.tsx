@@ -60,9 +60,7 @@ export default function App() {
   switch (true) {
     case state.matches(stateTypes.WELCOME_VIEW):
       return <Welcome send={send} />;
-    case [stateTypes.EXERCISE_NOT_SELECTED, stateTypes.EXERCISE_SELECTED].some(
-      state.matches
-    ):
+    case state.matches(stateTypes.MAIN_VIEW):
       return <Main state={state} send={send} />;
     default:
       return (

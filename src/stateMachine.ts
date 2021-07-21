@@ -15,6 +15,7 @@ export enum eventTypes {
 
 export enum stateTypes {
   WELCOME_VIEW = "WELCOME_VIEW",
+  MAIN_VIEW = "MAIN_VIEW",
   EXERCISE_NOT_SELECTED = "EXERCISE_NOT_SELECTED",
   EXERCISE_PROGRESS = "EXERCISE_PROGRESS",
   EXERCISE_SELECTED = "EXERCISE_SELECTED",
@@ -25,6 +26,12 @@ export enum stateTypes {
   TIMER_OFF = "TIMER_OFF",
   TIMER_ONGOING = "TIMER_ONGOING",
   TIMER_STOPPED = "TIMER_STOPPED"
+}
+
+enum IDs {
+  ROOT = "ROOT",
+  WELCOME_VIEW = "WELCOME_VIEW",
+  MAIN_VIEW = "MAIN_VIEW"
 }
 
 enum actionTypes {
@@ -125,6 +132,7 @@ function totalGrossKeystrokesTyped(totalKeystrokes: number, errors: number) {
 
 export const stateMachine = createMachine<stateContext, stateEvents>(
   {
+    id: IDs.ROOT,
     initial: stateTypes.WELCOME_VIEW,
     context: {
       userName: "",
@@ -143,108 +151,117 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
     },
     states: {
       [stateTypes.WELCOME_VIEW]: {
+        id: IDs.WELCOME_VIEW,
         on: {
           [eventTypes.USER_DATA_LOADED]: {
-            target: stateTypes.EXERCISE_NOT_SELECTED,
+            target: stateTypes.MAIN_VIEW,
             actions: actionTypes.SET_USER_DATA
           }
         }
       },
-      [stateTypes.EXERCISE_NOT_SELECTED]: {},
-      [stateTypes.EXERCISE_SELECTED]: {
-        entry: [
-          // TODO: i don't think these computed values should be computed here and not in app.tsx on the fly
-          actionTypes.RESET_ELAPSED_TIME_TO_0,
-          actionTypes.RESET_ERRORS_TO_0,
-          actionTypes.RESET_GROSS_KEYWORDS_TYPED_TO_0,
-          actionTypes.RESET_NET_KEYWORDS_TYPED_TO_0
-        ],
-        type: "parallel",
+      [stateTypes.MAIN_VIEW]: {
+        id: IDs.MAIN_VIEW,
+        initial: stateTypes.EXERCISE_NOT_SELECTED,
         states: {
-          [stateTypes.EXERCISE_PROGRESS]: {
-            initial: stateTypes.EXERCISE_NOT_STARTED,
-            entry: actionTypes.SET_CURSOR_TO_NOT_STARTED,
+          [stateTypes.EXERCISE_NOT_SELECTED]: {},
+          [stateTypes.EXERCISE_SELECTED]: {
+            entry: [
+              actionTypes.RESET_ELAPSED_TIME_TO_0,
+              actionTypes.RESET_ERRORS_TO_0,
+              // TODO: i don't think these computed values should be computed here and not in app.tsx on the fly
+              actionTypes.RESET_GROSS_KEYWORDS_TYPED_TO_0,
+              actionTypes.RESET_NET_KEYWORDS_TYPED_TO_0
+            ],
+            type: "parallel",
             states: {
-              [stateTypes.EXERCISE_NOT_STARTED]: {
-                on: {
-                  [eventTypes.KEY_PRESSED]: {
-                    target: stateTypes.EXERCISE_ONGOING,
-                    cond: guardTypes.ENTER_WAS_PRESSED,
-                    actions: actionTypes.SET_CURSOR_TO_FIRST_LETTER
-                  }
-                }
-              },
-              [stateTypes.EXERCISE_ONGOING]: {
-                on: {
-                  [eventTypes.KEY_PRESSED]: [
-                    {
-                      target: stateTypes.EXERCISE_FINISHED,
-                      cond: guardTypes.PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER,
-                      actions: [
-                        actionTypes.MOVE_CURSOR_BY_ONE,
-                        actionTypes.CALCULATE_GROSS_KEYWORDS_TYPED,
-                        actionTypes.CALCULATE_NET_KEYWORDS_TYPED
-                      ]
-                    },
-                    {
-                      target: stateTypes.EXERCISE_ONGOING,
-                      cond: guardTypes.PRESSED_CORRECT_LETTER,
-                      actions: [
-                        actionTypes.MOVE_CURSOR_BY_ONE,
-                        actionTypes.CALCULATE_GROSS_KEYWORDS_TYPED,
-                        actionTypes.CALCULATE_NET_KEYWORDS_TYPED
-                      ]
-                    },
-                    {
-                      target: stateTypes.EXERCISE_ONGOING,
-                      actions: [
-                        actionTypes.INCREASE_ERRORS_BY_ONE,
-                        actionTypes.CALCULATE_GROSS_KEYWORDS_TYPED,
-                        actionTypes.CALCULATE_NET_KEYWORDS_TYPED
+              [stateTypes.EXERCISE_PROGRESS]: {
+                initial: stateTypes.EXERCISE_NOT_STARTED,
+                entry: actionTypes.SET_CURSOR_TO_NOT_STARTED,
+                states: {
+                  [stateTypes.EXERCISE_NOT_STARTED]: {
+                    on: {
+                      [eventTypes.KEY_PRESSED]: {
+                        target: stateTypes.EXERCISE_ONGOING,
+                        cond: guardTypes.ENTER_WAS_PRESSED,
+                        actions: actionTypes.SET_CURSOR_TO_FIRST_LETTER
+                      }
+                    }
+                  },
+                  [stateTypes.EXERCISE_ONGOING]: {
+                    on: {
+                      [eventTypes.KEY_PRESSED]: [
+                        {
+                          target: stateTypes.EXERCISE_FINISHED,
+                          cond: guardTypes.PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER,
+                          actions: [
+                            actionTypes.MOVE_CURSOR_BY_ONE,
+                            actionTypes.CALCULATE_GROSS_KEYWORDS_TYPED,
+                            actionTypes.CALCULATE_NET_KEYWORDS_TYPED
+                          ]
+                        },
+                        {
+                          target: stateTypes.EXERCISE_ONGOING,
+                          cond: guardTypes.PRESSED_CORRECT_LETTER,
+                          actions: [
+                            actionTypes.MOVE_CURSOR_BY_ONE,
+                            actionTypes.CALCULATE_GROSS_KEYWORDS_TYPED,
+                            actionTypes.CALCULATE_NET_KEYWORDS_TYPED
+                          ]
+                        },
+                        {
+                          target: stateTypes.EXERCISE_ONGOING,
+                          actions: [
+                            actionTypes.INCREASE_ERRORS_BY_ONE,
+                            actionTypes.CALCULATE_GROSS_KEYWORDS_TYPED,
+                            actionTypes.CALCULATE_NET_KEYWORDS_TYPED
+                          ]
+                        }
                       ]
                     }
-                  ]
+                  },
+                  [stateTypes.EXERCISE_FINISHED]: {}
                 }
               },
-              [stateTypes.EXERCISE_FINISHED]: {}
+              [stateTypes.EXERCISE_TIMER]: {
+                initial: stateTypes.TIMER_OFF,
+                states: {
+                  [stateTypes.TIMER_OFF]: {
+                    on: {
+                      [eventTypes.KEY_PRESSED]: {
+                        target: stateTypes.TIMER_ONGOING,
+                        cond: guardTypes.ENTER_WAS_PRESSED
+                      }
+                    }
+                  },
+                  [stateTypes.TIMER_ONGOING]: {
+                    after: {
+                      1000: {
+                        target: stateTypes.TIMER_ONGOING,
+                        actions: actionTypes.ADD_ONE_TO_ELAPSED_SECONDS
+                      }
+                    },
+                    on: {
+                      [eventTypes.KEY_PRESSED]: {
+                        target: stateTypes.TIMER_STOPPED,
+                        cond: guardTypes.PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER
+                      }
+                    }
+                  },
+                  [stateTypes.TIMER_STOPPED]: {}
+                }
+              }
             }
-          },
-          [stateTypes.EXERCISE_TIMER]: {
-            initial: stateTypes.TIMER_OFF,
-            states: {
-              [stateTypes.TIMER_OFF]: {
-                on: {
-                  [eventTypes.KEY_PRESSED]: {
-                    target: stateTypes.TIMER_ONGOING,
-                    cond: guardTypes.ENTER_WAS_PRESSED
-                  }
-                }
-              },
-              [stateTypes.TIMER_ONGOING]: {
-                after: {
-                  1000: {
-                    target: stateTypes.TIMER_ONGOING,
-                    actions: actionTypes.ADD_ONE_TO_ELAPSED_SECONDS
-                  }
-                },
-                on: {
-                  [eventTypes.KEY_PRESSED]: {
-                    target: stateTypes.TIMER_STOPPED,
-                    cond: guardTypes.PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER
-                  }
-                }
-              },
-              [stateTypes.TIMER_STOPPED]: {}
-            }
+          }
+        },
+        on: {
+          [eventTypes.EXERCISE_SELECTED]: {
+            target: `#${IDs.MAIN_VIEW}.${stateTypes.EXERCISE_SELECTED}`,
+            actions: actionTypes.SET_EXERCISE_DATA
           }
         }
       }
     },
     on: {
-      [eventTypes.EXERCISE_SELECTED]: {
-        target: stateTypes.EXERCISE_SELECTED,
-        actions: actionTypes.SET_EXERCISE_DATA
-      },
       [eventTypes.USER_DATA_RELOADED]: {
         actions: actionTypes.SET_USER_DATA
       }
