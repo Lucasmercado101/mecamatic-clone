@@ -1569,19 +1569,9 @@ function Index({ send, state }: Props) {
               {state.matches({
                 [stateTypes.MAIN_VIEW]: stateTypes.EXERCISE_NOT_SELECTED
               }) && (
-                <div
-                  style={{
-                    backgroundColor: "#ff8080",
-                    border: "2px solid",
-                    borderStyle: "inset",
-                    color: "white",
-                    height: "100%",
-                    width: "100%",
-                    padding: 5
-                  }}
-                >
+                <RedBGIncidencesText>
                   Seleccione un ejercicio
-                </div>
+                </RedBGIncidencesText>
               )}
 
               {state.matches({
