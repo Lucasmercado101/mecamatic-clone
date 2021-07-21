@@ -305,7 +305,7 @@ function createWindow() {
 app
   .whenReady()
   .then(() => {
-    if (NODE_ENV === "development") {
+    if (NODE_ENV !== "production") {
       globalShortcut.register("CommandOrControl+Shift+C", () => {
         const win = BrowserWindow.getFocusedWindow();
         win.webContents.openDevTools();
