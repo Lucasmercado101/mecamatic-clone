@@ -46,9 +46,10 @@
   background-color: transparent;
   align-items: center;
   border: none;
-  gap: 8px;
-  padding: 0 4px;
+  padding: 0 8px;
+  justify-content: space-between;
   margin: 1px;
+  width: 100px;
 }
 
 .top-toolbar-menu-item:hover {
