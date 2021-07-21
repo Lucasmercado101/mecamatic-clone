@@ -60,14 +60,16 @@ enum actionTypes {
   RESET_NET_KEYWORDS_TYPED_TO_0 = "RESET_NET_KEYWORDS_TYPED_TO_0",
   SET_USER_DATA = "SET_USER_DATA",
   SET_ERROR_MESSAGE_TO_TIME_RAN_OUT = "SET_ERROR_MESSAGE_TO_TIME_RAN_OUT",
-  SET_ERROR_MESSAGE_TO_TOO_MANY_ERRORS = "SET_ERROR_MESSAGE_TO_TOO_MANY_ERRORS"
+  SET_ERROR_MESSAGE_TO_TOO_MANY_ERRORS = "SET_ERROR_MESSAGE_TO_TOO_MANY_ERRORS",
+  SET_ERROR_MESSAGE_TO_TOO_SLOW = "SET_ERROR_MESSAGE_TO_TOO_SLOW"
 }
 
 enum guardTypes {
   ENTER_WAS_PRESSED = "ENTER_WAS_PRESSED",
   PRESSED_CORRECT_LETTER = "PRESSED_CORRECT_LETTER",
   PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER = "PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER",
-  PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER_BUT_ERRORS_PERCENTAGE_IS_BIGGER_THAN_ERRORS_COEFFICIENT = "PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER_BUT_ERRORS_PERCENTAGE_IS_BIGGER_THAN_ERRORS_COEFFICIENT",
+  PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER_BUT_MADE_TOO_MANY_MISTAKES = "PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER_BUT_MADE_TOO_MANY_MISTAKES",
+  PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER_BUT_WAS_TOO_SLOW = "PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER_BUT_WAS_TOO_SLOW",
   THERE_IS_ONE_SECOND_LEFT = "THERE_IS_ONE_SECOND_LEFT"
 }
 
@@ -220,12 +222,22 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
                       [eventTypes.KEY_PRESSED]: [
                         {
                           target: `#${IDs.MAIN_VIEW}.${stateTypes.EXERCISE_FINISHED_UNSUCCESSFULLY}`,
-                          cond: guardTypes.PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER_BUT_ERRORS_PERCENTAGE_IS_BIGGER_THAN_ERRORS_COEFFICIENT,
+                          cond: guardTypes.PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER_BUT_MADE_TOO_MANY_MISTAKES,
                           actions: [
                             actionTypes.MOVE_CURSOR_BY_ONE,
                             actionTypes.CALCULATE_GROSS_KEYWORDS_TYPED,
                             actionTypes.CALCULATE_NET_KEYWORDS_TYPED,
                             actionTypes.SET_ERROR_MESSAGE_TO_TOO_MANY_ERRORS
+                          ]
+                        },
+                        {
+                          target: `#${IDs.MAIN_VIEW}.${stateTypes.EXERCISE_FINISHED_UNSUCCESSFULLY}`,
+                          cond: guardTypes.PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER_BUT_WAS_TOO_SLOW,
+                          actions: [
+                            actionTypes.MOVE_CURSOR_BY_ONE,
+                            actionTypes.CALCULATE_GROSS_KEYWORDS_TYPED,
+                            actionTypes.CALCULATE_NET_KEYWORDS_TYPED,
+                            actionTypes.SET_ERROR_MESSAGE_TO_TOO_SLOW
                           ]
                         },
                         {
@@ -413,6 +425,10 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
       [actionTypes.SET_ERROR_MESSAGE_TO_TOO_MANY_ERRORS]: assign((_) => ({
         exerciseFinishedUnsuccessfullyIncidenceMessage:
           "Ha superado el % maximo de errores permitidos"
+      })),
+      [actionTypes.SET_ERROR_MESSAGE_TO_TOO_SLOW]: assign((_) => ({
+        exerciseFinishedUnsuccessfullyIncidenceMessage:
+          "No ha superado la velocidad minima"
       }))
     },
     guards: {
@@ -433,22 +449,56 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
         event
       ) => {
         const { key } = event as KeyPressedEvent;
-        return (
-          key === ctx.selectedLessonText?.[ctx.exerciseCursorPosition] &&
-          ctx.selectedLessonText?.length - 1 === ctx.exerciseCursorPosition
-        );
+        const pressedCorrectKey =
+          key === ctx.selectedLessonText?.[ctx.exerciseCursorPosition];
+        const isAtLastLetter = ctx.selectedLessonText
+          ? ctx.selectedLessonText.length - 1 === ctx.exerciseCursorPosition
+          : false;
+
+        return pressedCorrectKey && isAtLastLetter;
       },
-      [guardTypes.PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER_BUT_ERRORS_PERCENTAGE_IS_BIGGER_THAN_ERRORS_COEFFICIENT]:
+      [guardTypes.PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER_BUT_MADE_TOO_MANY_MISTAKES]:
         (ctx, event) => {
           const { key } = event as KeyPressedEvent;
-          return (
-            key === ctx.selectedLessonText?.[ctx.exerciseCursorPosition] &&
-            ctx.selectedLessonText?.length - 1 === ctx.exerciseCursorPosition &&
+          const pressedCorrectKey =
+            key === ctx.selectedLessonText?.[ctx.exerciseCursorPosition];
+          const isAtLastLetter = ctx.selectedLessonText
+            ? ctx.selectedLessonText.length - 1 === ctx.exerciseCursorPosition
+            : false;
+
+          const madeTooManyMistakes =
             calculatePercentageOfErrors(
               ctx.errors,
               ctx.exerciseCursorPosition
-            ) > (ctx.errorsCoefficient || ctx.defaultErrorsCoefficient)
-          );
+            ) > (ctx.errorsCoefficient || ctx.defaultErrorsCoefficient);
+
+          return pressedCorrectKey && isAtLastLetter && madeTooManyMistakes;
+        },
+      [guardTypes.PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER_BUT_WAS_TOO_SLOW]:
+        (ctx, event) => {
+          const { key } = event as KeyPressedEvent;
+          const pressedCorrectKey =
+            key === ctx.selectedLessonText?.[ctx.exerciseCursorPosition];
+          const isAtLastLetter = ctx.selectedLessonText
+            ? ctx.selectedLessonText.length - 1 === ctx.exerciseCursorPosition
+            : false;
+
+          const calcNetWPM = (
+            typedEntries: number,
+            seconds: number,
+            errors: number
+          ): number => (typedEntries / 5 - errors) / (seconds / 60);
+
+          const wasTooSlow =
+            +calcNetWPM(
+              ctx.exerciseCursorPosition,
+              ctx.elapsedSeconds,
+              ctx.errors
+            ).toFixed(0) <
+            (ctx.minSpeed ||
+              ctx.minimumWPMNeededToCompleteExerciseSuccessfully);
+
+          return pressedCorrectKey && isAtLastLetter && wasTooSlow;
         }
     }
   }
