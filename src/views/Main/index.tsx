@@ -147,7 +147,7 @@ function Index({ send, state }: Props) {
     lessonCategory,
     exerciseCursorPosition,
     lessonNumber,
-    errorsCoefficient,
+    errorsCoefficient: customErrorsCoefficient,
     minimumWPMNeededToCompleteExerciseSuccessfully,
     // isKeyboardVisibleForThisExercise,
     isTutorActiveForThisExercise = true, // if no exercise selected then by default true
@@ -161,6 +161,8 @@ function Index({ send, state }: Props) {
     userName,
     exerciseFinishedUnsuccessfullyIncidenceMessage
   } = state.context;
+
+  const errorsCoefficient = customErrorsCoefficient ?? 2;
 
   const timeLimitMinutes = ~~((timeLimitInSeconds - elapsedSeconds) / 60);
   const timeLimitSeconds = (timeLimitInSeconds - elapsedSeconds) % 60;
