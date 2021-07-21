@@ -7,6 +7,7 @@ export interface userData {
   userName: string;
   errorsCoefficient?: number;
   isKeyboardGloballyVisible?: boolean;
+  minimumWPM?: number;
   isTutorGloballyActive?: boolean;
   timeLimitInSeconds: number;
 }

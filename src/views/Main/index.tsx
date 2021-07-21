@@ -159,7 +159,8 @@ function Index({ send, state }: Props) {
     totalGrossKeystrokes,
     timeLimitInSeconds,
     userName,
-    exerciseFinishedUnsuccessfullyIncidenceMessage
+    exerciseFinishedUnsuccessfullyIncidenceMessage,
+    minSpeed
   } = state.context;
 
   const errorsCoefficient = customErrorsCoefficient ?? 2;
@@ -1671,7 +1672,7 @@ function Index({ send, state }: Props) {
                       fontWeight: "bold"
                     }}
                   >
-                    {minimumWPMNeededToCompleteExerciseSuccessfully}
+                    {minSpeed || minimumWPMNeededToCompleteExerciseSuccessfully}
                   </div>
                 </div>
               </div>

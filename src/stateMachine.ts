@@ -394,14 +394,16 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
           errorsCoefficient,
           timeLimitInSeconds,
           isKeyboardGloballyVisible,
-          isTutorGloballyActive
+          isTutorGloballyActive,
+          minimumWPM
         } = e as UserDataLoadedEvent;
         return {
           userName,
           errorsCoefficient,
           timeLimitInSeconds,
           isKeyboardGloballyVisible,
-          isTutorGloballyActive
+          isTutorGloballyActive,
+          minSpeed: minimumWPM
         };
       }),
       [actionTypes.SET_ERROR_MESSAGE_TO_TIME_RAN_OUT]: assign((_) => ({
