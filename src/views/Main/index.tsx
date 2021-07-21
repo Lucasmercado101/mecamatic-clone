@@ -8,8 +8,7 @@ import {
   stateTypes
 } from "../../stateMachine";
 import { makeStyles } from "@material-ui/styles";
-import redCheckCheckMark from "../../assets/red_checkmark.png";
-import stopIcon from "../../assets/stop.png";
+import TopToolbar from "./TopToolbar";
 const electron = window?.require?.("electron");
 
 enum KEY_FINGER_COLORS {
@@ -186,36 +185,7 @@ function Index({ send, state }: Props) {
       }}
     >
       <div style={{ display: "flex", flexDirection: "column" }}>
-        <div className="top-toolbar" style={{ height: 22, display: "flex" }}>
-          <div className="toolbar-separator" />
-          <button
-            onClick={() => {
-              electron.ipcRenderer.send(
-                "open-global-settings-window",
-                state.context.userName
-              );
-            }}
-            className="top-toolbar-menu-item"
-          >
-            <img src={redCheckCheckMark} alt="a red checkmark" />
-            Opciones
-          </button>
-          <div className="toolbar-separator" />
-          <button
-            // onClick={() => {
-            //   electron.ipcRenderer.send(
-            //     "open-global-settings-window",
-            //     state.context.userName
-            //   );
-            // }}
-            className="top-toolbar-menu-item"
-          >
-            <img src={stopIcon} alt="a red stop sign icon" />
-            Pausa
-          </button>
-          <div className="toolbar-separator" />
-        </div>
-
+        <TopToolbar state={state} send={send} />
         <div style={{ display: "flex", gap: 15, padding: "10px 0px 0px 25px" }}>
           <div style={{ display: "flex", flexDirection: "column" }}>
             <div
