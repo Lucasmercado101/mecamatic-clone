@@ -10,7 +10,9 @@ export enum eventTypes {
   EXERCISE_SELECTED = "EXERCISE_SELECTED",
   KEY_PRESSED = "KEY_PRESSED",
   USER_DATA_LOADED = "USER_DATA_LOADED",
-  USER_DATA_RELOADED = "USER_DATA_RELOADED"
+  USER_DATA_RELOADED = "USER_DATA_RELOADED",
+  PAUSE_TIMER = "PAUSE_TIMER",
+  RESUME_TIMER = "RESUME_TIMER"
 }
 
 export enum stateTypes {
@@ -25,7 +27,8 @@ export enum stateTypes {
   EXERCISE_TIMER = "EXERCISE_TIMER",
   TIMER_OFF = "TIMER_OFF",
   TIMER_ONGOING = "TIMER_ONGOING",
-  TIMER_STOPPED = "TIMER_STOPPED"
+  TIMER_STOPPED = "TIMER_STOPPED",
+  TIMER_PAUSED = "TIMER_PAUSED"
 }
 
 enum IDs {
@@ -116,11 +119,21 @@ type UserDataReloadedEvent = {
   type: eventTypes.USER_DATA_RELOADED;
 } & userData;
 
+type PauseTimerEvent = {
+  type: eventTypes.PAUSE_TIMER;
+};
+
+type ResumeTimerEvent = {
+  type: eventTypes.RESUME_TIMER;
+};
+
 export type stateEvents =
   | ExerciseSelectedEvent
   | KeyPressedEvent
   | UserDataLoadedEvent
-  | UserDataReloadedEvent;
+  | UserDataReloadedEvent
+  | PauseTimerEvent
+  | ResumeTimerEvent;
 
 function totalNetKeystrokesTyped(totalKeystrokes: number, errors: number) {
   return totalKeystrokes - errors;
@@ -245,6 +258,16 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
                       [eventTypes.KEY_PRESSED]: {
                         target: stateTypes.TIMER_STOPPED,
                         cond: guardTypes.PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER
+                      },
+                      [eventTypes.PAUSE_TIMER]: {
+                        target: stateTypes.TIMER_PAUSED
+                      }
+                    }
+                  },
+                  [stateTypes.TIMER_PAUSED]: {
+                    on: {
+                      [eventTypes.RESUME_TIMER]: {
+                        target: stateTypes.TIMER_ONGOING
                       }
                     }
                   },

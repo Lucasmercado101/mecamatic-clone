@@ -4,10 +4,21 @@ import { stateMachine, eventTypes, stateTypes } from "./stateMachine";
 import { useMachine } from "@xstate/react";
 import Welcome, { userData } from "./views/Welcome";
 import Main from "./views/Main";
+import { inspect } from "@xstate/inspect";
 const electron = window?.require?.("electron");
+const { NODE_ENV } = process.env;
+
+NODE_ENV === "development" &&
+  inspect({
+    url: "https://statecharts.io/inspect",
+    iframe: false
+  });
 
 export default function App() {
-  const [state, send] = useMachine(stateMachine);
+  const [state, send] = useMachine(
+    stateMachine,
+    NODE_ENV === "development" ? { devTools: true } : {}
+  );
 
   useEffect(() => {
     electron?.ipcRenderer?.on(

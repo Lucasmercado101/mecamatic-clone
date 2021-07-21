@@ -1,7 +1,12 @@
 import { Event, EventData, SingleOrArray, State } from "xstate";
 import redCheckCheckMark from "../../assets/red_checkmark.png";
 import stopIcon from "../../assets/stop.png";
-import { stateContext, stateEvents } from "../../stateMachine";
+import {
+  eventTypes,
+  stateContext,
+  stateEvents,
+  stateTypes
+} from "../../stateMachine";
 const electron = window?.require?.("electron");
 
 interface Props {
@@ -38,16 +43,58 @@ function TopToolbar({ send, state }: Props) {
       </button>
       <div className="toolbar-separator" />
       <button
-        // onClick={() => {
-        //   electron.ipcRenderer.send(
-        //     "open-global-settings-window",
-        //     state.context.userName
-        //   );
-        // }}
+        onClick={() => {
+          if (
+            [
+              {
+                [stateTypes.MAIN_VIEW]: {
+                  [stateTypes.EXERCISE_SELECTED]: {
+                    [stateTypes.EXERCISE_PROGRESS]: stateTypes.EXERCISE_ONGOING
+                  }
+                }
+              },
+              {
+                [stateTypes.MAIN_VIEW]: {
+                  [stateTypes.EXERCISE_SELECTED]: {
+                    [stateTypes.EXERCISE_TIMER]: stateTypes.TIMER_ONGOING
+                  }
+                }
+              }
+            ].every(state.matches)
+          )
+            send({ type: eventTypes.PAUSE_TIMER });
+          else if (
+            [
+              {
+                [stateTypes.MAIN_VIEW]: {
+                  [stateTypes.EXERCISE_SELECTED]: {
+                    [stateTypes.EXERCISE_PROGRESS]: stateTypes.EXERCISE_ONGOING
+                  }
+                }
+              },
+              {
+                [stateTypes.MAIN_VIEW]: {
+                  [stateTypes.EXERCISE_SELECTED]: {
+                    [stateTypes.EXERCISE_TIMER]: stateTypes.TIMER_PAUSED
+                  }
+                }
+              }
+            ].some(state.matches)
+          )
+            send({ type: eventTypes.RESUME_TIMER });
+        }}
         className="top-toolbar-menu-item"
       >
         <img src={stopIcon} alt="a red stop sign icon" />
-        Pausa
+        {state.matches({
+          [stateTypes.MAIN_VIEW]: {
+            [stateTypes.EXERCISE_SELECTED]: {
+              [stateTypes.EXERCISE_TIMER]: [stateTypes.TIMER_PAUSED]
+            }
+          }
+        })
+          ? "Reanudar"
+          : "Pausa"}
       </button>
       <div className="toolbar-separator" />
     </div>
