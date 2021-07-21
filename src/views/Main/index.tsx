@@ -211,19 +211,20 @@ function Index({ send, state }: Props) {
               style={{
                 backgroundColor: "#008282",
                 color: "white",
-                // resize: "both",
                 overflow: "auto",
                 height: 210,
                 width: 570,
-                fontSize: "1.5rem",
                 border: "thin solid",
                 borderStyle: "inset"
-                // fontSize: "1.2rem",
-                // padding: 15,
               }}
             >
               {selectedLessonText ? (
-                <div style={{ padding: 4 }}>
+                <div
+                  style={{
+                    fontSize: "1.3rem",
+                    padding: 4
+                  }}
+                >
                   {Array.from(selectedLessonText).map((letter, i) => (
                     <span
                       key={i}
@@ -233,8 +234,8 @@ function Index({ send, state }: Props) {
                           exerciseCursorPosition === i
                             ? "#ff8a7e"
                             : "transparent",
-                        whiteSpace: "break-spaces"
-                        // minWidth: 13
+                        whiteSpace: "break-spaces",
+                        fontFamily: `monospace`
                       }}
                     >
                       {letter}
@@ -244,6 +245,7 @@ function Index({ send, state }: Props) {
               ) : (
                 <div
                   style={{
+                    fontSize: "1.5rem",
                     width: "100%",
                     height: "100%",
                     display: "grid",
