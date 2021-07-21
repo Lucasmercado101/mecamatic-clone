@@ -272,10 +272,11 @@ ipcMain.on("close-settings-window", (e, data) => {
 function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
-    width: 810,
-    height: 590,
-    minWidth: 810,
-    minHeight: 590,
+    width: 800,
+    height: 580,
+    minWidth: 800,
+    minHeight: 580,
+    resizable: NODE_ENV === "production" ? false : true,
     title: "MecaMatic 3.0",
     webPreferences: {
       nodeIntegration: true,
