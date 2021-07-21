@@ -161,6 +161,7 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
       },
       [stateTypes.MAIN_VIEW]: {
         id: IDs.MAIN_VIEW,
+        type: "compound",
         initial: stateTypes.EXERCISE_NOT_SELECTED,
         states: {
           [stateTypes.EXERCISE_NOT_SELECTED]: {},
