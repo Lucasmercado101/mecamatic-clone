@@ -58,7 +58,7 @@
   border: thin outset;
 }
 
-.top-toolbar-menu-item:focus:hover {
+.top-toolbar-menu-item:active:hover {
   border: thin inset;
 }
 

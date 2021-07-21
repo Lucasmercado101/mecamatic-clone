@@ -85,7 +85,7 @@ form {
   border: 2px outset;
 }
 
-.buttons button:focus {
+.buttons button:active {
   width: 45%;
   height: 20px;
   border: 2px inset;
