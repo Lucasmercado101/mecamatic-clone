@@ -1,6 +1,13 @@
 import { createMachine, assign } from "xstate";
 import { userData } from "./views/Welcome";
 
+function calculatePercentageOfErrors(
+  errors: number,
+  totalAmount: number
+): number {
+  return (errors / totalAmount) * 100;
+}
+
 export enum EXERCISE_CURSOR_POSITION {
   NOT_STARTED = -1,
   FIRST_LETTER = 0
@@ -52,13 +59,15 @@ enum actionTypes {
   RESET_GROSS_KEYWORDS_TYPED_TO_0 = "RESET_GROSS_KEYWORDS_TYPED_TO_0",
   RESET_NET_KEYWORDS_TYPED_TO_0 = "RESET_NET_KEYWORDS_TYPED_TO_0",
   SET_USER_DATA = "SET_USER_DATA",
-  SET_ERROR_MESSAGE_TO_TIME_RAN_OUT = "SET_ERROR_MESSAGE_TO_TIME_RAN_OUT"
+  SET_ERROR_MESSAGE_TO_TIME_RAN_OUT = "SET_ERROR_MESSAGE_TO_TIME_RAN_OUT",
+  SET_ERROR_MESSAGE_TO_TOO_MANY_ERRORS = "SET_ERROR_MESSAGE_TO_TOO_MANY_ERRORS"
 }
 
 enum guardTypes {
   ENTER_WAS_PRESSED = "ENTER_WAS_PRESSED",
   PRESSED_CORRECT_LETTER = "PRESSED_CORRECT_LETTER",
   PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER = "PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER",
+  PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER_BUT_ERRORS_PERCENTAGE_IS_BIGGER_THAN_ERRORS_COEFFICIENT = "PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER_BUT_ERRORS_PERCENTAGE_IS_BIGGER_THAN_ERRORS_COEFFICIENT",
   THERE_IS_ONE_SECOND_LEFT = "THERE_IS_ONE_SECOND_LEFT"
 }
 
@@ -209,6 +218,16 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
                   [stateTypes.EXERCISE_ONGOING]: {
                     on: {
                       [eventTypes.KEY_PRESSED]: [
+                        {
+                          target: `#${IDs.MAIN_VIEW}.${stateTypes.EXERCISE_FINISHED_UNSUCCESSFULLY}`,
+                          cond: guardTypes.PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER_BUT_ERRORS_PERCENTAGE_IS_BIGGER_THAN_ERRORS_COEFFICIENT,
+                          actions: [
+                            actionTypes.MOVE_CURSOR_BY_ONE,
+                            actionTypes.CALCULATE_GROSS_KEYWORDS_TYPED,
+                            actionTypes.CALCULATE_NET_KEYWORDS_TYPED,
+                            actionTypes.SET_ERROR_MESSAGE_TO_TOO_MANY_ERRORS
+                          ]
+                        },
                         {
                           target: stateTypes.EXERCISE_FINISHED,
                           cond: guardTypes.PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER,
@@ -388,6 +407,10 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
       [actionTypes.SET_ERROR_MESSAGE_TO_TIME_RAN_OUT]: assign((_) => ({
         exerciseFinishedUnsuccessfullyIncidenceMessage:
           "Ha superado el\nlimite de tiempo\nestablecido"
+      })),
+      [actionTypes.SET_ERROR_MESSAGE_TO_TOO_MANY_ERRORS]: assign((_) => ({
+        exerciseFinishedUnsuccessfullyIncidenceMessage:
+          "Ha superado el % maximo de errores permitidos"
       }))
     },
     guards: {
@@ -412,7 +435,19 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
           key === ctx.selectedLessonText?.[ctx.exerciseCursorPosition] &&
           ctx.selectedLessonText?.length - 1 === ctx.exerciseCursorPosition
         );
-      }
+      },
+      [guardTypes.PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER_BUT_ERRORS_PERCENTAGE_IS_BIGGER_THAN_ERRORS_COEFFICIENT]:
+        (ctx, event) => {
+          const { key } = event as KeyPressedEvent;
+          return (
+            key === ctx.selectedLessonText?.[ctx.exerciseCursorPosition] &&
+            ctx.selectedLessonText?.length - 1 === ctx.exerciseCursorPosition &&
+            calculatePercentageOfErrors(
+              ctx.errors,
+              ctx.exerciseCursorPosition
+            ) > (ctx.errorsCoefficient || ctx.defaultErrorsCoefficient)
+          );
+        }
     }
   }
 );

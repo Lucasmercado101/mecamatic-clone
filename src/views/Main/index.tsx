@@ -1582,16 +1582,12 @@ function Index({ send, state }: Props) {
                     [stateTypes.EXERCISE_PROGRESS]: stateTypes.EXERCISE_FINISHED
                   }
                 }
-              }) &&
-                (errorsCoefficient < percentageOfErrors ? (
-                  <RedBGIncidencesText>
-                    Ha superado el % maximo de errores permitidos
-                  </RedBGIncidencesText>
-                ) : (
-                  <RedBGIncidencesText>
-                    Ha realizado el ejercicio con exito
-                  </RedBGIncidencesText>
-                ))}
+              }) && (
+                <RedBGIncidencesText>
+                  Ha realizado el ejercicio con exito
+                </RedBGIncidencesText>
+              )}
+
               {state.matches({
                 [stateTypes.MAIN_VIEW]:
                   stateTypes.EXERCISE_FINISHED_UNSUCCESSFULLY
