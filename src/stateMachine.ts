@@ -24,6 +24,7 @@ export enum stateTypes {
   EXERCISE_NOT_STARTED = "EXERCISE_NOT_STARTED",
   EXERCISE_ONGOING = "EXERCISE_ONGOING",
   EXERCISE_FINISHED = "EXERCISE_FINISHED",
+  EXERCISE_FINISHED_UNSUCCESSFULLY = "EXERCISE_FINISHED_UNSUCCESSFULLY",
   EXERCISE_TIMER = "EXERCISE_TIMER",
   TIMER_OFF = "TIMER_OFF",
   TIMER_ONGOING = "TIMER_ONGOING",
@@ -50,13 +51,15 @@ enum actionTypes {
   RESET_ERRORS_TO_0 = "RESET_ERRORS_TO_0",
   RESET_GROSS_KEYWORDS_TYPED_TO_0 = "RESET_GROSS_KEYWORDS_TYPED_TO_0",
   RESET_NET_KEYWORDS_TYPED_TO_0 = "RESET_NET_KEYWORDS_TYPED_TO_0",
-  SET_USER_DATA = "SET_USER_DATA"
+  SET_USER_DATA = "SET_USER_DATA",
+  SET_ERROR_MESSAGE_TO_TIME_RAN_OUT = "SET_ERROR_MESSAGE_TO_TIME_RAN_OUT"
 }
 
 enum guardTypes {
   ENTER_WAS_PRESSED = "ENTER_WAS_PRESSED",
   PRESSED_CORRECT_LETTER = "PRESSED_CORRECT_LETTER",
-  PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER = "PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER"
+  PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER = "PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER",
+  THERE_IS_ONE_SECOND_LEFT = "THERE_IS_ONE_SECOND_LEFT"
 }
 
 export interface stateContext {
@@ -93,6 +96,7 @@ export interface stateContext {
   totalGrossKeystrokes?: number;
   errors: number;
   elapsedSeconds: number;
+  exerciseFinishedUnsuccessfullyIncidenceMessage: string;
 }
 
 type ExerciseSelectedEvent = {
@@ -148,6 +152,7 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
     id: IDs.ROOT,
     initial: stateTypes.WELCOME_VIEW,
     context: {
+      exerciseFinishedUnsuccessfullyIncidenceMessage: "",
       userName: "",
       exerciseCursorPosition: EXERCISE_CURSOR_POSITION.NOT_STARTED,
       minimumWPMNeededToCompleteExerciseSuccessfully: 20,
@@ -249,10 +254,20 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
                   },
                   [stateTypes.TIMER_ONGOING]: {
                     after: {
-                      1000: {
-                        target: stateTypes.TIMER_ONGOING,
-                        actions: actionTypes.ADD_ONE_TO_ELAPSED_SECONDS
-                      }
+                      1000: [
+                        {
+                          target: `#${IDs.MAIN_VIEW}.${stateTypes.EXERCISE_FINISHED_UNSUCCESSFULLY}`,
+                          actions: [
+                            actionTypes.ADD_ONE_TO_ELAPSED_SECONDS,
+                            actionTypes.SET_ERROR_MESSAGE_TO_TIME_RAN_OUT
+                          ],
+                          cond: guardTypes.THERE_IS_ONE_SECOND_LEFT
+                        },
+                        {
+                          target: stateTypes.TIMER_ONGOING,
+                          actions: actionTypes.ADD_ONE_TO_ELAPSED_SECONDS
+                        }
+                      ]
                     },
                     on: {
                       [eventTypes.KEY_PRESSED]: {
@@ -275,7 +290,8 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
                 }
               }
             }
-          }
+          },
+          [stateTypes.EXERCISE_FINISHED_UNSUCCESSFULLY]: {}
         },
         on: {
           [eventTypes.EXERCISE_SELECTED]: {
@@ -344,13 +360,13 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
       [actionTypes.INCREASE_ERRORS_BY_ONE]: assign((ctx) => ({
         errors: ctx.errors + 1
       })),
-      [actionTypes.RESET_GROSS_KEYWORDS_TYPED_TO_0]: assign((ctx) => ({
+      [actionTypes.RESET_GROSS_KEYWORDS_TYPED_TO_0]: assign((_) => ({
         totalGrossKeystrokes: 0
       })),
-      [actionTypes.RESET_NET_KEYWORDS_TYPED_TO_0]: assign((ctx) => ({
+      [actionTypes.RESET_NET_KEYWORDS_TYPED_TO_0]: assign((_) => ({
         totalNetKeystrokes: 0
       })),
-      [actionTypes.RESET_ERRORS_TO_0]: assign((ctx) => ({
+      [actionTypes.RESET_ERRORS_TO_0]: assign((_) => ({
         errors: 0
       })),
       [actionTypes.SET_USER_DATA]: assign((_, e) => {
@@ -368,7 +384,11 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
           isKeyboardGloballyVisible,
           isTutorGloballyActive
         };
-      })
+      }),
+      [actionTypes.SET_ERROR_MESSAGE_TO_TIME_RAN_OUT]: assign((_) => ({
+        exerciseFinishedUnsuccessfullyIncidenceMessage:
+          "Ha superado el\nlimite de tiempo\nestablecido"
+      }))
     },
     guards: {
       [guardTypes.ENTER_WAS_PRESSED]: (_, event) => {
@@ -378,6 +398,10 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
       [guardTypes.PRESSED_CORRECT_LETTER]: (ctx, event) => {
         const { key } = event as KeyPressedEvent;
         return key === ctx.selectedLessonText?.[ctx.exerciseCursorPosition];
+      },
+      [guardTypes.THERE_IS_ONE_SECOND_LEFT]: (ctx) => {
+        console.log(ctx.timeLimitInSeconds - ctx.elapsedSeconds);
+        return ctx.timeLimitInSeconds - ctx.elapsedSeconds === 1;
       },
       [guardTypes.PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER]: (
         ctx,

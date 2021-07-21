@@ -97,6 +97,22 @@ function Key({
   );
 }
 
+const RedBGIncidencesText: React.FC = ({ children }) => (
+  <div
+    style={{
+      backgroundColor: "#ff8080",
+      border: "2px solid",
+      borderStyle: "inset",
+      color: "white",
+      height: "100%",
+      width: "100%",
+      padding: 5
+    }}
+  >
+    {children}
+  </div>
+);
+
 interface Props {
   send: (
     event: SingleOrArray<Event<stateEvents>>,
@@ -142,7 +158,8 @@ function Index({ send, state }: Props) {
     totalNetKeystrokes,
     totalGrossKeystrokes,
     timeLimitInSeconds,
-    userName
+    userName,
+    exerciseFinishedUnsuccessfullyIncidenceMessage
   } = state.context;
 
   const timeLimitMinutes = ~~((timeLimitInSeconds - elapsedSeconds) / 60);
@@ -1549,8 +1566,8 @@ function Index({ send, state }: Props) {
               }}
             >
               <div className={classes.riseTitleText}>Incidencias</div>
-              {!state.matches({
-                [stateTypes.MAIN_VIEW]: stateTypes.EXERCISE_SELECTED
+              {state.matches({
+                [stateTypes.MAIN_VIEW]: stateTypes.EXERCISE_NOT_SELECTED
               }) && (
                 <div
                   style={{
@@ -1575,34 +1592,22 @@ function Index({ send, state }: Props) {
                 }
               }) &&
                 (errorsCoefficient < percentageOfErrors ? (
-                  <div
-                    style={{
-                      backgroundColor: "#ff8080",
-                      border: "2px solid",
-                      borderStyle: "inset",
-                      color: "white",
-                      height: "100%",
-                      width: "100%",
-                      padding: 5
-                    }}
-                  >
+                  <RedBGIncidencesText>
                     Ha superado el % maximo de errores permitidos
-                  </div>
+                  </RedBGIncidencesText>
                 ) : (
-                  <div
-                    style={{
-                      backgroundColor: "#ff8080",
-                      border: "2px solid",
-                      borderStyle: "inset",
-                      color: "white",
-                      height: "100%",
-                      width: "100%",
-                      padding: 5
-                    }}
-                  >
+                  <RedBGIncidencesText>
                     Ha realizado el ejercicio con exito
-                  </div>
+                  </RedBGIncidencesText>
                 ))}
+              {state.matches({
+                [stateTypes.MAIN_VIEW]:
+                  stateTypes.EXERCISE_FINISHED_UNSUCCESSFULLY
+              }) && (
+                <RedBGIncidencesText>
+                  {exerciseFinishedUnsuccessfullyIncidenceMessage}
+                </RedBGIncidencesText>
+              )}
             </div>
 
             <div
