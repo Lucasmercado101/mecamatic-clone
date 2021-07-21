@@ -48,12 +48,17 @@
   border: none;
   gap: 8px;
   padding: 0 4px;
+  margin: 1px;
 }
 
 .top-toolbar-menu-item:hover {
   display: flex;
   align-items: center;
-  border: thin solid outset;
+  border: thin outset;
+}
+
+.top-toolbar-menu-item:focus:hover {
+  border: thin inset;
 }
 
 .toolbar-separator {
