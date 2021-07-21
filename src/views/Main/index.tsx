@@ -9,6 +9,7 @@ import {
 } from "../../stateMachine";
 import { makeStyles } from "@material-ui/styles";
 import redCheckCheckMark from "../../assets/red_checkmark.png";
+import stopIcon from "../../assets/stop.png";
 const electron = window?.require?.("electron");
 
 enum KEY_FINGER_COLORS {
@@ -198,6 +199,19 @@ function Index({ send, state }: Props) {
           >
             <img src={redCheckCheckMark} alt="a red checkmark" />
             Opciones
+          </button>
+          <div className="toolbar-separator" />
+          <button
+            // onClick={() => {
+            //   electron.ipcRenderer.send(
+            //     "open-global-settings-window",
+            //     state.context.userName
+            //   );
+            // }}
+            className="top-toolbar-menu-item"
+          >
+            <img src={stopIcon} alt="a red stop sign icon" />
+            Pausa
           </button>
           <div className="toolbar-separator" />
         </div>
