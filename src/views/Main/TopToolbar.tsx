@@ -26,6 +26,9 @@ interface Props {
 }
 
 function TopToolbar({ send, state }: Props) {
+  // TODO buttons stay focused once clicked
+  // if exercise is selected after clicking a button
+  // the buttons are not unblured.
   return (
     <div className="top-toolbar" style={{ height: 22, display: "flex" }}>
       <div className="toolbar-separator" />
