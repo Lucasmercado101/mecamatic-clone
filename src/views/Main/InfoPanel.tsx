@@ -1,11 +1,31 @@
 import { State } from "xstate";
 import { stateContext, stateEvents, stateTypes } from "../../stateMachine";
+import { pipe, cond, always, complement, T } from "ramda";
+import { isValidNumber } from "ramda-adjunct";
+
+const calcWhatPercentageOfANumberIsAnotherNumber = (
+  number: number,
+  anotherNumber: number
+) => (number / anotherNumber) * 100;
+
+const isWholeNumber = (num: number) => num % 1 === 0;
 
 function calculatePercentageOfErrors(
   errors: number,
   totalAmount: number
-): number {
-  return (errors / totalAmount) * 100;
+): string {
+  const errorsPercentage = calcWhatPercentageOfANumberIsAnotherNumber(
+    errors,
+    totalAmount
+  );
+
+  const res = cond([
+    [complement(isValidNumber), always(0)],
+    [isWholeNumber, always(errorsPercentage)],
+    [T, (num: number): string => num.toFixed(2)]
+  ])(errorsPercentage);
+
+  return res + "";
 }
 
 const calcNetWPM = (
@@ -80,15 +100,6 @@ function InfoPanel({ state }: Props) {
     errors,
     exerciseCursorPosition
   );
-
-  // check if percentageOfErrors is a whole number, if it
-  // is then return the whole number, otherwise return the number with 1 decimal
-  const percentageOfErrorsAsNumber =
-    isNaN(percentageOfErrors) || percentageOfErrors === Infinity
-      ? 0
-      : percentageOfErrors % 1 === 0
-      ? percentageOfErrors
-      : percentageOfErrors.toFixed(1);
 
   const timeLimitMinutes = ~~((timeLimitInSeconds - elapsedSeconds) / 60);
   const timeLimitSeconds = (timeLimitInSeconds - elapsedSeconds) % 60;
@@ -452,7 +463,7 @@ function InfoPanel({ state }: Props) {
                     }
                   }
                 }
-              ].some(state.matches) && percentageOfErrorsAsNumber}
+              ].some(state.matches) && percentageOfErrors}
             </div>
           </div>
 
