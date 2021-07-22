@@ -204,6 +204,12 @@ ipcMain.on("is-on-main-view", () => {
               })
           };
         })
+    },
+    {
+      label: "Terminar sesión",
+      click() {
+        win.webContents.send("log-out");
+      }
     }
   ]);
   Menu.setApplicationMenu(menu);

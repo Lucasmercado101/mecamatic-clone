@@ -19,7 +19,8 @@ export enum eventTypes {
   USER_DATA_LOADED = "USER_DATA_LOADED",
   USER_DATA_RELOADED = "USER_DATA_RELOADED",
   PAUSE_TIMER = "PAUSE_TIMER",
-  RESUME_TIMER = "RESUME_TIMER"
+  RESUME_TIMER = "RESUME_TIMER",
+  LOG_OUT = "LOG_OUT"
 }
 
 export enum stateTypes {
@@ -145,13 +146,18 @@ type ResumeTimerEvent = {
   type: eventTypes.RESUME_TIMER;
 };
 
+type LogOutEvent = {
+  type: eventTypes.LOG_OUT;
+};
+
 export type stateEvents =
   | ExerciseSelectedEvent
   | KeyPressedEvent
   | UserDataLoadedEvent
   | UserDataReloadedEvent
   | PauseTimerEvent
-  | ResumeTimerEvent;
+  | ResumeTimerEvent
+  | LogOutEvent;
 
 function totalNetKeystrokesTyped(totalKeystrokes: number, errors: number) {
   return totalKeystrokes - errors;
@@ -346,6 +352,11 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
     on: {
       [eventTypes.USER_DATA_RELOADED]: {
         actions: actionTypes.SET_USER_DATA
+      },
+      [eventTypes.LOG_OUT]: {
+        target: stateTypes.WELCOME_VIEW
+        // TODO clear user data
+        //actions: actionTypes.CLEAR_USER_DATA
       }
     }
   },

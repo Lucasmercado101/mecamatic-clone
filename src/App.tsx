@@ -62,6 +62,11 @@ export default function App() {
         send({ type: eventTypes.USER_DATA_RELOADED, ...userData });
       }
     );
+
+    electron?.ipcRenderer?.on("log-out", (_) => {
+      send({ type: eventTypes.LOG_OUT });
+    });
+
     return () => {
       electron.ipcRenderer.removeAllListeners("exercise");
       electron.ipcRenderer.removeAllListeners("load-user-profile");
