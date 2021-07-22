@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Event, EventData, SingleOrArray, State } from "xstate";
 import {
   eventTypes,
@@ -102,6 +102,10 @@ function Index({ send, state }: Props) {
     electron.ipcRenderer.send("is-on-main-view");
   }, []);
 
+  const myRef = useRef<null | HTMLElement>(null);
+
+  const executeScroll = () => myRef?.current?.scrollIntoView();
+
   const {
     selectedLessonText,
     exerciseCursorPosition,
@@ -127,7 +131,7 @@ function Index({ send, state }: Props) {
   return (
     <div
       onKeyDown={({ key, altKey, ctrlKey }) => {
-        console.log(key);
+        executeScroll();
         // NOTE "key" does not pick up dead key modifier keys ( "´" , "^", "`")
         send({
           type: eventTypes.KEY_PRESSED,
@@ -177,6 +181,7 @@ function Index({ send, state }: Props) {
                         whiteSpace: "break-spaces",
                         fontFamily: `monospace`
                       }}
+                      ref={exerciseCursorPosition === i ? myRef : null}
                     >
                       {letter}
                     </span>
