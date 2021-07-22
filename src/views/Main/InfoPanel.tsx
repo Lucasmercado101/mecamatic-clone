@@ -53,8 +53,10 @@ const riseTitleTextStyles = {
   padding: "0 1px"
 };
 
-// TODO: always show stats when in exercise_progress or finished, both successfully and un
+// TODO: always show stats when in exercise_progress or finished, both successfully and unsuccessfully
 
+// Pure component, the stateMachine isn't interacted with, no state is mutated
+// only new values are obtained and shown locally from the state
 function InfoPanel({ state }: Props) {
   const {
     userName,
@@ -78,6 +80,15 @@ function InfoPanel({ state }: Props) {
     errors,
     exerciseCursorPosition
   );
+
+  // check if percentageOfErrors is a whole number, if it
+  // is then return the whole number, otherwise return the number with 1 decimal
+  const percentageOfErrorsAsNumber =
+    isNaN(percentageOfErrors) || percentageOfErrors === Infinity
+      ? 0
+      : percentageOfErrors % 1 === 0
+      ? percentageOfErrors
+      : percentageOfErrors.toFixed(1);
 
   const timeLimitMinutes = ~~((timeLimitInSeconds - elapsedSeconds) / 60);
   const timeLimitSeconds = (timeLimitInSeconds - elapsedSeconds) % 60;
@@ -441,10 +452,7 @@ function InfoPanel({ state }: Props) {
                     }
                   }
                 }
-              ].some(state.matches) &&
-                (percentageOfErrors === Infinity || isNaN(percentageOfErrors)
-                  ? ""
-                  : percentageOfErrors.toFixed(1))}
+              ].some(state.matches) && percentageOfErrorsAsNumber}
             </div>
           </div>
 
@@ -492,16 +500,17 @@ function InfoPanel({ state }: Props) {
                   }
                 }
               ].some(state.matches) &&
-                exerciseCursorPosition > 0 &&
-                elapsedSeconds > 0 &&
-                Math.max(
-                  +calcNetWPM(
-                    exerciseCursorPosition,
-                    elapsedSeconds,
-                    errors
-                  ).toFixed(0),
-                  0
-                )}
+                ((exerciseCursorPosition > 0 &&
+                  elapsedSeconds > 0 &&
+                  Math.max(
+                    +calcNetWPM(
+                      exerciseCursorPosition,
+                      elapsedSeconds,
+                      errors
+                    ).toFixed(0),
+                    0
+                  )) ||
+                  0)}
             </div>
           </div>
         </div>
