@@ -126,8 +126,9 @@ function Index({ send, state }: Props) {
 
   return (
     <div
-      onKeyDown={(e) => {
-        const { key, altKey, ctrlKey } = e;
+      onKeyDown={({ key, altKey, ctrlKey }) => {
+        console.log(key);
+        // NOTE "key" does not pick up dead key modifier keys ( "´" , "^", "`")
         send({
           type: eventTypes.KEY_PRESSED,
           key,
