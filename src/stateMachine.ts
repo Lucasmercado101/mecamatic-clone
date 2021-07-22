@@ -441,7 +441,6 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
         return key === ctx.selectedLessonText?.[ctx.exerciseCursorPosition];
       },
       [guardTypes.THERE_IS_ONE_SECOND_LEFT]: (ctx) => {
-        console.log(ctx.timeLimitInSeconds - ctx.elapsedSeconds);
         return ctx.timeLimitInSeconds - ctx.elapsedSeconds === 1;
       },
       [guardTypes.PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER]: (
