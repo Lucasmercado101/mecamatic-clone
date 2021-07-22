@@ -326,6 +326,10 @@ function InfoPanel({ state }: Props) {
                         stateTypes.EXERCISE_FINISHED
                     }
                   }
+                },
+                {
+                  [stateTypes.MAIN_VIEW]:
+                    stateTypes.EXERCISE_FINISHED_UNSUCCESSFULLY
                 }
               ].some(state.matches) && totalGrossKeystrokes}
             </div>
@@ -372,6 +376,10 @@ function InfoPanel({ state }: Props) {
                         stateTypes.EXERCISE_FINISHED
                     }
                   }
+                },
+                {
+                  [stateTypes.MAIN_VIEW]:
+                    stateTypes.EXERCISE_FINISHED_UNSUCCESSFULLY
                 }
               ].some(state.matches) && totalNetKeystrokes}
             </div>
@@ -419,6 +427,10 @@ function InfoPanel({ state }: Props) {
                         stateTypes.EXERCISE_FINISHED
                     }
                   }
+                },
+                {
+                  [stateTypes.MAIN_VIEW]:
+                    stateTypes.EXERCISE_FINISHED_UNSUCCESSFULLY
                 }
               ].some(state.matches) && errors}
             </div>
@@ -466,6 +478,10 @@ function InfoPanel({ state }: Props) {
                         stateTypes.EXERCISE_FINISHED
                     }
                   }
+                },
+                {
+                  [stateTypes.MAIN_VIEW]:
+                    stateTypes.EXERCISE_FINISHED_UNSUCCESSFULLY
                 }
               ].some(state.matches) && percentageOfErrors}
             </div>
@@ -513,6 +529,10 @@ function InfoPanel({ state }: Props) {
                         stateTypes.EXERCISE_FINISHED
                     }
                   }
+                },
+                {
+                  [stateTypes.MAIN_VIEW]:
+                    stateTypes.EXERCISE_FINISHED_UNSUCCESSFULLY
                 }
               ].some(state.matches) &&
                 ((exerciseCursorPosition > 0 &&
