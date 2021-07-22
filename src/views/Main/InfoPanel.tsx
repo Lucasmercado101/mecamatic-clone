@@ -1,6 +1,6 @@
 import { State } from "xstate";
 import { stateContext, stateEvents, stateTypes } from "../../stateMachine";
-import { pipe, cond, always, complement, T } from "ramda";
+import { cond, always, complement, T } from "ramda";
 import { isValidNumber } from "ramda-adjunct";
 
 const calcWhatPercentageOfANumberIsAnotherNumber = (
