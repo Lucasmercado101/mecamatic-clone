@@ -103,6 +103,7 @@ function Index({ send, state }: Props) {
   }, []);
 
   const myRef = useRef<null | HTMLElement>(null);
+  const textContainerDiv = useRef<null | HTMLDivElement>(null);
 
   const executeScroll = () => myRef?.current?.scrollIntoView();
 
@@ -114,6 +115,12 @@ function Index({ send, state }: Props) {
     // global settings
     isTutorGloballyActive
   } = state.context;
+
+  useEffect(() => {
+    if (textContainerDiv?.current) {
+      textContainerDiv.current.scrollTop = 0;
+    }
+  }, [selectedLessonText]);
 
   const isTutorActiveCurrently = isTutorGloballyActive
     ? true
@@ -152,6 +159,7 @@ function Index({ send, state }: Props) {
         <div style={{ display: "flex", gap: 15, padding: "10px 0px 0px 25px" }}>
           <div style={{ display: "flex", flexDirection: "column" }}>
             <div
+              ref={textContainerDiv}
               style={{
                 backgroundColor: "#008282",
                 color: "white",
