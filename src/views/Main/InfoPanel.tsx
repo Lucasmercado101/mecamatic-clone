@@ -1,5 +1,9 @@
 import { State } from "xstate";
-import { stateContext, stateEvents, stateTypes } from "../../stateMachine";
+import {
+  stateContext,
+  stateEvents,
+  stateTypes
+} from "../../globalStateMachine/stateMachine";
 import { cond, always, complement, T } from "ramda";
 import { isValidNumber } from "ramda-adjunct";
 

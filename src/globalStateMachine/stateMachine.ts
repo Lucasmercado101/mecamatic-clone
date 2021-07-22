@@ -1,5 +1,5 @@
 import { createMachine, assign } from "xstate";
-import { userData } from "./views/Welcome";
+import { userData } from "../views/Welcome";
 
 function calculatePercentageOfErrors(
   errors: number,

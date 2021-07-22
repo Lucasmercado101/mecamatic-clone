@@ -6,7 +6,7 @@ import {
   stateContext,
   stateEvents,
   stateTypes
-} from "../../stateMachine";
+} from "../../globalStateMachine/stateMachine";
 const electron = window?.require?.("electron");
 
 interface Props {

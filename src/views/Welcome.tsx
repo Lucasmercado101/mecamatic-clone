@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Event, EventData, SingleOrArray } from "xstate";
-import { eventTypes, stateEvents } from "../stateMachine";
+import { eventTypes, stateEvents } from "../globalStateMachine/stateMachine";
 const electron = window?.require?.("electron");
 
 export interface userData {

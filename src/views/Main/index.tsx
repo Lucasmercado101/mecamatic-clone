@@ -5,7 +5,7 @@ import {
   EXERCISE_CURSOR_POSITION,
   stateContext,
   stateEvents
-} from "../../stateMachine";
+} from "../../globalStateMachine/stateMachine";
 import { makeStyles } from "@material-ui/styles";
 import TopToolbar from "./TopToolbar";
 import InfoPanel from "./InfoPanel";

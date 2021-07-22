@@ -1,6 +1,10 @@
 import { useEffect } from "react";
 import "./styles.css";
-import { stateMachine, eventTypes, stateTypes } from "./stateMachine";
+import {
+  stateMachine,
+  eventTypes,
+  stateTypes
+} from "./globalStateMachine/stateMachine";
 import { useMachine } from "@xstate/react";
 import Welcome, { userData } from "./views/Welcome";
 import Main from "./views/Main";
