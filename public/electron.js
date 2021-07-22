@@ -10,34 +10,47 @@ const { observable } = require("mobx");
 const fs = require("fs");
 const path = require("path");
 const isDev = require("electron-is-dev");
+
 const learningLessonsPath = path.join(
-  __dirname,
+  isDev ? __dirname : path.dirname(__dirname),
   "..",
   "data",
   "lessons",
   "learning"
 );
+
 const practiceLessonsPath = path.join(
-  __dirname,
+  isDev ? __dirname : path.dirname(__dirname),
   "..",
   "data",
   "lessons",
   "practice"
 );
 const perfectionLessonsPath = path.join(
-  __dirname,
+  isDev ? __dirname : path.dirname(__dirname),
   "..",
   "data",
   "lessons",
   "perfecting"
 );
-const userProfilesPath = path.join(__dirname, "..", "data", "profiles");
+const userProfilesPath = path.join(app.getPath("userData"), "profiles");
 
 let currentUser = observable("");
 let settingsWindow = observable();
 
-ipcMain.handle("get-user-profiles", () => {
-  const users = fs.readdirSync(userProfilesPath);
+ipcMain.handle("get-user-profiles", (e) => {
+  // check if folder profiles exists
+  fs.statSync(userProfilesPath, (err, stats) => {
+    if (err) {
+      fs.mkdir(userProfilesPath, (err) => {
+        if (err) {
+          // TODO handle errors
+          throw err;
+        }
+      });
+    }
+  });
+  const users = fs.readdirSync(userProfilesPath) || [];
   return users;
 });
 
@@ -221,7 +234,7 @@ ipcMain.on("open-global-settings-window", (e, userName) => {
     height: 280,
     minWidth: 655,
     minHeight: 280,
-    resizable: isDev ? false : true,
+    resizable: isDev ? true : false,
     fullscreen: false,
     skipTaskbar: true,
     title: "Opciones",
@@ -238,7 +251,7 @@ ipcMain.on("open-global-settings-window", (e, userName) => {
   win.setMenu(null);
   win.removeMenu();
   win.loadURL(`file://${__dirname}/settings/index.html`);
-  // win.loadURL("http://localhost:3000/settings");
+
   if (isDev) win.webContents.openDevTools();
 
   currentUser = userName;
@@ -282,7 +295,7 @@ function createWindow() {
     height: 580,
     minWidth: 800,
     minHeight: 580,
-    resizable: isDev ? false : true,
+    resizable: isDev ? true : false,
     title: "MecaMatic 3.0",
     webPreferences: {
       nodeIntegration: true,
@@ -290,7 +303,13 @@ function createWindow() {
       contextIsolation: false
     }
   });
-  win.loadURL("http://localhost:3000/");
+  win.loadURL(
+    isDev
+      ? "http://localhost:3000"
+      : `file://${path.join(__dirname, "../build/index.html")}`
+  );
+
+  // win.loadURL("http://localhost:3000/");
 
   if (isDev) win.webContents.openDevTools();
 
