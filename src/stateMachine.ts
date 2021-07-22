@@ -201,7 +201,7 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
             entry: [
               actionTypes.RESET_ELAPSED_TIME_TO_0,
               actionTypes.RESET_ERRORS_TO_0,
-              // TODO: i don't think these computed values should be computed here and not in app.tsx on the fly
+              // TODO i don't think these computed values should be computed here and not in app.tsx on the fly
               actionTypes.RESET_GROSS_KEYWORDS_TYPED_TO_0,
               actionTypes.RESET_NET_KEYWORDS_TYPED_TO_0
             ],
@@ -455,9 +455,51 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
         return ctx.timeLimitInSeconds - ctx.elapsedSeconds === 1;
       },
       [guardTypes.PRESSED_A_MODIFIER_KEY]: (_, event) => {
-        // TODO: dead keys and other modifier keys
-        const { pressedAltKey, pressedCtrlKey } = event as KeyPressedEvent;
-        return pressedAltKey || pressedCtrlKey || false;
+        // https://www.w3.org/TR/uievents-key/#keys-modifier
+        const modifierKeys = [
+          "Alt",
+          "AltGraph",
+          "CapsLock",
+          "Control",
+          "Fn",
+          "FnLock",
+          "Meta",
+          "NumLock",
+          "ScrollLock",
+          "Shift",
+          "Symbol",
+          "SymbolLock"
+        ];
+
+        // https://www.w3.org/TR/uievents-key/#keys-composition
+        const IMEAndCompositionKeys = [
+          "AllCandidates",
+          "Alphanumeric",
+          "CodeInput",
+          "Compose",
+          "Convert",
+          "Dead",
+          "FinalMode",
+          "GroupFirst",
+          "GroupLast",
+          "GroupNext",
+          "GroupPrevious",
+          "ModeChange",
+          "NextCandidate",
+          "NonConvert",
+          "PreviousCandidate",
+          "Process",
+          "SingleCandidate"
+        ];
+
+        const { pressedAltKey, pressedCtrlKey, key } = event as KeyPressedEvent;
+        return (
+          pressedAltKey ||
+          pressedCtrlKey ||
+          IMEAndCompositionKeys.some((k) => k === key) ||
+          modifierKeys.some((k) => k === key) ||
+          false
+        );
       },
       [guardTypes.PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER]: (
         ctx,
