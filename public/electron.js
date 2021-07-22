@@ -39,19 +39,13 @@ let currentUser = observable("");
 let settingsWindow = observable();
 
 ipcMain.handle("get-user-profiles", (e) => {
-  // check if folder profiles exists
-  fs.statSync(userProfilesPath, (err, stats) => {
-    if (err) {
-      fs.mkdir(userProfilesPath, (err) => {
-        if (err) {
-          // TODO handle errors
-          throw err;
-        }
-      });
-    }
-  });
-  const users = fs.readdirSync(userProfilesPath) || [];
-  return users;
+  if (fs.existsSync(userProfilesPath)) {
+    const users = fs.readdirSync(userProfilesPath) || [];
+    return users;
+  } else {
+    fs.mkdirSync(userProfilesPath);
+    return [];
+  }
 });
 
 ipcMain.handle("create-user-profile-and-load-said-user", (event, userName) => {
