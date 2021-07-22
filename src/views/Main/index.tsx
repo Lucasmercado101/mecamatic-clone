@@ -126,11 +126,14 @@ function Index({ send, state }: Props) {
 
   return (
     <div
-      onKeyDown={({
-        key: keyPressed
-        //  code: keyCode
-      }) => {
-        send({ type: eventTypes.KEY_PRESSED, key: keyPressed });
+      onKeyDown={(e) => {
+        const { key, altKey, ctrlKey } = e;
+        send({
+          type: eventTypes.KEY_PRESSED,
+          key,
+          pressedAltKey: altKey,
+          pressedCtrlKey: ctrlKey
+        });
       }}
       tabIndex={0}
       style={{

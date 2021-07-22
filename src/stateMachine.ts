@@ -70,7 +70,8 @@ enum guardTypes {
   PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER = "PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER",
   PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER_BUT_MADE_TOO_MANY_MISTAKES = "PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER_BUT_MADE_TOO_MANY_MISTAKES",
   PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER_BUT_WAS_TOO_SLOW = "PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER_BUT_WAS_TOO_SLOW",
-  THERE_IS_ONE_SECOND_LEFT = "THERE_IS_ONE_SECOND_LEFT"
+  THERE_IS_ONE_SECOND_LEFT = "THERE_IS_ONE_SECOND_LEFT",
+  PRESSED_A_MODIFIER_KEY = "PRESSED_A_MODIFIER_KEY"
 }
 
 export interface stateContext {
@@ -124,6 +125,8 @@ type ExerciseSelectedEvent = {
 type KeyPressedEvent = {
   type: eventTypes.KEY_PRESSED;
   key: string;
+  pressedCtrlKey?: boolean;
+  pressedAltKey?: boolean;
 };
 
 type UserDataLoadedEvent = {
@@ -254,6 +257,14 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
                           cond: guardTypes.PRESSED_CORRECT_LETTER,
                           actions: [
                             actionTypes.MOVE_CURSOR_BY_ONE,
+                            actionTypes.CALCULATE_GROSS_KEYWORDS_TYPED,
+                            actionTypes.CALCULATE_NET_KEYWORDS_TYPED
+                          ]
+                        },
+                        {
+                          target: stateTypes.EXERCISE_ONGOING,
+                          cond: guardTypes.PRESSED_A_MODIFIER_KEY,
+                          actions: [
                             actionTypes.CALCULATE_GROSS_KEYWORDS_TYPED,
                             actionTypes.CALCULATE_NET_KEYWORDS_TYPED
                           ]
@@ -442,6 +453,11 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
       },
       [guardTypes.THERE_IS_ONE_SECOND_LEFT]: (ctx) => {
         return ctx.timeLimitInSeconds - ctx.elapsedSeconds === 1;
+      },
+      [guardTypes.PRESSED_A_MODIFIER_KEY]: (_, event) => {
+        // TODO: dead keys and other modifier keys
+        const { pressedAltKey, pressedCtrlKey } = event as KeyPressedEvent;
+        return pressedAltKey || pressedCtrlKey || false;
       },
       [guardTypes.PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER]: (
         ctx,
