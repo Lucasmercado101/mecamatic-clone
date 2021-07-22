@@ -9,6 +9,7 @@ const {
 const { observable } = require("mobx");
 const fs = require("fs");
 const path = require("path");
+const isDev = require("electron-is-dev");
 const learningLessonsPath = path.join(
   __dirname,
   "..",
@@ -31,7 +32,6 @@ const perfectionLessonsPath = path.join(
   "perfecting"
 );
 const userProfilesPath = path.join(__dirname, "..", "data", "profiles");
-const { NODE_ENV } = process.env;
 
 let currentUser = observable("");
 let settingsWindow = observable();
@@ -221,7 +221,7 @@ ipcMain.on("open-global-settings-window", (e, userName) => {
     height: 280,
     minWidth: 655,
     minHeight: 280,
-    resizable: NODE_ENV === "production" ? false : true,
+    resizable: isDev ? false : true,
     fullscreen: false,
     skipTaskbar: true,
     title: "Opciones",
@@ -239,7 +239,7 @@ ipcMain.on("open-global-settings-window", (e, userName) => {
   win.removeMenu();
   win.loadURL(`file://${__dirname}/settings/index.html`);
   // win.loadURL("http://localhost:3000/settings");
-  if (NODE_ENV !== "production") win.webContents.openDevTools();
+  if (isDev) win.webContents.openDevTools();
 
   currentUser = userName;
   settingsWindow = win;
@@ -282,7 +282,7 @@ function createWindow() {
     height: 580,
     minWidth: 800,
     minHeight: 580,
-    resizable: NODE_ENV === "production" ? false : true,
+    resizable: isDev ? false : true,
     title: "MecaMatic 3.0",
     webPreferences: {
       nodeIntegration: true,
@@ -292,7 +292,7 @@ function createWindow() {
   });
   win.loadURL("http://localhost:3000/");
 
-  if (NODE_ENV !== "production") win.webContents.openDevTools();
+  if (isDev) win.webContents.openDevTools();
 
   const menu = Menu.buildFromTemplate([
     {
@@ -311,7 +311,7 @@ function createWindow() {
 app
   .whenReady()
   .then(() => {
-    if (NODE_ENV !== "production") {
+    if (isDev) {
       globalShortcut.register("CommandOrControl+Shift+C", () => {
         const win = BrowserWindow.getFocusedWindow();
         win.webContents.openDevTools();
