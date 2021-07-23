@@ -146,6 +146,7 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
         }
       },
       [stateTypes.MAIN_VIEW]: {
+        // TODO handle when exercise data has and hasn't loaded / reloaded
         id: IDs.MAIN_VIEW,
         type: "compound",
         initial: stateTypes.EXERCISE_NOT_SELECTED,
