@@ -98,13 +98,15 @@ function InfoPanel({ state }: Props) {
 
   const {
     timeLimit: timeLimitInSeconds,
+    errorsCoefficient
     // TODO replace magic number with number from an enum globalDefaults
-    errorsCoefficient = 2
   } = userData
     ? userData.userSettings
     : {
+        // NOTE this is to serve as a placeholder for when no user data has loaded yet
         // TODO get this from enum globalDefaults.exerciseTimeLimit
-        timeLimit: 900 // 15 minutes default time limit
+        timeLimit: 900, // 15 minutes default time limit
+        errorsCoefficient: 2
       };
 
   const timeRemaining = {
