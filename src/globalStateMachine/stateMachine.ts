@@ -126,6 +126,9 @@ export type stateEvents =
   | ResumeTimerEvent
   | LogOutEvent;
 
+// TODO make main view into a parallel state
+// same thing, but with user_data_loaded and user_data_not_loaded
+// and user_data_reloaded states
 export const stateMachine = createMachine<stateContext, stateEvents>(
   {
     id: IDs.ROOT,
