@@ -95,11 +95,14 @@ function InfoPanel({ state }: Props) {
     exerciseData
   } = state.context;
 
-  const userData = state.context.userData ?? { // NOTE this is to serve as a placeholder for when no user data has loaded yet
+  const userData = state.context.userData ?? {
+    // NOTE this is to serve as a placeholder for when no user data has loaded yet
     // TODO userSettings placeholder data with fixed variable
+    userName: null,
     userSettings: {
       timeLimit: 900, // 15 minutes default time limit
-      errorsCoefficient: 2
+      errorsCoefficient: 2,
+      minWPM: 20
     }
   };
 
