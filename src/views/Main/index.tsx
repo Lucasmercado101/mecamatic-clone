@@ -3,12 +3,13 @@ import { Event, EventData, SingleOrArray, State } from "xstate";
 import {
   eventTypes,
   EXERCISE_CURSOR_POSITION,
-  stateContext,
-  stateEvents
+  stateEvents,
+  stateTypes
 } from "../../globalStateMachine/stateMachine";
 import { makeStyles } from "@material-ui/styles";
 import TopToolbar from "./TopToolbar";
 import InfoPanel from "./InfoPanel";
+import { stateContext } from "../../globalStateMachine/context";
 const electron = window?.require?.("electron");
 
 enum KEY_FINGER_COLORS {
@@ -21,10 +22,10 @@ enum KEY_FINGER_COLORS {
 
 const useStyles = makeStyles({
   enterBottom: ({
-    isTutorActiveCurrently,
+    isTutorActive,
     isEnterHighlighted
   }: {
-    isTutorActiveCurrently: boolean;
+    isTutorActive: boolean;
     isEnterHighlighted: boolean;
   }) => ({
     position: "relative",
@@ -37,7 +38,7 @@ const useStyles = makeStyles({
       bottom: 10,
       backgroundColor: isEnterHighlighted
         ? "#ff8080"
-        : isTutorActiveCurrently
+        : isTutorActive
         ? KEY_FINGER_COLORS.PINKY
         : "#e0e0e0",
       borderLeft: "3px solid #808080",
@@ -81,6 +82,15 @@ function Key({
   );
 }
 
+const isCurrentlyOnChar = (
+  char: string,
+  exerciseText: string | null | undefined,
+  cursorLocation: number | null | undefined
+) => {
+  if (!exerciseText || !cursorLocation) return false;
+  return exerciseText[cursorLocation] === char;
+};
+
 interface Props {
   send: (
     event: SingleOrArray<Event<stateEvents>>,
@@ -107,32 +117,31 @@ function Index({ send, state }: Props) {
 
   const executeScroll = () => myRef?.current?.scrollIntoView();
 
-  const {
-    selectedLessonText,
-    exerciseCursorPosition,
-    // isKeyboardVisibleForThisExercise,
-    isTutorActiveForThisExercise = true, // if no exercise selected then by default true
-    // global settings
-    isTutorGloballyActive
-  } = state.context;
+  const { exerciseData, exerciseCursorPosition } = state.context;
+
+  const userData = state.context.userData ?? {
+    // TODO get this from global placeholder variable
+    // NOTE this is to serve as a placeholder for when no user data has loaded yet
+    userSettings: { isTutorActive: null }
+  };
+  const isTutorActive =
+    userData.userSettings.isTutorActive ?? exerciseData?.isTutorActive ?? false;
 
   useEffect(() => {
     if (textContainerDiv?.current) {
       textContainerDiv.current.scrollTop = 0;
     }
-  }, [selectedLessonText]);
-
-  const isTutorActiveCurrently = isTutorGloballyActive
-    ? true
-    : !isTutorGloballyActive
-    ? false
-    : isTutorActiveForThisExercise;
+  }, [exerciseData?.text]);
 
   const classes = useStyles({
-    isTutorActiveCurrently,
-    isEnterHighlighted:
-      exerciseCursorPosition === EXERCISE_CURSOR_POSITION.NOT_STARTED &&
-      !!selectedLessonText
+    isTutorActive,
+    isEnterHighlighted: state.matches({
+      [stateTypes.MAIN_VIEW]: {
+        [stateTypes.EXERCISE_SELECTED]: {
+          [stateTypes.EXERCISE_PROGRESS]: stateTypes.EXERCISE_NOT_STARTED
+        }
+      }
+    })
   });
 
   return (
@@ -170,32 +179,9 @@ function Index({ send, state }: Props) {
                 borderStyle: "inset"
               }}
             >
-              {selectedLessonText ? (
-                <div
-                  style={{
-                    fontSize: "1.3rem",
-                    padding: 4
-                  }}
-                >
-                  {Array.from(selectedLessonText).map((letter, i) => (
-                    <span
-                      key={i}
-                      style={{
-                        color: exerciseCursorPosition > i ? "black" : "",
-                        backgroundColor:
-                          exerciseCursorPosition === i
-                            ? "#ff8a7e"
-                            : "transparent",
-                        whiteSpace: "break-spaces",
-                        fontFamily: `monospace`
-                      }}
-                      ref={exerciseCursorPosition === i ? myRef : null}
-                    >
-                      {letter}
-                    </span>
-                  ))}
-                </div>
-              ) : (
+              {state.matches({
+                [stateTypes.MAIN_VIEW]: stateTypes.EXERCISE_NOT_SELECTED
+              }) && (
                 <div
                   style={{
                     fontSize: "1.5rem",
@@ -206,6 +192,37 @@ function Index({ send, state }: Props) {
                   }}
                 >
                   Bienvenido a MecaMatic 3.0
+                </div>
+              )}
+
+              {state.matches({
+                [stateTypes.MAIN_VIEW]: stateTypes.EXERCISE_SELECTED
+              }) && (
+                <div
+                  style={{
+                    fontSize: "1.3rem",
+                    padding: 4
+                  }}
+                >
+                  {/* // TODO handle what happens when exercise data hasn't loaded yet */}
+                  {Array.from(exerciseData?.text || "").map((letter, i) => (
+                    <span
+                      key={i}
+                      style={{
+                        // TODO change so that when exercise has loaded after it has been selected to tell typescript cursor exists (!)
+                        color: (exerciseCursorPosition || 0) > i ? "black" : "",
+                        backgroundColor:
+                          (exerciseCursorPosition || 0) === i
+                            ? "#ff8a7e"
+                            : "transparent",
+                        whiteSpace: "break-spaces",
+                        fontFamily: `monospace`
+                      }}
+                      ref={(exerciseCursorPosition || 0) === i ? myRef : null}
+                    >
+                      {letter}
+                    </span>
+                  ))}
                 </div>
               )}
             </div>
@@ -227,7 +244,7 @@ function Index({ send, state }: Props) {
             >
               <div style={{ display: "flex", gap: 4 }}>
                 <Key
-                  color={isTutorActiveCurrently ? KEY_FINGER_COLORS.PINKY : ""}
+                  color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
                   letter={
                     <div
                       style={{
@@ -263,11 +280,14 @@ function Index({ send, state }: Props) {
                   }
                 />
                 <Key
-                  isHighlighted={["1", "!"].some(
-                    (char) =>
-                      selectedLessonText?.[exerciseCursorPosition] === char
+                  isHighlighted={["1", "!"].some((char) =>
+                    isCurrentlyOnChar(
+                      char,
+                      exerciseData?.text,
+                      exerciseCursorPosition
+                    )
                   )}
-                  color={isTutorActiveCurrently ? KEY_FINGER_COLORS.PINKY : ""}
+                  color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
                   letter={
                     <div
                       style={{
@@ -310,13 +330,14 @@ function Index({ send, state }: Props) {
                   }
                 />
                 <Key
-                  isHighlighted={["2", `"`].some(
-                    (char) =>
-                      selectedLessonText?.[exerciseCursorPosition] === char
+                  isHighlighted={["2", `"`].some((char) =>
+                    isCurrentlyOnChar(
+                      char,
+                      exerciseData?.text,
+                      exerciseCursorPosition
+                    )
                   )}
-                  color={
-                    isTutorActiveCurrently ? KEY_FINGER_COLORS.RING_FINGER : ""
-                  }
+                  color={isTutorActive ? KEY_FINGER_COLORS.RING_FINGER : ""}
                   letter={
                     <div
                       style={{
@@ -352,15 +373,14 @@ function Index({ send, state }: Props) {
                   }
                 />
                 <Key
-                  isHighlighted={["3", `#`].some(
-                    (char) =>
-                      selectedLessonText?.[exerciseCursorPosition] === char
+                  isHighlighted={["3", `#`].some((char) =>
+                    isCurrentlyOnChar(
+                      char,
+                      exerciseData?.text,
+                      exerciseCursorPosition
+                    )
                   )}
-                  color={
-                    isTutorActiveCurrently
-                      ? KEY_FINGER_COLORS.MIDDLE_FINGER
-                      : ""
-                  }
+                  color={isTutorActive ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
                   letter={
                     <div
                       style={{
@@ -396,15 +416,14 @@ function Index({ send, state }: Props) {
                   }
                 />
                 <Key
-                  isHighlighted={["4", `$`].some(
-                    (char) =>
-                      selectedLessonText?.[exerciseCursorPosition] === char
+                  isHighlighted={["4", `$`].some((char) =>
+                    isCurrentlyOnChar(
+                      char,
+                      exerciseData?.text,
+                      exerciseCursorPosition
+                    )
                   )}
-                  color={
-                    isTutorActiveCurrently
-                      ? KEY_FINGER_COLORS.INDEX_LEFT_HAND
-                      : ""
-                  }
+                  color={isTutorActive ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
                   letter={
                     <div
                       style={{
@@ -437,15 +456,14 @@ function Index({ send, state }: Props) {
                   }
                 />
                 <Key
-                  isHighlighted={["5", `%`].some(
-                    (char) =>
-                      selectedLessonText?.[exerciseCursorPosition] === char
+                  isHighlighted={["5", `%`].some((char) =>
+                    isCurrentlyOnChar(
+                      char,
+                      exerciseData?.text,
+                      exerciseCursorPosition
+                    )
                   )}
-                  color={
-                    isTutorActiveCurrently
-                      ? KEY_FINGER_COLORS.INDEX_LEFT_HAND
-                      : ""
-                  }
+                  color={isTutorActive ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
                   letter={
                     <div
                       style={{
@@ -478,14 +496,15 @@ function Index({ send, state }: Props) {
                   }
                 />
                 <Key
-                  isHighlighted={["6", `&`].some(
-                    (char) =>
-                      selectedLessonText?.[exerciseCursorPosition] === char
+                  isHighlighted={["6", `&`].some((char) =>
+                    isCurrentlyOnChar(
+                      char,
+                      exerciseData?.text,
+                      exerciseCursorPosition
+                    )
                   )}
                   color={
-                    isTutorActiveCurrently
-                      ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND
-                      : ""
+                    isTutorActive ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""
                   }
                   letter={
                     <div
@@ -519,14 +538,15 @@ function Index({ send, state }: Props) {
                   }
                 />
                 <Key
-                  isHighlighted={["7", `/`].some(
-                    (char) =>
-                      selectedLessonText?.[exerciseCursorPosition] === char
+                  isHighlighted={["7", `/`].some((char) =>
+                    isCurrentlyOnChar(
+                      char,
+                      exerciseData?.text,
+                      exerciseCursorPosition
+                    )
                   )}
                   color={
-                    isTutorActiveCurrently
-                      ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND
-                      : ""
+                    isTutorActive ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""
                   }
                   letter={
                     <div
@@ -560,15 +580,14 @@ function Index({ send, state }: Props) {
                   }
                 />
                 <Key
-                  isHighlighted={["8", `(`].some(
-                    (char) =>
-                      selectedLessonText?.[exerciseCursorPosition] === char
+                  isHighlighted={["8", `(`].some((char) =>
+                    isCurrentlyOnChar(
+                      char,
+                      exerciseData?.text,
+                      exerciseCursorPosition
+                    )
                   )}
-                  color={
-                    isTutorActiveCurrently
-                      ? KEY_FINGER_COLORS.MIDDLE_FINGER
-                      : ""
-                  }
+                  color={isTutorActive ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
                   letter={
                     <div
                       style={{
@@ -601,13 +620,14 @@ function Index({ send, state }: Props) {
                   }
                 />
                 <Key
-                  isHighlighted={["9", `)`].some(
-                    (char) =>
-                      selectedLessonText?.[exerciseCursorPosition] === char
+                  isHighlighted={["9", `)`].some((char) =>
+                    isCurrentlyOnChar(
+                      char,
+                      exerciseData?.text,
+                      exerciseCursorPosition
+                    )
                   )}
-                  color={
-                    isTutorActiveCurrently ? KEY_FINGER_COLORS.RING_FINGER : ""
-                  }
+                  color={isTutorActive ? KEY_FINGER_COLORS.RING_FINGER : ""}
                   letter={
                     <div
                       style={{
@@ -640,11 +660,14 @@ function Index({ send, state }: Props) {
                   }
                 />
                 <Key
-                  isHighlighted={["0", `=`].some(
-                    (char) =>
-                      selectedLessonText?.[exerciseCursorPosition] === char
+                  isHighlighted={["0", `=`].some((char) =>
+                    isCurrentlyOnChar(
+                      char,
+                      exerciseData?.text,
+                      exerciseCursorPosition
+                    )
                   )}
-                  color={isTutorActiveCurrently ? KEY_FINGER_COLORS.PINKY : ""}
+                  color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
                   letter={
                     <div
                       style={{
@@ -677,11 +700,14 @@ function Index({ send, state }: Props) {
                   }
                 />
                 <Key
-                  isHighlighted={["?", "'", "\\"].some(
-                    (char) =>
-                      selectedLessonText?.[exerciseCursorPosition] === char
+                  isHighlighted={["?", "'", "\\"].some((char) =>
+                    isCurrentlyOnChar(
+                      char,
+                      exerciseData?.text,
+                      exerciseCursorPosition
+                    )
                   )}
-                  color={isTutorActiveCurrently ? KEY_FINGER_COLORS.PINKY : ""}
+                  color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
                   letter={
                     <div
                       style={{
@@ -714,10 +740,13 @@ function Index({ send, state }: Props) {
                   }
                 />
                 <Key
-                  color={isTutorActiveCurrently ? KEY_FINGER_COLORS.PINKY : ""}
-                  isHighlighted={["¿", "¡"].some(
-                    (char) =>
-                      selectedLessonText?.[exerciseCursorPosition] === char
+                  color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
+                  isHighlighted={["¿", "¡"].some((char) =>
+                    isCurrentlyOnChar(
+                      char,
+                      exerciseData?.text,
+                      exerciseCursorPosition
+                    )
                   )}
                   letter={
                     <div
@@ -763,7 +792,7 @@ function Index({ send, state }: Props) {
 
               <div style={{ display: "flex", gap: 4 }}>
                 <Key
-                  color={isTutorActiveCurrently ? KEY_FINGER_COLORS.PINKY : ""}
+                  color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
                   style={{
                     width: 48,
                     fontSize: "1.1em",
@@ -774,31 +803,29 @@ function Index({ send, state }: Props) {
                   letter="&#11134;"
                 />
                 <Key
-                  isHighlighted={
-                    selectedLessonText?.[
-                      exerciseCursorPosition
-                    ]?.toLowerCase() === "q"
-                  }
+                  isHighlighted={isCurrentlyOnChar(
+                    "q",
+                    exerciseData?.text,
+                    exerciseCursorPosition
+                  )}
                   letter="Q"
-                  color={isTutorActiveCurrently ? KEY_FINGER_COLORS.PINKY : ""}
+                  color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
                 />
                 <Key
-                  isHighlighted={
-                    selectedLessonText?.[
-                      exerciseCursorPosition
-                    ]?.toLowerCase() === "w"
-                  }
+                  isHighlighted={isCurrentlyOnChar(
+                    "w",
+                    exerciseData?.text,
+                    exerciseCursorPosition
+                  )}
                   letter="W"
-                  color={
-                    isTutorActiveCurrently ? KEY_FINGER_COLORS.RING_FINGER : ""
-                  }
+                  color={isTutorActive ? KEY_FINGER_COLORS.RING_FINGER : ""}
                 />
                 <Key
-                  isHighlighted={
-                    selectedLessonText?.[
-                      exerciseCursorPosition
-                    ]?.toLowerCase() === "e"
-                  }
+                  isHighlighted={isCurrentlyOnChar(
+                    "e",
+                    exerciseData?.text,
+                    exerciseCursorPosition
+                  )}
                   letter={
                     <div
                       style={{
@@ -831,99 +858,77 @@ function Index({ send, state }: Props) {
                       </p>
                     </div>
                   }
-                  color={
-                    isTutorActiveCurrently
-                      ? KEY_FINGER_COLORS.MIDDLE_FINGER
-                      : ""
-                  }
+                  color={isTutorActive ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
                 />
                 <Key
-                  isHighlighted={
-                    selectedLessonText?.[
-                      exerciseCursorPosition
-                    ]?.toLowerCase() === "r"
-                  }
+                  isHighlighted={isCurrentlyOnChar(
+                    "r",
+                    exerciseData?.text,
+                    exerciseCursorPosition
+                  )}
                   letter="R"
-                  color={
-                    isTutorActiveCurrently
-                      ? KEY_FINGER_COLORS.INDEX_LEFT_HAND
-                      : ""
-                  }
+                  color={isTutorActive ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
                 />
                 <Key
-                  isHighlighted={
-                    selectedLessonText?.[
-                      exerciseCursorPosition
-                    ]?.toLowerCase() === "t"
-                  }
+                  isHighlighted={isCurrentlyOnChar(
+                    "t",
+                    exerciseData?.text,
+                    exerciseCursorPosition
+                  )}
                   letter="T"
-                  color={
-                    isTutorActiveCurrently
-                      ? KEY_FINGER_COLORS.INDEX_LEFT_HAND
-                      : ""
-                  }
+                  color={isTutorActive ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
                 />
                 <Key
-                  isHighlighted={
-                    selectedLessonText?.[
-                      exerciseCursorPosition
-                    ]?.toLowerCase() === "y"
-                  }
+                  isHighlighted={isCurrentlyOnChar(
+                    "y",
+                    exerciseData?.text,
+                    exerciseCursorPosition
+                  )}
                   letter="Y"
                   color={
-                    isTutorActiveCurrently
-                      ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND
-                      : ""
+                    isTutorActive ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""
                   }
                 />
                 <Key
-                  isHighlighted={
-                    selectedLessonText?.[
-                      exerciseCursorPosition
-                    ]?.toLowerCase() === "u"
-                  }
+                  isHighlighted={isCurrentlyOnChar(
+                    "u",
+                    exerciseData?.text,
+                    exerciseCursorPosition
+                  )}
                   letter="U"
                   color={
-                    isTutorActiveCurrently
-                      ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND
-                      : ""
+                    isTutorActive ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""
                   }
                 />
                 <Key
-                  isHighlighted={
-                    selectedLessonText?.[
-                      exerciseCursorPosition
-                    ]?.toLowerCase() === "i"
-                  }
+                  isHighlighted={isCurrentlyOnChar(
+                    "i",
+                    exerciseData?.text,
+                    exerciseCursorPosition
+                  )}
                   letter="I"
-                  color={
-                    isTutorActiveCurrently
-                      ? KEY_FINGER_COLORS.MIDDLE_FINGER
-                      : ""
-                  }
+                  color={isTutorActive ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
                 />
                 <Key
-                  isHighlighted={
-                    selectedLessonText?.[
-                      exerciseCursorPosition
-                    ]?.toLowerCase() === "o"
-                  }
+                  isHighlighted={isCurrentlyOnChar(
+                    "o",
+                    exerciseData?.text,
+                    exerciseCursorPosition
+                  )}
                   letter="O"
-                  color={
-                    isTutorActiveCurrently ? KEY_FINGER_COLORS.RING_FINGER : ""
-                  }
+                  color={isTutorActive ? KEY_FINGER_COLORS.RING_FINGER : ""}
                 />
                 <Key
-                  isHighlighted={
-                    selectedLessonText?.[
-                      exerciseCursorPosition
-                    ]?.toLowerCase() === "p"
-                  }
+                  isHighlighted={isCurrentlyOnChar(
+                    "p",
+                    exerciseData?.text,
+                    exerciseCursorPosition
+                  )}
                   letter="P"
-                  color={isTutorActiveCurrently ? KEY_FINGER_COLORS.PINKY : ""}
+                  color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
                 />
                 <Key
-                  color={isTutorActiveCurrently ? KEY_FINGER_COLORS.PINKY : ""}
+                  color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
                   letter={
                     <div
                       style={{
@@ -950,11 +955,14 @@ function Index({ send, state }: Props) {
                   }
                 />
                 <Key
-                  isHighlighted={["+", "*", "~"].some(
-                    (char) =>
-                      selectedLessonText?.[exerciseCursorPosition] === char
+                  isHighlighted={["+", "*", "~"].some((char) =>
+                    isCurrentlyOnChar(
+                      char,
+                      exerciseData?.text,
+                      exerciseCursorPosition
+                    )
                   )}
-                  color={isTutorActiveCurrently ? KEY_FINGER_COLORS.PINKY : ""}
+                  color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
                   letter={
                     <div
                       style={{
@@ -979,7 +987,7 @@ function Index({ send, state }: Props) {
                   }
                 />
                 <Key
-                  color={isTutorActiveCurrently ? KEY_FINGER_COLORS.PINKY : ""}
+                  color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
                   isHighlighted={
                     exerciseCursorPosition ===
                       EXERCISE_CURSOR_POSITION.NOT_STARTED &&
@@ -998,7 +1006,7 @@ function Index({ send, state }: Props) {
 
               <div style={{ display: "flex", gap: 4 }}>
                 <Key
-                  color={isTutorActiveCurrently ? KEY_FINGER_COLORS.PINKY : ""}
+                  color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
                   style={{
                     width: 59,
                     fontSize: "0.9rem",
@@ -1008,49 +1016,39 @@ function Index({ send, state }: Props) {
                   letter="Mayús"
                 />
                 <Key
-                  isHighlighted={
-                    selectedLessonText?.[
-                      exerciseCursorPosition
-                    ]?.toLowerCase() === "a"
-                  }
+                  isHighlighted={isCurrentlyOnChar(
+                    "a",
+                    exerciseData?.text,
+                    exerciseCursorPosition
+                  )}
                   letter="A"
-                  color={isTutorActiveCurrently ? KEY_FINGER_COLORS.PINKY : ""}
+                  color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
                 />
                 <Key
-                  isHighlighted={
-                    selectedLessonText?.[
-                      exerciseCursorPosition
-                    ]?.toLowerCase() === "s"
-                  }
+                  isHighlighted={isCurrentlyOnChar(
+                    "s",
+                    exerciseData?.text,
+                    exerciseCursorPosition
+                  )}
                   letter="S"
-                  color={
-                    isTutorActiveCurrently ? KEY_FINGER_COLORS.RING_FINGER : ""
-                  }
+                  color={isTutorActive ? KEY_FINGER_COLORS.RING_FINGER : ""}
                 />
                 <Key
-                  isHighlighted={
-                    selectedLessonText?.[
-                      exerciseCursorPosition
-                    ]?.toLowerCase() === "d"
-                  }
+                  isHighlighted={isCurrentlyOnChar(
+                    "d",
+                    exerciseData?.text,
+                    exerciseCursorPosition
+                  )}
                   letter="D"
-                  color={
-                    isTutorActiveCurrently
-                      ? KEY_FINGER_COLORS.MIDDLE_FINGER
-                      : ""
-                  }
+                  color={isTutorActive ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
                 />
                 <Key
-                  isHighlighted={
-                    selectedLessonText?.[
-                      exerciseCursorPosition
-                    ]?.toLowerCase() === "f"
-                  }
-                  color={
-                    isTutorActiveCurrently
-                      ? KEY_FINGER_COLORS.INDEX_LEFT_HAND
-                      : ""
-                  }
+                  isHighlighted={isCurrentlyOnChar(
+                    "f",
+                    exerciseData?.text,
+                    exerciseCursorPosition
+                  )}
+                  color={isTutorActive ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
                   letter={
                     <div style={{ lineHeight: 0.3, paddingTop: 5 }}>
                       F <br /> _
@@ -1058,41 +1056,33 @@ function Index({ send, state }: Props) {
                   }
                 />
                 <Key
-                  isHighlighted={
-                    selectedLessonText?.[
-                      exerciseCursorPosition
-                    ]?.toLowerCase() === "g"
-                  }
+                  isHighlighted={isCurrentlyOnChar(
+                    "g",
+                    exerciseData?.text,
+                    exerciseCursorPosition
+                  )}
                   letter="G"
-                  color={
-                    isTutorActiveCurrently
-                      ? KEY_FINGER_COLORS.INDEX_LEFT_HAND
-                      : ""
-                  }
+                  color={isTutorActive ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
                 />
                 <Key
-                  isHighlighted={
-                    selectedLessonText?.[
-                      exerciseCursorPosition
-                    ]?.toLowerCase() === "h"
-                  }
+                  isHighlighted={isCurrentlyOnChar(
+                    "h",
+                    exerciseData?.text,
+                    exerciseCursorPosition
+                  )}
                   letter="H"
                   color={
-                    isTutorActiveCurrently
-                      ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND
-                      : ""
+                    isTutorActive ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""
                   }
                 />
                 <Key
-                  isHighlighted={
-                    selectedLessonText?.[
-                      exerciseCursorPosition
-                    ]?.toLowerCase() === "j"
-                  }
+                  isHighlighted={isCurrentlyOnChar(
+                    "j",
+                    exerciseData?.text,
+                    exerciseCursorPosition
+                  )}
                   color={
-                    isTutorActiveCurrently
-                      ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND
-                      : ""
+                    isTutorActive ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""
                   }
                   letter={
                     <div style={{ lineHeight: 0.3, paddingTop: 5 }}>
@@ -1101,45 +1091,39 @@ function Index({ send, state }: Props) {
                   }
                 />
                 <Key
-                  isHighlighted={
-                    selectedLessonText?.[
-                      exerciseCursorPosition
-                    ]?.toLowerCase() === "k"
-                  }
+                  isHighlighted={isCurrentlyOnChar(
+                    "k",
+                    exerciseData?.text,
+                    exerciseCursorPosition
+                  )}
                   letter="K"
-                  color={
-                    isTutorActiveCurrently
-                      ? KEY_FINGER_COLORS.MIDDLE_FINGER
-                      : ""
-                  }
+                  color={isTutorActive ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
                 />
                 <Key
-                  isHighlighted={
-                    selectedLessonText?.[
-                      exerciseCursorPosition
-                    ]?.toLowerCase() === "l"
-                  }
+                  isHighlighted={isCurrentlyOnChar(
+                    "l",
+                    exerciseData?.text,
+                    exerciseCursorPosition
+                  )}
                   letter="L"
-                  color={
-                    isTutorActiveCurrently ? KEY_FINGER_COLORS.RING_FINGER : ""
-                  }
+                  color={isTutorActive ? KEY_FINGER_COLORS.RING_FINGER : ""}
                 />
                 <Key
-                  isHighlighted={
-                    selectedLessonText?.[
-                      exerciseCursorPosition
-                    ]?.toLowerCase() === "ñ"
-                  }
+                  isHighlighted={isCurrentlyOnChar(
+                    "ñ",
+                    exerciseData?.text,
+                    exerciseCursorPosition
+                  )}
                   letter="Ñ"
-                  color={isTutorActiveCurrently ? KEY_FINGER_COLORS.PINKY : ""}
+                  color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
                 />
                 <Key
-                  isHighlighted={
-                    selectedLessonText?.[
-                      exerciseCursorPosition
-                    ]?.toLowerCase() === "{"
-                  }
-                  color={isTutorActiveCurrently ? KEY_FINGER_COLORS.PINKY : ""}
+                  isHighlighted={isCurrentlyOnChar(
+                    "{",
+                    exerciseData?.text,
+                    exerciseCursorPosition
+                  )}
+                  color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
                   letter={
                     <div
                       style={{
@@ -1166,12 +1150,12 @@ function Index({ send, state }: Props) {
                   }
                 />
                 <Key
-                  isHighlighted={
-                    selectedLessonText?.[
-                      exerciseCursorPosition
-                    ]?.toLowerCase() === "}"
-                  }
-                  color={isTutorActiveCurrently ? KEY_FINGER_COLORS.PINKY : ""}
+                  isHighlighted={isCurrentlyOnChar(
+                    "}",
+                    exerciseData?.text,
+                    exerciseCursorPosition
+                  )}
+                  color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
                   letter={
                     <div
                       style={{
@@ -1204,7 +1188,7 @@ function Index({ send, state }: Props) {
                   }
                 />
                 <Key
-                  color={isTutorActiveCurrently ? KEY_FINGER_COLORS.PINKY : ""}
+                  color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
                   className={classes.enterBottom}
                   style={{ width: 41, paddingTop: 7 }}
                   letter="&crarr;"
@@ -1218,11 +1202,14 @@ function Index({ send, state }: Props) {
 
               <div style={{ display: "flex", gap: 4 }}>
                 <Key
-                  isHighlighted={[";", ":", "_"].some(
-                    (char) =>
-                      selectedLessonText?.[exerciseCursorPosition] === char
+                  isHighlighted={[";", ":", "_"].some((char) =>
+                    isCurrentlyOnChar(
+                      char,
+                      exerciseData?.text,
+                      exerciseCursorPosition
+                    )
                   )}
-                  color={isTutorActiveCurrently ? KEY_FINGER_COLORS.PINKY : ""}
+                  color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
                   style={{
                     width: 44,
                     fontSize: "0.9rem",
@@ -1232,10 +1219,13 @@ function Index({ send, state }: Props) {
                   letter="&#8679;"
                 />
                 <Key
-                  color={isTutorActiveCurrently ? KEY_FINGER_COLORS.PINKY : ""}
-                  isHighlighted={["<", ">"].some(
-                    (char) =>
-                      selectedLessonText?.[exerciseCursorPosition] === char
+                  color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
+                  isHighlighted={["<", ">"].some((char) =>
+                    isCurrentlyOnChar(
+                      char,
+                      exerciseData?.text,
+                      exerciseCursorPosition
+                    )
                   )}
                   letter={
                     <div style={{ lineHeight: 0.65 }}>
@@ -1244,100 +1234,81 @@ function Index({ send, state }: Props) {
                   }
                 />
                 <Key
-                  isHighlighted={
-                    selectedLessonText?.[
-                      exerciseCursorPosition
-                    ]?.toLowerCase() === "z"
-                  }
+                  isHighlighted={isCurrentlyOnChar(
+                    "z",
+                    exerciseData?.text,
+                    exerciseCursorPosition
+                  )}
                   letter="Z"
-                  color={isTutorActiveCurrently ? KEY_FINGER_COLORS.PINKY : ""}
+                  color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
                 />
                 <Key
-                  isHighlighted={
-                    selectedLessonText?.[
-                      exerciseCursorPosition
-                    ]?.toLowerCase() === "x"
-                  }
+                  isHighlighted={isCurrentlyOnChar(
+                    "x",
+                    exerciseData?.text,
+                    exerciseCursorPosition
+                  )}
                   letter="X"
-                  color={
-                    isTutorActiveCurrently ? KEY_FINGER_COLORS.RING_FINGER : ""
-                  }
+                  color={isTutorActive ? KEY_FINGER_COLORS.RING_FINGER : ""}
                 />
                 <Key
-                  isHighlighted={
-                    selectedLessonText?.[
-                      exerciseCursorPosition
-                    ]?.toLowerCase() === "c"
-                  }
+                  isHighlighted={isCurrentlyOnChar(
+                    "c",
+                    exerciseData?.text,
+                    exerciseCursorPosition
+                  )}
                   letter="C"
-                  color={
-                    isTutorActiveCurrently
-                      ? KEY_FINGER_COLORS.MIDDLE_FINGER
-                      : ""
-                  }
+                  color={isTutorActive ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
                 />
                 <Key
-                  isHighlighted={
-                    selectedLessonText?.[
-                      exerciseCursorPosition
-                    ]?.toLowerCase() === "v"
-                  }
+                  isHighlighted={isCurrentlyOnChar(
+                    "v",
+                    exerciseData?.text,
+                    exerciseCursorPosition
+                  )}
                   letter="V"
-                  color={
-                    isTutorActiveCurrently
-                      ? KEY_FINGER_COLORS.INDEX_LEFT_HAND
-                      : ""
-                  }
+                  color={isTutorActive ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
                 />
                 <Key
-                  isHighlighted={
-                    selectedLessonText?.[
-                      exerciseCursorPosition
-                    ]?.toLowerCase() === "b"
-                  }
+                  isHighlighted={isCurrentlyOnChar(
+                    "b",
+                    exerciseData?.text,
+                    exerciseCursorPosition
+                  )}
                   letter="B"
-                  color={
-                    isTutorActiveCurrently
-                      ? KEY_FINGER_COLORS.INDEX_LEFT_HAND
-                      : ""
-                  }
+                  color={isTutorActive ? KEY_FINGER_COLORS.INDEX_LEFT_HAND : ""}
                 />
                 <Key
-                  isHighlighted={
-                    selectedLessonText?.[
-                      exerciseCursorPosition
-                    ]?.toLowerCase() === "n"
-                  }
+                  isHighlighted={isCurrentlyOnChar(
+                    "n",
+                    exerciseData?.text,
+                    exerciseCursorPosition
+                  )}
                   letter="N"
                   color={
-                    isTutorActiveCurrently
-                      ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND
-                      : ""
+                    isTutorActive ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""
                   }
                 />
                 <Key
-                  isHighlighted={
-                    selectedLessonText?.[
-                      exerciseCursorPosition
-                    ]?.toLowerCase() === "m"
-                  }
+                  isHighlighted={isCurrentlyOnChar(
+                    "m",
+                    exerciseData?.text,
+                    exerciseCursorPosition
+                  )}
                   letter="M"
                   color={
-                    isTutorActiveCurrently
-                      ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND
-                      : ""
+                    isTutorActive ? KEY_FINGER_COLORS.INDEX_RIGHT_HAND : ""
                   }
                 />
                 <Key
-                  isHighlighted={[",", ";"].some(
-                    (char) =>
-                      selectedLessonText?.[exerciseCursorPosition] === char
+                  isHighlighted={[",", ";"].some((char) =>
+                    isCurrentlyOnChar(
+                      char,
+                      exerciseData?.text,
+                      exerciseCursorPosition
+                    )
                   )}
-                  color={
-                    isTutorActiveCurrently
-                      ? KEY_FINGER_COLORS.MIDDLE_FINGER
-                      : ""
-                  }
+                  color={isTutorActive ? KEY_FINGER_COLORS.MIDDLE_FINGER : ""}
                   letter={
                     <div
                       style={{
@@ -1352,13 +1323,14 @@ function Index({ send, state }: Props) {
                   }
                 />
                 <Key
-                  isHighlighted={[".", ":"].some(
-                    (char) =>
-                      selectedLessonText?.[exerciseCursorPosition] === char
+                  isHighlighted={[".", ":"].some((char) =>
+                    isCurrentlyOnChar(
+                      char,
+                      exerciseData?.text,
+                      exerciseCursorPosition
+                    )
                   )}
-                  color={
-                    isTutorActiveCurrently ? KEY_FINGER_COLORS.RING_FINGER : ""
-                  }
+                  color={isTutorActive ? KEY_FINGER_COLORS.RING_FINGER : ""}
                   letter={
                     <div
                       style={{
@@ -1373,11 +1345,14 @@ function Index({ send, state }: Props) {
                   }
                 />
                 <Key
-                  isHighlighted={["-", "_"].some(
-                    (char) =>
-                      selectedLessonText?.[exerciseCursorPosition] === char
+                  isHighlighted={["-", "_"].some((char) =>
+                    isCurrentlyOnChar(
+                      char,
+                      exerciseData?.text,
+                      exerciseCursorPosition
+                    )
                   )}
-                  color={isTutorActiveCurrently ? KEY_FINGER_COLORS.PINKY : ""}
+                  color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
                   letter={
                     <div
                       style={{
@@ -1396,7 +1371,7 @@ function Index({ send, state }: Props) {
                   isHighlighted={
                     selectedLessonText?.[exerciseCursorPosition] === ">"
                   }
-                  color={isTutorActiveCurrently ? KEY_FINGER_COLORS.PINKY : ""}
+                  color={isTutorActive ? KEY_FINGER_COLORS.PINKY : ""}
                   style={{
                     width: 93,
                     fontSize: "0.9rem",
@@ -1438,7 +1413,7 @@ function Index({ send, state }: Props) {
                   isHighlighted={
                     selectedLessonText?.[exerciseCursorPosition] === " "
                   }
-                  color={isTutorActiveCurrently ? "#ffc0c0" : ""}
+                  color={isTutorActive ? "#ffc0c0" : ""}
                 />
                 <Key
                   style={{
