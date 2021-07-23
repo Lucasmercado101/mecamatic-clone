@@ -126,14 +126,6 @@ export type stateEvents =
   | ResumeTimerEvent
   | LogOutEvent;
 
-function totalNetKeystrokesTyped(totalKeystrokes: number, errors: number) {
-  return totalKeystrokes - errors;
-}
-
-function totalGrossKeystrokesTyped(totalKeystrokes: number, errors: number) {
-  return totalKeystrokes + errors;
-}
-
 export const stateMachine = createMachine<stateContext, stateEvents>(
   {
     id: IDs.ROOT,
