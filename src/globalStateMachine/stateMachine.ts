@@ -1,5 +1,6 @@
 import { createMachine, assign } from "xstate";
 import { userData } from "../views/Welcome";
+import { stateContext } from "./context";
 
 function calculatePercentageOfErrors(
   errors: number,
@@ -53,8 +54,6 @@ enum actionTypes {
   MOVE_CURSOR_BY_ONE = "MOVE_CURSOR_BY_ONE",
   ADD_ONE_TO_ELAPSED_SECONDS = "ADD_ONE_TO_ELAPSED_SECONDS",
   RESET_ELAPSED_TIME_TO_0 = "RESET_ELAPSED_TIME_TO_0",
-  CALCULATE_GROSS_KEYWORDS_TYPED = "CALCULATE_GROSS_KEYWORDS_TYPED",
-  CALCULATE_NET_KEYWORDS_TYPED = "CALCULATE_NET_KEYWORDS_TYPED",
   INCREASE_ERRORS_BY_ONE = "INCREASE_ERRORS_BY_ONE",
   RESET_ERRORS_TO_0 = "RESET_ERRORS_TO_0",
   RESET_GROSS_KEYWORDS_TYPED_TO_0 = "RESET_GROSS_KEYWORDS_TYPED_TO_0",
@@ -75,48 +74,16 @@ enum guardTypes {
   PRESSED_A_MODIFIER_KEY = "PRESSED_A_MODIFIER_KEY"
 }
 
-export interface stateContext {
-  // ----------------- global settings -----------------
-  // fixed number or depends on the exercise settings
-  // this global number, if set, overrides the minimum speed
-  // of the exercises
-  minSpeed?: number;
-  // maximum amount of errors allowed (%):
-  // fixed number or depends on the exercise settings
-  errorsCoefficient: number;
-  defaultErrorsCoefficient: number;
-  isKeyboardGloballyVisible?: boolean; // always show, never show, or depends on the exercise settings
-  isTutorGloballyActive?: boolean; // always active, never active, or depends on the exercise settings
-  timeLimitInSeconds: number;
-  userName: string;
-
-  // ---- options -----
-  soundOnKeysTap: boolean;
-  soundOnError: boolean;
-  infoPanelOnTheLeft: boolean;
-  showResultsWhileDoingExercise: boolean;
-
-  // ----------------- exercise data -----------------
-  selectedLessonText?: string;
-  lessonCategory?: string;
-  lessonNumber?: number;
-  exerciseCursorPosition: number;
-  exerciseNumber?: number;
-  minimumWPMNeededToCompleteExerciseSuccessfully: number;
-  isTutorActiveForThisExercise?: boolean;
-  isKeyboardVisibleForThisExercise?: boolean;
-  totalNetKeystrokes?: number;
-  totalGrossKeystrokes?: number;
-  errors: number;
-  elapsedSeconds: number;
-  exerciseFinishedUnsuccessfullyIncidenceMessage: string;
-}
-
 type ExerciseSelectedEvent = {
   type: eventTypes.EXERCISE_SELECTED;
   selectedLessonText: string;
-  lessonCategory: string;
-  lessonNumber?: number;
+  lessonCategory:
+    | "Perfeccionamiento"
+    | "Practica"
+    | "Aprendizaje"
+    | "Definido por el Usuario";
+  // TODO optional on user made exercises
+  lessonNumber: number;
   exerciseNumber: number;
   isTutorActive: boolean;
   isKeyboardVisible: boolean;
@@ -172,20 +139,8 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
     id: IDs.ROOT,
     initial: stateTypes.WELCOME_VIEW,
     context: {
-      exerciseFinishedUnsuccessfullyIncidenceMessage: "",
-      userName: "",
-      exerciseCursorPosition: EXERCISE_CURSOR_POSITION.NOT_STARTED,
-      minimumWPMNeededToCompleteExerciseSuccessfully: 20,
-      elapsedSeconds: 0,
-      errors: 0,
-      timeLimitInSeconds: 900, // 15 minutes default time limit
-      // global settings
-      defaultErrorsCoefficient: 2,
-      errorsCoefficient: 2, // initially 2, then loaded from user settings,
-      soundOnKeysTap: false,
-      soundOnError: false,
-      infoPanelOnTheLeft: false,
-      showResultsWhileDoingExercise: false
+      errorsCommitted: 0,
+      elapsedSeconds: 0
     },
     states: {
       [stateTypes.WELCOME_VIEW]: {
@@ -234,8 +189,6 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
                           cond: guardTypes.PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER_BUT_MADE_TOO_MANY_MISTAKES,
                           actions: [
                             actionTypes.MOVE_CURSOR_BY_ONE,
-                            actionTypes.CALCULATE_GROSS_KEYWORDS_TYPED,
-                            actionTypes.CALCULATE_NET_KEYWORDS_TYPED,
                             actionTypes.SET_ERROR_MESSAGE_TO_TOO_MANY_ERRORS
                           ]
                         },
@@ -244,44 +197,26 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
                           cond: guardTypes.PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER_BUT_WAS_TOO_SLOW,
                           actions: [
                             actionTypes.MOVE_CURSOR_BY_ONE,
-                            actionTypes.CALCULATE_GROSS_KEYWORDS_TYPED,
-                            actionTypes.CALCULATE_NET_KEYWORDS_TYPED,
                             actionTypes.SET_ERROR_MESSAGE_TO_TOO_SLOW
                           ]
                         },
                         {
                           target: stateTypes.EXERCISE_FINISHED,
                           cond: guardTypes.PRESSED_CORRECT_LETTER_AND_IS_AT_LAST_LETTER,
-                          actions: [
-                            actionTypes.MOVE_CURSOR_BY_ONE,
-                            actionTypes.CALCULATE_GROSS_KEYWORDS_TYPED,
-                            actionTypes.CALCULATE_NET_KEYWORDS_TYPED
-                          ]
+                          actions: actionTypes.MOVE_CURSOR_BY_ONE
                         },
                         {
                           target: stateTypes.EXERCISE_ONGOING,
                           cond: guardTypes.PRESSED_CORRECT_LETTER,
-                          actions: [
-                            actionTypes.MOVE_CURSOR_BY_ONE,
-                            actionTypes.CALCULATE_GROSS_KEYWORDS_TYPED,
-                            actionTypes.CALCULATE_NET_KEYWORDS_TYPED
-                          ]
+                          actions: actionTypes.MOVE_CURSOR_BY_ONE
                         },
                         {
                           target: stateTypes.EXERCISE_ONGOING,
-                          cond: guardTypes.PRESSED_A_MODIFIER_KEY,
-                          actions: [
-                            actionTypes.CALCULATE_GROSS_KEYWORDS_TYPED,
-                            actionTypes.CALCULATE_NET_KEYWORDS_TYPED
-                          ]
+                          cond: guardTypes.PRESSED_A_MODIFIER_KEY
                         },
                         {
                           target: stateTypes.EXERCISE_ONGOING,
-                          actions: [
-                            actionTypes.INCREASE_ERRORS_BY_ONE,
-                            actionTypes.CALCULATE_GROSS_KEYWORDS_TYPED,
-                            actionTypes.CALCULATE_NET_KEYWORDS_TYPED
-                          ]
+                          actions: actionTypes.INCREASE_ERRORS_BY_ONE
                         }
                       ]
                     }
@@ -374,20 +309,22 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
         } = event as ExerciseSelectedEvent;
 
         return {
-          exerciseNumber,
-          lessonCategory,
-          selectedLessonText,
-          lessonNumber,
-          isTutorActiveForThisExercise: isTutorActive,
-          isKeyboardVisibleForThisExercise: isKeyboardVisible,
-          minimumWPMNeededToCompleteExerciseSuccessfully: exerciseMinimumSpeed
+          exerciseData: {
+            exerciseCategory: lessonCategory,
+            exerciseNumber,
+            text: selectedLessonText,
+            lessonNumber,
+            minWPM: exerciseMinimumSpeed,
+            isTutorActive,
+            isKeyboardVisible
+          }
         };
       }),
       [actionTypes.SET_CURSOR_TO_NOT_STARTED]: assign((_) => ({
         exerciseCursorPosition: EXERCISE_CURSOR_POSITION.NOT_STARTED
       })),
       [actionTypes.MOVE_CURSOR_BY_ONE]: assign((ctx) => ({
-        exerciseCursorPosition: ctx.exerciseCursorPosition + 1
+        exerciseCursorPosition: ctx.exerciseCursorPosition! + 1
       })),
       [actionTypes.SET_CURSOR_TO_FIRST_LETTER]: assign((_) => ({
         exerciseCursorPosition: EXERCISE_CURSOR_POSITION.FIRST_LETTER
@@ -398,29 +335,11 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
       [actionTypes.RESET_ELAPSED_TIME_TO_0]: assign((_) => ({
         elapsedSeconds: 0
       })),
-      [actionTypes.CALCULATE_GROSS_KEYWORDS_TYPED]: assign((ctx) => ({
-        totalNetKeystrokes: totalNetKeystrokesTyped(
-          ctx.exerciseCursorPosition,
-          ctx.errors
-        )
-      })),
-      [actionTypes.CALCULATE_NET_KEYWORDS_TYPED]: assign((ctx) => ({
-        totalGrossKeystrokes: totalGrossKeystrokesTyped(
-          ctx.exerciseCursorPosition,
-          ctx.errors
-        )
-      })),
       [actionTypes.INCREASE_ERRORS_BY_ONE]: assign((ctx) => ({
-        errors: ctx.errors + 1
-      })),
-      [actionTypes.RESET_GROSS_KEYWORDS_TYPED_TO_0]: assign((_) => ({
-        totalGrossKeystrokes: 0
-      })),
-      [actionTypes.RESET_NET_KEYWORDS_TYPED_TO_0]: assign((_) => ({
-        totalNetKeystrokes: 0
+        errorsCommitted: ctx.errorsCommitted + 1
       })),
       [actionTypes.RESET_ERRORS_TO_0]: assign((_) => ({
-        errors: 0
+        errorsCommitted: 0
       })),
       [actionTypes.SET_USER_DATA]: assign((_, e) => {
         const {
@@ -432,25 +351,27 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
           minimumWPM
         } = e as UserDataLoadedEvent;
         return {
-          userName,
-          errorsCoefficient,
-          timeLimitInSeconds,
-          isKeyboardGloballyVisible,
-          isTutorGloballyActive,
-          minSpeed: minimumWPM
+          userData: {
+            userName,
+            userSettings: {
+              minWPM: minimumWPM,
+              errorsCoefficient,
+              timeLimit: timeLimitInSeconds,
+              isKeyboardVisible: isKeyboardGloballyVisible,
+              isTutorActive: isTutorGloballyActive,
+              showResultsWhileDoingExercise: true
+            }
+          }
         };
       }),
       [actionTypes.SET_ERROR_MESSAGE_TO_TIME_RAN_OUT]: assign((_) => ({
-        exerciseFinishedUnsuccessfullyIncidenceMessage:
-          "Ha superado el\nlimite de tiempo\nestablecido"
+        incidentMessage: "Ha superado el\nlimite de tiempo\nestablecido"
       })),
       [actionTypes.SET_ERROR_MESSAGE_TO_TOO_MANY_ERRORS]: assign((_) => ({
-        exerciseFinishedUnsuccessfullyIncidenceMessage:
-          "Ha superado el % maximo de errores permitidos"
+        incidentMessage: "Ha superado el % maximo de errores permitidos"
       })),
       [actionTypes.SET_ERROR_MESSAGE_TO_TOO_SLOW]: assign((_) => ({
-        exerciseFinishedUnsuccessfullyIncidenceMessage:
-          "No ha superado la velocidad minima"
+        incidentMessage: "No ha superado la velocidad minima"
       }))
     },
     guards: {
@@ -460,10 +381,10 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
       },
       [guardTypes.PRESSED_CORRECT_LETTER]: (ctx, event) => {
         const { key } = event as KeyPressedEvent;
-        return key === ctx.selectedLessonText?.[ctx.exerciseCursorPosition];
+        return key === ctx.exerciseData!.text[ctx.exerciseCursorPosition!];
       },
       [guardTypes.THERE_IS_ONE_SECOND_LEFT]: (ctx) => {
-        return ctx.timeLimitInSeconds - ctx.elapsedSeconds === 1;
+        return ctx.userData!.userSettings.timeLimit - ctx.elapsedSeconds === 1;
       },
       [guardTypes.PRESSED_A_MODIFIER_KEY]: (_, event) => {
         // https://www.w3.org/TR/uievents-key/#keys-modifier
@@ -516,12 +437,13 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
         ctx,
         event
       ) => {
+        if (ctx.exerciseData) return false;
         const { key } = event as KeyPressedEvent;
         const pressedCorrectKey =
-          key === ctx.selectedLessonText?.[ctx.exerciseCursorPosition];
-        const isAtLastLetter = ctx.selectedLessonText
-          ? ctx.selectedLessonText.length - 1 === ctx.exerciseCursorPosition
-          : false;
+          key === ctx.exerciseData!.text[ctx.exerciseCursorPosition!];
+
+        const isAtLastLetter =
+          ctx.exerciseData!.text.length - 1 === ctx.exerciseCursorPosition!;
 
         return pressedCorrectKey && isAtLastLetter;
       },
@@ -529,16 +451,17 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
         (ctx, event) => {
           const { key } = event as KeyPressedEvent;
           const pressedCorrectKey =
-            key === ctx.selectedLessonText?.[ctx.exerciseCursorPosition];
-          const isAtLastLetter = ctx.selectedLessonText
-            ? ctx.selectedLessonText.length - 1 === ctx.exerciseCursorPosition
-            : false;
+            key === ctx.exerciseData!.text[ctx.exerciseCursorPosition!];
+
+          const isAtLastLetter =
+            ctx.exerciseData!.text.length - 1 === ctx.exerciseCursorPosition!;
 
           const madeTooManyMistakes =
             calculatePercentageOfErrors(
-              ctx.errors,
-              ctx.exerciseCursorPosition
-            ) > (ctx.errorsCoefficient || ctx.defaultErrorsCoefficient);
+              ctx.errorsCommitted,
+              ctx.exerciseCursorPosition!
+              // TODO replace the 2 with a enum globalDefaults.maxErrorsPerExercisePercentage
+            ) > (ctx.userData!.userSettings.errorsCoefficient || 2);
 
           return pressedCorrectKey && isAtLastLetter && madeTooManyMistakes;
         },
@@ -546,10 +469,10 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
         (ctx, event) => {
           const { key } = event as KeyPressedEvent;
           const pressedCorrectKey =
-            key === ctx.selectedLessonText?.[ctx.exerciseCursorPosition];
-          const isAtLastLetter = ctx.selectedLessonText
-            ? ctx.selectedLessonText.length - 1 === ctx.exerciseCursorPosition
-            : false;
+            key === ctx.exerciseData!.text[ctx.exerciseCursorPosition!];
+
+          const isAtLastLetter =
+            ctx.exerciseData!.text.length - 1 === ctx.exerciseCursorPosition!;
 
           const calcNetWPM = (
             typedEntries: number,
@@ -558,13 +481,11 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
           ): number => (typedEntries / 5 - errors) / (seconds / 60);
 
           const wasTooSlow =
-            +calcNetWPM(
-              ctx.exerciseCursorPosition,
+            calcNetWPM(
+              ctx.exerciseCursorPosition!,
               ctx.elapsedSeconds,
-              ctx.errors
-            ).toFixed(0) <
-            (ctx.minSpeed ||
-              ctx.minimumWPMNeededToCompleteExerciseSuccessfully);
+              ctx.errorsCommitted
+            ) < (ctx.userData!.userSettings.minWPM || ctx.exerciseData!.minWPM);
 
           return pressedCorrectKey && isAtLastLetter && wasTooSlow;
         }
