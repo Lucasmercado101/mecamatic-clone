@@ -56,8 +56,6 @@ enum actionTypes {
   RESET_ELAPSED_TIME_TO_0 = "RESET_ELAPSED_TIME_TO_0",
   INCREASE_ERRORS_BY_ONE = "INCREASE_ERRORS_BY_ONE",
   RESET_ERRORS_TO_0 = "RESET_ERRORS_TO_0",
-  RESET_GROSS_KEYWORDS_TYPED_TO_0 = "RESET_GROSS_KEYWORDS_TYPED_TO_0",
-  RESET_NET_KEYWORDS_TYPED_TO_0 = "RESET_NET_KEYWORDS_TYPED_TO_0",
   SET_USER_DATA = "SET_USER_DATA",
   SET_ERROR_MESSAGE_TO_TIME_RAN_OUT = "SET_ERROR_MESSAGE_TO_TIME_RAN_OUT",
   SET_ERROR_MESSAGE_TO_TOO_MANY_ERRORS = "SET_ERROR_MESSAGE_TO_TOO_MANY_ERRORS",
@@ -156,10 +154,7 @@ export const stateMachine = createMachine<stateContext, stateEvents>(
           [stateTypes.EXERCISE_SELECTED]: {
             entry: [
               actionTypes.RESET_ELAPSED_TIME_TO_0,
-              actionTypes.RESET_ERRORS_TO_0,
-              // TODO i don't think these computed values should be computed here and not in app.tsx on the fly
-              actionTypes.RESET_GROSS_KEYWORDS_TYPED_TO_0,
-              actionTypes.RESET_NET_KEYWORDS_TYPED_TO_0
+              actionTypes.RESET_ERRORS_TO_0
             ],
             type: "parallel",
             states: {
