@@ -1,9 +1,6 @@
 import { State } from "xstate";
-import {
-  stateContext,
-  stateEvents,
-  stateTypes
-} from "../../globalStateMachine/stateMachine";
+import { stateEvents, stateTypes } from "../../globalStateMachine/stateMachine";
+import { stateContext } from "../../globalStateMachine/context";
 import { cond, always, complement, T } from "ramda";
 import { isValidNumber } from "ramda-adjunct";
 
@@ -16,8 +13,10 @@ const isWholeNumber = (num: number) => num % 1 === 0;
 
 function calculatePercentageOfErrors(
   errors: number,
-  totalAmount: number
+  totalAmount: number | null | undefined
 ): string {
+  if (!totalAmount) return "";
+
   const errorsPercentage = calcWhatPercentageOfANumberIsAnotherNumber(
     errors,
     totalAmount
@@ -31,6 +30,12 @@ function calculatePercentageOfErrors(
 
   return res + "";
 }
+
+const calcNetKeystrokesTyped = (totalKeystrokes: number, errors: number) =>
+  totalKeystrokes - errors;
+
+const calcGrossKeystrokesTyped = (totalKeystrokes: number, errors: number) =>
+  totalKeystrokes + errors;
 
 const calcNetWPM = (
   typedEntries: number,
@@ -83,30 +88,42 @@ const riseTitleTextStyles = {
 // only new values are obtained and shown locally from the state
 function InfoPanel({ state }: Props) {
   const {
-    userName,
-    lessonCategory,
-    lessonNumber,
-    exerciseNumber,
-    exerciseFinishedUnsuccessfullyIncidenceMessage,
-    minSpeed,
-    minimumWPMNeededToCompleteExerciseSuccessfully,
-    totalNetKeystrokes,
-    totalGrossKeystrokes,
-    errors,
-    exerciseCursorPosition,
+    incidentMessage,
+    errorsCommitted,
     elapsedSeconds,
-    timeLimitInSeconds
+    userData,
+    exerciseCursorPosition,
+    exerciseData
   } = state.context;
 
-  const errorsCoefficient = state.context.errorsCoefficient ?? 2;
+  const {
+    timeLimit: timeLimitInSeconds,
+    // TODO replace magic number with number from an enum globalDefaults
+    errorsCoefficient = 2
+  } = userData
+    ? userData.userSettings
+    : {
+        // TODO get this from enum globalDefaults.exerciseTimeLimit
+        timeLimit: 900 // 15 minutes default time limit
+      };
+
+  const timeRemaining = {
+    minutes: ~~((timeLimitInSeconds - elapsedSeconds) / 60),
+    seconds: (timeLimitInSeconds - elapsedSeconds) % 60
+  };
+
+  const netKeyStrokes = exerciseCursorPosition
+    ? calcNetKeystrokesTyped(exerciseCursorPosition, errorsCommitted)
+    : null;
+
+  const grossKeyStrokes = exerciseCursorPosition
+    ? calcNetKeystrokesTyped(exerciseCursorPosition, errorsCommitted)
+    : null;
 
   const percentageOfErrors = calculatePercentageOfErrors(
-    errors,
+    errorsCommitted,
     exerciseCursorPosition
   );
-
-  const timeLimitMinutes = ~~((timeLimitInSeconds - elapsedSeconds) / 60);
-  const timeLimitSeconds = (timeLimitInSeconds - elapsedSeconds) % 60;
 
   return (
     <div
@@ -137,17 +154,21 @@ function InfoPanel({ state }: Props) {
         <div style={riseTitleTextStyles}>Alumno y nivel actual</div>
         <br />
         <div>
-          {userName}
+          {userData?.userName}
           <br />
           {state.matches({
             [stateTypes.MAIN_VIEW]: stateTypes.EXERCISE_SELECTED
           }) && (
             <div style={{ marginTop: 8 }}>
-              {lessonCategory}
+              {exerciseData?.exerciseCategory}
               <br />
-              {lessonNumber && `Lección ${lessonNumber}`}{" "}
-              {exerciseNumber && lessonNumber && "-"}{" "}
-              {exerciseNumber && `Ejercicio ${exerciseNumber}`}
+              {exerciseData?.lessonNumber &&
+                `Lección ${exerciseData?.lessonNumber}`}{" "}
+              {exerciseData?.exerciseNumber &&
+                exerciseData?.lessonNumber &&
+                "-"}{" "}
+              {exerciseData?.exerciseNumber &&
+                `Ejercicio ${exerciseData?.exerciseNumber}`}
             </div>
           )}
         </div>
@@ -186,11 +207,7 @@ function InfoPanel({ state }: Props) {
 
         {state.matches({
           [stateTypes.MAIN_VIEW]: stateTypes.EXERCISE_FINISHED_UNSUCCESSFULLY
-        }) && (
-          <RedBGIncidencesText>
-            {exerciseFinishedUnsuccessfullyIncidenceMessage}
-          </RedBGIncidencesText>
-        )}
+        }) && <RedBGIncidencesText>{incidentMessage}</RedBGIncidencesText>}
       </div>
 
       <div
@@ -264,7 +281,8 @@ function InfoPanel({ state }: Props) {
                 fontWeight: "bold"
               }}
             >
-              {minSpeed || minimumWPMNeededToCompleteExerciseSuccessfully}
+              {/* // TODO replace magic number with number from an enum globalDefaults */}
+              {userData?.userSettings.minWPM || exerciseData?.minWPM || 20}
             </div>
           </div>
         </div>
@@ -331,7 +349,7 @@ function InfoPanel({ state }: Props) {
                   [stateTypes.MAIN_VIEW]:
                     stateTypes.EXERCISE_FINISHED_UNSUCCESSFULLY
                 }
-              ].some(state.matches) && totalGrossKeystrokes}
+              ].some(state.matches) && grossKeyStrokes}
             </div>
           </div>
           <div
@@ -381,7 +399,7 @@ function InfoPanel({ state }: Props) {
                   [stateTypes.MAIN_VIEW]:
                     stateTypes.EXERCISE_FINISHED_UNSUCCESSFULLY
                 }
-              ].some(state.matches) && totalNetKeystrokes}
+              ].some(state.matches) && netKeyStrokes}
             </div>
           </div>
 
@@ -432,7 +450,7 @@ function InfoPanel({ state }: Props) {
                   [stateTypes.MAIN_VIEW]:
                     stateTypes.EXERCISE_FINISHED_UNSUCCESSFULLY
                 }
-              ].some(state.matches) && errors}
+              ].some(state.matches) && errorsCommitted}
             </div>
           </div>
 
@@ -535,13 +553,13 @@ function InfoPanel({ state }: Props) {
                     stateTypes.EXERCISE_FINISHED_UNSUCCESSFULLY
                 }
               ].some(state.matches) &&
-                ((exerciseCursorPosition > 0 &&
+                ((exerciseCursorPosition! > 0 &&
                   elapsedSeconds > 0 &&
                   Math.max(
                     +calcNetWPM(
-                      exerciseCursorPosition,
+                      exerciseCursorPosition!,
                       elapsedSeconds,
-                      errors
+                      errorsCommitted
                     ).toFixed(0),
                     0
                   )) ||
@@ -580,8 +598,13 @@ function InfoPanel({ state }: Props) {
             paddingTop: 1
           }}
         >
-          {timeLimitMinutes <= 9 ? `0${timeLimitMinutes}` : timeLimitMinutes}:
-          {timeLimitSeconds <= 9 ? `0${timeLimitSeconds}` : timeLimitSeconds}
+          {timeRemaining.minutes <= 9
+            ? `0${timeRemaining.minutes}`
+            : timeRemaining.minutes}
+          :
+          {timeRemaining.seconds <= 9
+            ? `0${timeRemaining.seconds}`
+            : timeRemaining.seconds}
         </div>
       </div>
     </div>
