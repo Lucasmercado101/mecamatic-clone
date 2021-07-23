@@ -60,6 +60,9 @@ interface exerciseData {
 }
 
 export interface stateContext {
+  // TODO make these two required (no ?)
+  // since there will be a moment where the userData hasn't loaded yet
+  // and use a default value(s) variable as the placeholder until it loads
   userData?: userData;
   exerciseData?: exerciseData;
 
