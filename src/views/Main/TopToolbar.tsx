@@ -1,9 +1,9 @@
 import { Event, EventData, SingleOrArray, State } from "xstate";
 import redCheckCheckMark from "../../assets/red_checkmark.png";
 import stopIcon from "../../assets/stop.png";
+import { stateContext } from "../../globalStateMachine/context";
 import {
   eventTypes,
-  stateContext,
   stateEvents,
   stateTypes
 } from "../../globalStateMachine/stateMachine";
@@ -36,7 +36,8 @@ function TopToolbar({ send, state }: Props) {
         onClick={() => {
           electron.ipcRenderer.send(
             "open-global-settings-window",
-            state.context.userName
+            // TODO handle what happens if user data has not loaded yet and is clicked
+            state.context.userData?.userName
           );
         }}
         className="top-toolbar-menu-item"
