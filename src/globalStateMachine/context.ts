@@ -11,15 +11,16 @@ interface userSettings {
   minWPM?: number;
   /**
    * Maximum amount of errors allowed (%)
+   *
+   * Overrides the global minimum error coefficient
    **/
-  errorsCoefficient: number;
+  errorsCoefficient?: number;
   /**
    * The time limit, in seconds, for the exercise
    *
    * Overrides the exercise's time limit
    */
   timeLimit: number;
-  userName: string;
   isKeyboardVisible?: boolean;
   isTutorActive?: boolean;
   showResultsWhileDoingExercise: true;
@@ -29,6 +30,11 @@ interface userSettings {
   // soundOnKeysTap: boolean;
   // soundOnError: boolean;
   // infoPanelOnTheLeft: boolean;
+}
+
+interface userData {
+  userName: string;
+  userSettings: userSettings;
 }
 
 /**
@@ -54,7 +60,7 @@ interface exerciseData {
 }
 
 export interface stateContext {
-  userSettings?: userSettings;
+  userData?: userData;
   exerciseData?: exerciseData;
 
   /**
@@ -72,6 +78,12 @@ export interface stateContext {
    * or completed it unsuccessfully
    */
   incidentMessage?: string;
+  /**
+   * @default 0
+   */
   errorsCommitted: number;
+  /**
+   * @default 0
+   */
   elapsedSeconds: number;
 }
