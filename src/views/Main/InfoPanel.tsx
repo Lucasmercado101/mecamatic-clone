@@ -91,23 +91,20 @@ function InfoPanel({ state }: Props) {
     incidentMessage,
     errorsCommitted,
     elapsedSeconds,
-    userData,
     exerciseCursorPosition,
     exerciseData
   } = state.context;
 
-  const {
-    timeLimit: timeLimitInSeconds,
-    errorsCoefficient
-    // TODO replace magic number with number from an enum globalDefaults
-  } = userData
-    ? userData.userSettings
-    : {
-        // NOTE this is to serve as a placeholder for when no user data has loaded yet
-        // TODO get this from enum globalDefaults.exerciseTimeLimit
-        timeLimit: 900, // 15 minutes default time limit
-        errorsCoefficient: 2
-      };
+  const userData = state.context.userData ?? { // NOTE this is to serve as a placeholder for when no user data has loaded yet
+    // TODO userSettings placeholder data with fixed variable
+    userSettings: {
+      timeLimit: 900, // 15 minutes default time limit
+      errorsCoefficient: 2
+    }
+  };
+
+  const { timeLimit: timeLimitInSeconds, errorsCoefficient } =
+    userData.userSettings;
 
   const timeRemaining = {
     minutes: ~~((timeLimitInSeconds - elapsedSeconds) / 60),
