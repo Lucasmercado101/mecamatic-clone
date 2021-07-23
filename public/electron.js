@@ -199,7 +199,7 @@ ipcMain.on("is-on-main-view", () => {
                       "utf8",
                       (err, data) => {
                         win.webContents.send("exercise", {
-                          category: "Practica",
+                          category: "Perfeccionamiento",
                           lesson: lessonNumber,
                           exercise: exerciseNumber,
                           ...JSON.parse(data)
